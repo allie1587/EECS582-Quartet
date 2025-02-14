@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        .menu {
+            margin-top: 20px;
+        }
+        .menu button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .db-box {
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        function sendData() {
+            let inputData = document.getElementById("dbInput").value;
+            fetch("server.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ data: inputData })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("dbOutput").innerText = data.message;
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Home</h1>
+    <div class="menu">
+        <button onclick="location.href='home.html'">Home</button>
+        <button onclick="location.href='schedule.html'">Schedule</button>
+        <button onclick="location.href='store.html'">Store</button>
+        <button onclick="location.href='page4.html'">Page 4</button>
+        <button onclick="location.href='page5.html'">Page 5</button>
+    </div>
+    
+    <div class="db-box">
+        <input type="text" id="dbInput" placeholder="Enter data">
+        <button onclick="sendData()">Submit</button>
+        <p id="dbOutput"></p>
+    </div>
+</body>
+</html>
