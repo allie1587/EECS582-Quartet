@@ -84,6 +84,24 @@
         .arrow-right {
             right: 0;
         }
+        .login-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .login-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
     </style>
     <script>
         function showImage(barberIndex, index) {
@@ -124,6 +142,10 @@
     </script>
 </head>
 <body>
+    <div class="login-container">
+        <span>Login</span>
+        <button class="login-button" onclick="location.href='login.html'">&#10132;</button>
+    </div>
     <h1>Home</h1>
     <div class="menu">
         <button onclick="location.href='home.html'">Home</button>
