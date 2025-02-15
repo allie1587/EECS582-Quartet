@@ -15,7 +15,6 @@
             </div>
             <div class="login-input">
                 <input type="password" id="password" placeholder="Password" required>
-                <span class="toggle-password" onclick="togglePassword()"></span>
                 <a href="#" class="login-forgot">Forgot password?</a>
             </div>
             <button type="submit">Login</button>
@@ -27,19 +26,6 @@
         </p>
     </div>
     <script>
-        function togglePassword() {
-            var passwordInput = document.getElementById("password");
-            var toggleIcon = document.getElementById("toggleIcon");
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
-                toggleIcon.classList.remove("ri-eye-off-line");
-                toggleIcon.classList.add("ri-eye-line");
-            } else {
-                passwordInput.type = "password";
-                toggleIcon.classList.remove("ri-eye-line");
-                toggleIcon.classList.add("ri-eye-off-line");
-            }
-        }
         document.getElementById('loginForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
