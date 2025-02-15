@@ -3,32 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello Quartet</title>
+    <title>Home Page</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        .menu {
+            margin-top: 20px;
+        }
+        .menu button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .top-bar {
+            background-color: green;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            height: 50px;
+        }
+        .top-bar h1 {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 24px;
+        }
+        .login-container {
+            display: flex;
+            align-items: center;
+            padding-right: 20px;
+        }
+        .login-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .db-box {
+            margin-top: 20px;
+        }
+        .store-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .store-info img {
+            width: 400px;
+            height: auto;
+            margin-right: 20px;
+        }
+        .store-text {
+            text-align: left;
+        }
+        .barbers {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .barber-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .barber-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .barber-images {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            max-width: 600px;
+        }
+        .barber-images img {
+            width: 300px;
+            height: auto;
+            display: none;
+        }
+        .barber-images img.active {
+            display: block;
+        }
+        .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 10px;
+            border: none;
+        }
+        .arrow-left {
+            left: 0;
+        }
+        .arrow-right {
+            right: 0;
+        }
+
+    </style>
+    <script>
+        function showImage(barberIndex, index) {
+            let images = document.querySelectorAll(`.barber-${barberIndex} img`);
+            images.forEach(img => img.classList.remove("active"));
+            images[index].classList.add("active");
+        }
+        function nextImage(barberIndex) {
+            let images = document.querySelectorAll(`.barber-${barberIndex} img`);
+            let currentIndex = Array.from(images).findIndex(img => img.classList.contains("active"));
+            currentIndex = (currentIndex + 1) % images.length;
+            showImage(barberIndex, currentIndex);
+        }
+        function prevImage(barberIndex) {
+            let images = document.querySelectorAll(`.barber-${barberIndex} img`);
+            let currentIndex = Array.from(images).findIndex(img => img.classList.contains("active"));
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            showImage(barberIndex, currentIndex);
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            for (let i = 1; i <= 3; i++) {
+                showImage(i, 0);
+            }
+        });
+
+        function sendData() {
+            let inputData = document.getElementById("dbInput").value;
+            fetch("server.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ data: inputData })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("dbOutput").innerText = data.message;
+            });
+        }
+    </script>
 </head>
 <body>
-    <h1>Welcome to Quartet</h1>
-    <p>istall node.js</p>
-    <p>cd to EECS582-QUARTET</p>
-    <p>install npm</p>
-    <p>in terminal type: node server.js</p>
-    <p>to open: http://localhost:3000</p>
-    <p>ctrl+c in terminal to terminate</p>
-    <p>if install npm is blocked then: Get-ExecutionPolicy<br>
-        this should be restricted<br>
-        Set-ExecutionPolicy RemoteSigned -Scope CurrentUser<br>
-        this should allow you to npm install and everything should work
-    </p>
+    <div class="top-bar">
+        <h1>Jose's Amazing Barbershop</h1>
+        <div class="login-container">
+            <span>Login</span>
+            <button class="login-button" onclick="location.href='login.html'">&#10132;</button>
+        </div>
+    </div>
+    <h1>Home</h1>
+    <div class="menu">
+        <button onclick="location.href='home.html'">Home</button>
+        <button onclick="location.href='schedule.html'">Schedule</button>
+        <button onclick="location.href='store.html'">Store</button>
+        <button onclick="location.href='page4.html'">Page 4</button>
+        <button onclick="location.href='page5.html'">Page 5</button>
+    </div>
     
-    <!--
-    used to test saving selections by the user
-    <select id="date">
-        <option value="Monday">Monday</option>
-        <option value="Tuesday">Tuesday</option>
-        <option value="Wednesday">Wednesday</option>
-    </select>
-    <button id="saveButton">Confirm Appointment</button>
-    <script src="scripts/save-selections.js"></script>
-    -->
+    <div class="db-box">
+        <input type="text" id="dbInput" placeholder="Enter data">
+        <button onclick="sendData()">Submit</button>
+        <p id="dbOutput"></p>
+    </div>
 
+    <div class="store-info">
+        <img src="images/store.jpg" alt="Store Image">
+        <div class="store-text">
+            <p><strong>Location:</strong> 123 Main St, Cityville</p>
+            <p><strong>Hours:</strong> Mon-Sat: 9 AM - 8 PM, Sun: Closed</p>
+            <p><strong>Information:</strong> Our store offers top-notch haircuts and grooming services.</p>
+        </div>
+    </div>
+    <h2> Barbers</h2>
+    <div class="barbers">
+        
+        <div class="barber-container">
+            <div class="barber-name">Pedro</div>
+            <div class="barber-images barber-1">
+                <button class="arrow arrow-left" onclick="prevImage(1)">&#9664;</button>
+                <img src="images/haircut1.jpg" alt="Haircut 1-1" class="active">
+                <img src="images/haircut2.jpg" alt="Haircut 1-2">
+                <img src="images/haircut3.jpg" alt="Haircut 1-3">
+                <button class="arrow arrow-right" onclick="nextImage(1)">&#9654;</button>
+            </div>
+        </div>
+
+        <div class="barber-container">
+            <div class="barber-name">Sebastian</div>
+            <div class="barber-images barber-2">
+                <button class="arrow arrow-left" onclick="prevImage(2)">&#9664;</button>
+                <img src="images/haircut1.jpg" alt="Haircut 2-1" class="active">
+                <img src="images/haircut2.jpg" alt="Haircut 2-2">
+                <img src="images/haircut3.jpg" alt="Haircut 2-3">
+                <button class="arrow arrow-right" onclick="nextImage(2)">&#9654;</button>
+            </div>
+        </div>
+
+        <div class="barber-container">
+            <div class="barber-name">Jean Marque III, future King of Zambodia</div>
+            <div class="barber-images barber-3">
+                <button class="arrow arrow-left" onclick="prevImage(3)">&#9664;</button>
+                <img src="images/haircut1.jpg" alt="Haircut 3-1" class="active">
+                <img src="images/haircut2.jpg" alt="Haircut 3-2">
+                <img src="images/haircut3.jpg" alt="Haircut 3-3">
+                <button class="arrow arrow-right" onclick="nextImage(3)">&#9654;</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="reviews">
+        <h2>Reviews</h2>
+        <p>(Coming soon...)</p>
+    </div>
 </body>
 </html>
