@@ -97,6 +97,11 @@
             height: auto;
             display: none;
         }
+    
+        .availability {
+            font-weight: bold;
+            color: green;
+        }
         .barber-images img.active {
             display: block;
         }
@@ -167,7 +172,7 @@
     </div>
     <h1>Home</h1>
     <div class="menu">
-        <button onclick="location.href='home.html'">Home</button>
+        <button onclick="location.href='index.html'">Home</button>
         <button onclick="location.href='schedule.html'">Schedule</button>
         <button onclick="location.href='store.html'">Store</button>
         <button onclick="location.href='page4.html'">Page 4</button>
@@ -193,6 +198,7 @@
         
         <div class="barber-container">
             <div class="barber-name">Pedro</div>
+            <p class="availability">Available: Tue, Fri, Sat 2:00PM-8:00PM</p>
             <div class="barber-images barber-1">
                 <button class="arrow arrow-left" onclick="prevImage(1)">&#9664;</button>
                 <img src="images/haircut1.jpg" alt="Haircut 1-1" class="active">
@@ -204,6 +210,7 @@
 
         <div class="barber-container">
             <div class="barber-name">Sebastian</div>
+            <p class="availability">Available: Mon-Wed 9:00AM-8:00PM</p>
             <div class="barber-images barber-2">
                 <button class="arrow arrow-left" onclick="prevImage(2)">&#9664;</button>
                 <img src="images/haircut1.jpg" alt="Haircut 2-1" class="active">
@@ -215,6 +222,7 @@
 
         <div class="barber-container">
             <div class="barber-name">Jean Marque III, future King of Zambodia</div>
+            <p class="availability">Available: Mon-Sat 9:00AM-8:00PM</p>
             <div class="barber-images barber-3">
                 <button class="arrow arrow-left" onclick="prevImage(3)">&#9664;</button>
                 <img src="images/haircut1.jpg" alt="Haircut 3-1" class="active">
