@@ -20,3 +20,9 @@ if install npm is blocked then: Get-ExecutionPolicy
 this should be restricted
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 this should allow you to npm install and everything should work
+
+Login (Test)
+```
+Username: admin
+Password: 123
+```
