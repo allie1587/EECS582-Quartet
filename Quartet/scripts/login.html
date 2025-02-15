@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <form id="loginForm">
+            <h2 class="login-title">Login</h2>
+            <div class="login-input">
+                <input type="text" id="username" placeholder="Username" required>
+            </div>
+            <div class="login-input">
+                <input type="password" id="password" placeholder="Password" required>
+                <span class="toggle-password" onclick="togglePassword()"></span>
+                <a href="#" class="login-forgot">Forgot password?</a>
+            </div>
+            <button type="submit">Login</button>
+            <p id="error-message" class="error-message"></p>
+        </form>
+        <p class="login-switch">
+            Don't have an account?
+            <a href="register.html" class="login-register">Create Account</a>
+        </p>
+    </div>
+    <script>
+        function togglePassword() {
+            var passwordInput = document.getElementById("password");
+            var toggleIcon = document.getElementById("toggleIcon");
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                toggleIcon.classList.remove("ri-eye-off-line");
+                toggleIcon.classList.add("ri-eye-line");
+            } else {
+                passwordInput.type = "password";
+                toggleIcon.classList.remove("ri-eye-line");
+                toggleIcon.classList.add("ri-eye-off-line");
+            }
+        }
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            document.getElementById('error-message').textContent = '';
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+            //TEST//
+            if (username == "admin" && password == "123") {
+                window.location.href = "home.html"
+            } else {
+                document.getElementById('error-message').textContent = "Invalid username or password.";
+            }
+        });
+    </script>
+</body>
+</html>
