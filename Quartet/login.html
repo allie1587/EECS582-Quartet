@@ -1,41 +1,65 @@
+<!--
+Authors: Alexandra, Jose, Brinley, Ben, Kyle
+Date: 02/12/2025
+Last modified: 02/16/2024
+Purpose: Login into your account
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!--Define character encoding-->
     <meta charset="UTF-8">
+    <!--Ensure proper rendering and touch zooming on mobile devices-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--Set the title of the page-->
     <title>Login Page</title>
+    <!--Link to external CSS file-->
     <link rel="stylesheet" href="style/styles.css">
 </head>
 <body>
+    <!--Container for the login form-->
     <div class="login-container">
+        <!--Login form-->
         <form id="loginForm">
+            <!--Title for the form-->
             <h2 class="login-title">Login</h2>
+            <!--Input field for username-->
             <div class="login-input">
                 <input type="text" id="username" placeholder="Username" required>
             </div>
+            <!--Input field for password-->
             <div class="login-input">
                 <input type="password" id="password" placeholder="Password" required>
                 <a href="#" class="login-forgot">Forgot password?</a>
             </div>
+            <!--Login button-->
             <button type="submit">Login</button>
+            <!--Placeholder for error messages-->
             <p id="error-message" class="error-message"></p>
         </form>
+        <!--Link to registration page for new users-->
         <p class="login-switch">
             Don't have an account?
             <a href="register.html" class="login-register">Create Account</a>
         </p>
     </div>
     <script>
+        //Selects the login form by its ID and adds an event listener to handle form submission
         document.getElementById('loginForm').addEventListener('submit', function(event) {
+            //Prevents prevents page reload
             event.preventDefault();
-
+            //Clears any previous error messages
             document.getElementById('error-message').textContent = '';
+            //Gets the values entered by the user for the username and password fields
             var username = document.getElementById('username').value;
             var password = document.getElementById('password').value;
             //TEST//
+            //If username is "admin" and password is "123", redirect to index.html
             if (username == "admin" && password == "123") {
+                //Redirects to the homepage
                 window.location.href = "index.html"
             } else {
+                //Displays an error message if the credentials are incorrect
                 document.getElementById('error-message').textContent = "Invalid username or password.";
             }
         });
