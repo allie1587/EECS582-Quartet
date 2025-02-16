@@ -1,9 +1,19 @@
+<!--
+Authors: Alexandra, Jose, Brinley, Ben, Kyle
+Date: 02/12/2025
+Last modified: 02/16/2025
+Purpose: Main Page to see the barbershops, Barbers, Cuts, and Availabilities
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!--Define character encoding-->
     <meta charset="UTF-8">
+    <!--Ensure proper rendering and touch zooming on mobile devices-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--Name of Page-->
     <title>Home Page</title>
+    <!--Style choices for page, they include font used, margins, alignation, background color, display types, and some others-->
     <style>
         body {
             text-align: center;
@@ -125,17 +135,20 @@
 
     </style>
     <script>
+        // Selects image from query and shows you the currently selected image
         function showImage(barberIndex, index) {
             let images = document.querySelectorAll(`.barber-${barberIndex} img`);
             images.forEach(img => img.classList.remove("active"));
             images[index].classList.add("active");
         }
+        //Scrolls to the next image by indexing foward through them
         function nextImage(barberIndex) {
             let images = document.querySelectorAll(`.barber-${barberIndex} img`);
             let currentIndex = Array.from(images).findIndex(img => img.classList.contains("active"));
             currentIndex = (currentIndex + 1) % images.length;
             showImage(barberIndex, currentIndex);
         }
+        //Scrolls to the previous image by indexing backwards through them
         function prevImage(barberIndex) {
             let images = document.querySelectorAll(`.barber-${barberIndex} img`);
             let currentIndex = Array.from(images).findIndex(img => img.classList.contains("active"));
@@ -163,14 +176,18 @@
     </script>
 </head>
 <body>
+    <!--The green Bar at the top that has the name and button that takes you to the login page-->
     <div class="top-bar">
-        <h1>Jose's Amazing Barbershop</h1>
+        <h1>Quartet's Amazing Barbershop</h1>
+        <!--Stylized Button to be circular, when clicked takes you to login.html-->
         <div class="login-container">
             <span>Login</span>
             <button class="login-button" onclick="location.href='login.html'">&#10132;</button>
         </div>
     </div>
+    <!--let's user know the current page they are on-->
     <h1>Home</h1>
+    <!--Menu with all possible pages-->
     <div class="menu">
         <button onclick="location.href='index.html'">Home</button>
         <button onclick="location.href='schedule.html'">Schedule</button>
@@ -184,7 +201,7 @@
         <button onclick="sendData()">Submit</button>
         <p id="dbOutput"></p>
     </div>
-
+    <!--Section that holds image of barbershop, followed by the Sotre Information-->
     <div class="store-info">
         <img src="images/store.jpg" alt="Store Image">
         <div class="store-text">
@@ -193,9 +210,10 @@
             <p><strong>Information:</strong> Our store offers top-notch haircuts and grooming services.</p>
         </div>
     </div>
+    <!--Section where we can see the cuts different barbers have made-->
     <h2> Barbers</h2>
     <div class="barbers">
-        
+        <!--Contains the name of Barber, availability, and scrollable images using the fuctions we defined earlier-->
         <div class="barber-container">
             <div class="barber-name">Pedro</div>
             <p class="availability">Available: Tue, Fri, Sat 2:00PM-8:00PM</p>
@@ -207,7 +225,7 @@
                 <button class="arrow arrow-right" onclick="nextImage(1)">&#9654;</button>
             </div>
         </div>
-
+        <!--Contains the name of Barber, availability, and scrollable images using the fuctions we defined earlier-->
         <div class="barber-container">
             <div class="barber-name">Sebastian</div>
             <p class="availability">Available: Mon-Wed 9:00AM-8:00PM</p>
@@ -219,7 +237,7 @@
                 <button class="arrow arrow-right" onclick="nextImage(2)">&#9654;</button>
             </div>
         </div>
-
+        <!--Contains the name of Barber, availability, and scrollable images using the fuctions we defined earlier-->
         <div class="barber-container">
             <div class="barber-name">Jean Marque III, future King of Zambodia</div>
             <p class="availability">Available: Mon-Sat 9:00AM-8:00PM</p>
@@ -232,7 +250,8 @@
             </div>
         </div>
     </div>
-    
+
+    <!--Added section to work on the future for the reviews of the page-->
     <div class="reviews">
         <h2>Reviews</h2>
         <p>(Coming soon...)</p>
