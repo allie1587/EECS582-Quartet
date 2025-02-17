@@ -1,6 +1,6 @@
 # EECS582-Quartet
 Welcome to Quartet
-Website: quartet.infinityfreeapp.com
+Website: www.quartet.infinityfreeapp.com
 
 Login (Test)
 ```
