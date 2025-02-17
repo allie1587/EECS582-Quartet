@@ -32,6 +32,10 @@ Purpose: Login into your account
                 <input type="password" id="password" placeholder="Password" required>
                 <a href="#" class="login-forgot">Forgot password?</a>
             </div>
+            <div class="remember-me">
+                <input type="checkbox" id="rememberMe">
+                <label for="rememberMe">Remember Me</label>
+            </div>
             <!--Login button-->
             <button type="submit">Login</button>
             <!--Placeholder for error messages-->
@@ -43,26 +47,6 @@ Purpose: Login into your account
             <a href="register.html" class="login-register">Create Account</a>
         </p>
     </div>
-    <script>
-        //Selects the login form by its ID and adds an event listener to handle form submission
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
-            //Prevents prevents page reload
-            event.preventDefault();
-            //Clears any previous error messages
-            document.getElementById('error-message').textContent = '';
-            //Gets the values entered by the user for the username and password fields
-            var username = document.getElementById('username').value;
-            var password = document.getElementById('password').value;
-            //TEST//
-            //If username is "admin" and password is "123", redirect to index.html
-            if (username == "admin" && password == "123") {
-                //Redirects to the homepage
-                window.location.href = "index.html"
-            } else {
-                //Displays an error message if the credentials are incorrect
-                document.getElementById('error-message').textContent = "Invalid username or password.";
-            }
-        });
-    </script>
+    <script src ="scripts/login.js"></script>
 </body>
 </html>
