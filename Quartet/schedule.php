@@ -79,7 +79,7 @@
         <div class="login-container">
             <span>Login</span>
             <!-- Clicking this button redirects to the login page -->
-            <button class="login-button" onclick="location.href='login.html'">&#10132;</button>
+            <button class="login-button" onclick="location.href='login.php'">&#10132;</button>
         </div>
     </div>
 
@@ -88,9 +88,9 @@
 
     <!-- Navigation menu with buttons linking to different pages -->
     <div class="menu">
-        <button onclick="location.href='index.html'">Home</button>
-        <button onclick="location.href='schedule.html'">Schedule</button>
-        <button onclick="location.href='store.html'">Store</button>
+        <button onclick="location.href='index.php'">Home</button>
+        <button onclick="location.href='schedule.php'">Schedule</button>
+        <button onclick="location.href='store.php'">Store</button>
         <button onclick="location.href='page4.html'">Page 4</button>
         <button onclick="location.href='page5.html'">Page 5</button>
     </div>

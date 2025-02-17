@@ -4,6 +4,16 @@ Date: 02/12/2025
 Last modified: 02/16/2025
 Purpose: Main Page to see the barbershops, Barbers, Cuts, and Availabilities
 -->
+<?php
+// Start the session to remember user info
+session_start();
+
+// check to see if the user is logged in and give them a cute little welcome messagef
+if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
+    echo "<p class='welcome-message'>Welcome back, " . htmlspecialchars($_SESSION["user"], ENT_QUOTES, 'UTF-8') . "!</p>";
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -182,16 +192,16 @@ Purpose: Main Page to see the barbershops, Barbers, Cuts, and Availabilities
         <!--Stylized Button to be circular, when clicked takes you to login.html-->
         <div class="login-container">
             <span>Login</span>
-            <button class="login-button" onclick="location.href='login.html'">&#10132;</button>
+            <button class="login-button" onclick="location.href='login.php'">&#10132;</button>
         </div>
     </div>
     <!--let's user know the current page they are on-->
     <h1>Home</h1>
     <!--Menu with all possible pages-->
     <div class="menu">
-        <button onclick="location.href='index.html'">Home</button>
-        <button onclick="location.href='schedule.html'">Schedule</button>
-        <button onclick="location.href='store.html'">Store</button>
+        <button onclick="location.href='index.php'">Home</button>
+        <button onclick="location.href='schedule.php'">Schedule</button>
+        <button onclick="location.href='store.php'">Store</button>
         <button onclick="location.href='page4.html'">Page 4</button>
         <button onclick="location.href='page5.html'">Page 5</button>
     </div>

@@ -1,9 +1,16 @@
 <!--
+login.php
+Description: Allows users to log in to their accounts
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 02/12/2025
-Last modified: 02/16/2024
-Purpose: Login into your account
+Revisions: 
+    02/16/2024 -- Brinley, adding session information
 -->
+<?php
+// Start the session to remember user info
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,15 +24,16 @@ Purpose: Login into your account
     <link rel="stylesheet" href="style/styles.css">
 </head>
 <body>
+    <button onclick="location.href='index.php'">&#10132;</button>
     <!--Container for the login form-->
     <div class="login-container">
         <!--Login form-->
-        <form id="loginForm">
+        <form id="loginForm" method="post">
             <!--Title for the form-->
             <h2 class="login-title">Login</h2>
             <!--Input field for username-->
             <div class="login-input">
-                <input type="text" id="username" placeholder="Username" required>
+                <input type="text" id="username" placeholder="Username" name="username" required >
             </div>
             <!--Input field for password-->
             <div class="login-input">
@@ -41,6 +49,11 @@ Purpose: Login into your account
             <!--Placeholder for error messages-->
             <p id="error-message" class="error-message"></p>
         </form>
+
+        <?php
+            // set session username
+            $_SESSION["user"] = $_POST["username"];
+        ?>
         <!--Link to registration page for new users-->
         <p class="login-switch">
             Don't have an account?
