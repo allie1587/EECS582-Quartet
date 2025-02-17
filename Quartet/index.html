@@ -15,20 +15,20 @@ Purpose: Main Page to see the barbershops, Barbers, Cuts, and Availabilities
     <title>Home Page</title>
     <!--Style choices for page, they include font used, margins, alignation, background color, display types, and some others-->
     <style>
-        body {
+        body { /*Centers text and sets the font */
             text-align: center;
             font-family: Arial, sans-serif;
         }
-        .menu {
+        .menu { /* Adds spacing for the menu*/
             margin-top: 20px;
         }
-        .menu button {
+        .menu button { /*Styles the menu buttons */
             margin: 5px;
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
         }
-        .top-bar {
+        .top-bar { /*Creates a top navigation bar with a green background, white text, and flexible layout */
             background-color: green;
             padding: 10px;
             display: flex;
@@ -37,17 +37,17 @@ Purpose: Main Page to see the barbershops, Barbers, Cuts, and Availabilities
             color: white;
             height: 50px;
         }
-        .top-bar h1 {
+        .top-bar h1 { /*Styles the header text in the top bar */
             margin: 0;
             padding-left: 20px;
             font-size: 24px;
         }
-        .login-container {
+        .login-container { /*Aligns login button and text */
             display: flex;
             align-items: center;
             padding-right: 20px;
         }
-        .login-button {
+        .login-button { /*Styles a circular login button */
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -61,61 +61,61 @@ Purpose: Main Page to see the barbershops, Barbers, Cuts, and Availabilities
             align-items: center;
             justify-content: center;
         }
-        .db-box {
+        .db-box { /*Adds margin above the database input section */
             margin-top: 20px;
         }
-        .store-info {
+        .store-info { /*Arranges store information in a flexbox */
             display: flex;
             align-items: center;
             justify-content: center;
             margin-top: 20px;
         }
-        .store-info img {
+        .store-info img { /*Sizes the store image and adds spacing */
             width: 400px;
             height: auto;
             margin-right: 20px;
         }
-        .store-text {
+        .store-text { /*Aligns store text */
             text-align: left;
         }
-        .barbers {
+        .barbers { /*Creates a flexbox for barber profiles */
             margin-top: 40px;
             display: flex;
             justify-content: center;
             gap: 20px;
         }
-        .barber-container {
+        .barber-container { /*Organizes barber profile content */
             display: flex;
             flex-direction: column;
             align-items: center;
             margin-bottom: 20px;
         }
-        .barber-name {
+        .barber-name { /*Styles barber names */
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 10px;
         }
-        .barber-images {
+        .barber-images { /*Centers barber image containers */
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             max-width: 600px;
         }
-        .barber-images img {
+        .barber-images img { /*Initially hides images */
             width: 300px;
             height: auto;
             display: none;
         }
     
-        .availability {
+        .availability { /*Highlights barber availability */
             font-weight: bold;
             color: green;
         }
-        .barber-images img.active {
+        .barber-images img.active { /*Ensures only the selected image is visible */
             display: block;
         }
-        .arrow {
+        .arrow { /*Styles navigation arrows for scrolling through barber images */
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
@@ -126,10 +126,10 @@ Purpose: Main Page to see the barbershops, Barbers, Cuts, and Availabilities
             padding: 10px;
             border: none;
         }
-        .arrow-left {
+        .arrow-left { /*Positions the left arrow */
             left: 0;
         }
-        .arrow-right {
+        .arrow-right { /*Positions the right arrow */
             right: 0;
         }
 
@@ -161,7 +161,7 @@ Purpose: Main Page to see the barbershops, Barbers, Cuts, and Availabilities
             }
         });
 
-        function sendData() {
+        function sendData() { //Sends input data to a PHP backend using
             let inputData = document.getElementById("dbInput").value;
             fetch("server.php", {
                 method: "POST",
