@@ -24,7 +24,6 @@ session_start();
     <link rel="stylesheet" href="style/styles.css">
 </head>
 <body>
-    <button onclick="location.href='index.php'">&#10132;</button>
     <!--Container for the login form-->
     <div class="login-container">
         <!--Login form-->
@@ -53,11 +52,15 @@ session_start();
         <?php
             // set session username
             $_SESSION["user"] = $_POST["username"];
+
+            if (isset($_SESSION["user"])) {
+                header("Location: index.php");
+            }
         ?>
         <!--Link to registration page for new users-->
         <p class="login-switch">
             Don't have an account?
-            <a href="register.html" class="login-register">Create Account</a>
+            <a href="register.php" class="login-register">Create Account</a>
         </p>
     </div>
     <script src ="scripts/login.js"></script>

@@ -4,6 +4,11 @@ Date: 02/12/2025
 Last modified: 02/16/2025
 Purpose: Creating a new account
 -->
+<?php
+// Start the session to remember user info
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,7 +25,7 @@ Purpose: Creating a new account
     <!--Container for the registration form-->
     <div class="register-container">
         <!--Registration form-->
-        <form id="registerForm">
+        <form id="registerForm" method="post">
             <!--Title for the form-->
             <h2 class="register-title">Create new account</h2>
             <!--Input field for first name-->
@@ -29,11 +34,11 @@ Purpose: Creating a new account
             </div>
             <!--Input field for last name-->
             <div class="register-input">
-                <input type="text" id="lname" placeholder="Lase Name" required>
+                <input type="text" id="lname" placeholder="Last Name" required>
             </div>
             <!--Input field for username-->
             <div class="register-input">
-                <input type="text" id="username" placeholder="Username" required>
+                <input type="text" id="username" placeholder="Username" name="username" required>
             </div>
             <!--Input field for password-->
             <div class="register-input">
@@ -48,10 +53,21 @@ Purpose: Creating a new account
             <!--Placeholder for error messages-->
             <p id="error-message" class="error-message"></p>
         </form>
+
+        <?php
+            // set session username
+            $_SESSION["user"] = $_POST["username"];
+
+            if (isset($_SESSION["user"])) {
+                header("Location: index.php");
+            }
+            
+        ?>
+
         <!--Link to the login page for existing users-->
         <p class="login-switch">
             Already have an account?
-            <a href="login.html" class="register-login">Log in</a>
+            <a href="login.php" class="register-login">Log in</a>
         </p>
     </div>
 </body>
