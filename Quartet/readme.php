@@ -1,5 +1,26 @@
+<!-- 
+ readme.php
+ Basic readme page for the original node.js project that shows connection to the database.
+ Authors: Alexandra Stratton, Brinley Hull, Kyle Moore, Ben Renner, Jose Leyba
+ Creation date: 2/13/2025
+ Revision date: 2/13/2025 - Brinley, copying the original readme.html and adding database information
+ Preconditions:
+    None
+ Postconditions:
+    None
+ Error/exception conditions:
+    Database doesn't connect -- database timeout
+ Side effects:
+    None
+ Invariants:
+    None
+ Known faults:
+    None
+-->
+
 <?php
-ini_set('mysql.connect_timeout', 60); // 60 seconds
+// setting the database timeout times to a minute
+ini_set('mysql.connect_timeout', 60); 
 ini_set('default_socket_timeout', 60);
 // Enable error reporting
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
@@ -10,7 +31,7 @@ try {
     
     echo "Success! Connected to MySQL.";
 
-    // Query the database
+    // Query the database for the users
     $query = "SELECT * FROM Users";
     $result = $conn->query($query);
 
