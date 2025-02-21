@@ -56,7 +56,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
     var password = document.getElementById('password').value;
     var rememberMe = document.getElementById('rememberMe').checked;
     //TEST//
-    //If username is "admin" and password is "123", redirect to index.html
+    //If username is "admin" and password is "123", redirect to index.php
     if (username === "admin" && password === "123") {
         if (rememberMe) {
             bakeCookie('savedUsername', username, 7); // save cookie for 7 days
@@ -64,7 +64,9 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
             deleteCookie('savedUsername'); //if wrong login then remove the cookie
         }
         //Redirects to the homepage
-        window.location.href = "index.html";
+        console.log("Login success");
+        window.location.href = "index.php";
+
     } else {
         //Displays an error message if the credentials are incorrect
         document.getElementById('error-message').textContent = "Invalid username or password.";
