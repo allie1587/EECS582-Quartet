@@ -1,3 +1,12 @@
+<!-- 
+    schedule.php
+    A page to hold the appointment calendar and scheduler.
+    Author: Alexandra Stratton, Ben Renner, Brinley Hull, Jose Leyba, Kyle Moore
+    Revisions:
+        2/25/2025 -- Brinley, add calendar
+    Creation date:
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,6 +78,40 @@
             font-size: 16px; /* Sets font size */
             cursor: pointer; /* Changes cursor to pointer on hover */
         }
+
+        /* Calendar styles */
+        .calendar-container {
+            margin-top: 20px;
+        }
+
+        .month-name {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+        }
+
+        .day {
+            border-style: solid;
+            border-width: 1.5px;
+            padding: 20px;
+            font-size: 16px;
+        }
+
+        .dayHead {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            padding: 10px;
+        }
+
+        .calendar-nav {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -94,5 +137,86 @@
         <button onclick="location.href='page4.html'">Page 4</button>
         <button onclick="location.href='page5.html'">Page 5</button>
     </div>
+
+    <div class="calendar-container">
+        <div class="month-name" id="monthName">
+            <!-- Month Name will be displayed here -->
+        </div>
+
+        <div class="calendar">
+            <!-- Days of the week -->
+            <div class="dayHead">Sunday</div>
+            <div class="dayHead">Monday</div>
+            <div class="dayHead">Tuesday</div>
+            <div class="dayHead">Wednesday</div>
+            <div class="dayHead">Thursday</div>
+            <div class="dayHead">Friday</div>
+            <div class="dayHead">Saturday</div>
+
+            <!-- Calendar Days will be dynamically generated here -->
+        </div>
+
+        <div class="calendar-nav">
+            <button onclick="changeMonth(-1)">Previous</button>
+            <button onclick="changeMonth(1)">Next</button>
+        </div>
+    </div>
+
+    <script>
+        let currentMonth = new Date().getMonth(); // Current month (0-11)
+        let currentYear = new Date().getFullYear(); // Current year
+        let monthNames = [
+            'January', 'February', 'March', 'April', 'May', 'June', 
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+
+        // Function to render the calendar
+        function renderCalendar() {
+            // Get the first day of the month and the total number of days in the month
+            let firstDay = new Date(currentYear, currentMonth, 1).getDay(); // First day of the month
+            let daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate(); // Number of days in the month
+
+            // Update month name
+            document.getElementById('monthName').innerHTML = `${monthNames[currentMonth]} ${currentYear}`;
+
+            // Clear the previous calendar days
+            let calendar = document.querySelector('.calendar');
+            calendar.querySelectorAll('.day').forEach(day => day.remove());
+
+            // Add empty divs for days before the 1st day of the month
+            for (let i = 0; i < firstDay; i++) {
+                let emptyDay = document.createElement('div');
+                emptyDay.classList.add('day');
+                calendar.appendChild(emptyDay);
+            }
+
+            // Add actual days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                let dayDiv = document.createElement('div');
+                dayDiv.classList.add('day');
+                dayDiv.textContent = day;
+                calendar.appendChild(dayDiv);
+            }
+        }
+
+        // Function to change the month (either forward or backward)
+        function changeMonth(direction) {
+            currentMonth += direction;
+
+            // If the month goes out of bounds, adjust the year and month
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+
+            renderCalendar(); // Re-render the calendar for the new month
+        }
+
+        // Initial render
+        renderCalendar();
+    </script>
 </body>
 </html>
