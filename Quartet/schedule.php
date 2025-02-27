@@ -81,7 +81,7 @@
 
         /* Calendar styles */
         .calendar-container {
-            margin-top: 20px;
+            margin-top: 30px;
         }
 
         .month-name {
@@ -90,18 +90,32 @@
         }
 
         .calendar {
+            margin: 15px;
+            margin-top: 10px;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
+            gap: 0px;
             text-align: center;
         }
 
         .day {
-            border-style: solid;
-            border-width: 1.5px;
-            padding: 20px;
-            font-size: 16px;
+            position: relative; /* Ensures child elements are positioned relative to this */
+            aspect-ratio: 1/.75;
+            border: 1px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
+        .day span {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            display: grid;
+        }
+
 
         .dayHead {
             background-color: #f2f2f2;
@@ -112,6 +126,15 @@
         .calendar-nav {
             margin-top: 20px;
         }
+
+        /* appointment button styling */
+        .day-button {
+            margin: 5px;
+            cursor: pointer;
+            width: 90%;
+            padding: 5px;
+        }
+
     </style>
 </head>
 <body>
@@ -163,6 +186,7 @@
     </div>
 
     <script>
+        // ChatGPT help start
         let currentMonth = new Date().getMonth(); // Current month (0-11)
         let currentYear = new Date().getFullYear(); // Current year
         let monthNames = [
@@ -194,7 +218,22 @@
             for (let day = 1; day <= daysInMonth; day++) {
                 let dayDiv = document.createElement('div');
                 dayDiv.classList.add('day');
-                dayDiv.textContent = day;
+
+                // Create a span for the day number
+                let dayNumber = document.createElement('span');
+                dayNumber.textContent = day;
+
+                // Create a button
+                let button = document.createElement('button');
+                button.textContent = 'Appointments Found';
+                button.addEventListener('click', () => {
+                    openAppointmentInfo(day);
+                });
+                button.classList.add('day-button');
+
+                // Append elements
+                dayDiv.appendChild(dayNumber);
+                dayDiv.appendChild(button);
                 calendar.appendChild(dayDiv);
             }
         }
@@ -215,8 +254,19 @@
             renderCalendar(); // Re-render the calendar for the new month
         }
 
+        function addAppointments() {
+            calendar.querySelectorAll('.day').forEach(day => {
+                // if sql.has appointment
+            });
+        }
+
+        function openAppointmentInfo(day) {
+            
+        }
+
         // Initial render
         renderCalendar();
+        //ChatGPT end
     </script>
 </body>
 </html>
