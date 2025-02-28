@@ -8,7 +8,7 @@ Purpose: Creating a new barber account
 //Start the session to remember user info
 session_start();
 include("db_connection.php");
-$error_message = "failed to connect";
+$error_message = "";
 // Check if the register form was submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     //Get form data
@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         //Attempt to secure password
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        //Prepare SQL statement to insert data into the database
+        //Prepare SQL statement to insert data into the User table
         $sql = "INSERT INTO Users (fname, lname, username, password) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         if ($stmt) {
@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($stmt->execute()) {
                 //Set session username
                 $_SESSION["user"] = $username;
-                // Redirect to the dashboard page
+                //Redirect to the dashboard page
                 header("Location: dashboard.php");
                 exit();
             } else {
