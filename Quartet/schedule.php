@@ -5,6 +5,7 @@
     Revisions:
         2/25/2025 -- Brinley, add calendar
         2/27/2025 -- Brinley, add appointment button popups
+        2/28/2025 -- Brinley, add timeslots and populate appointment details
     Creation date:
     Other sources: ChatGPT
 -->
@@ -240,7 +241,7 @@ if ($mysqli->connect_error) {
         <div id="appointmentPopup" class="popup">
             <div class="popup-content">
                 <span class="close-btn">&times;</span>
-                <h2>Available appointments for <span id="appointmentDay"></span></h2>
+                <h2><span id="appointmentDay"></span></h2>
                 <div id="appointmentGrid" class="appointment-grid"></div>
             </div>
         </div>
@@ -334,13 +335,13 @@ if ($mysqli->connect_error) {
         }
 
         function openAppointments(day) {
+            // Functiont to show all appointment timeslots for a specific day
             const popup = document.getElementById('appointmentPopup');
-            const appointmentText = document.getElementById('appointmentText');
             const appointmentGrid = document.getElementById('appointmentGrid');
             const appointmentDay = document.getElementById('appointmentDay');
 
             // Update the popup title
-            appointmentDay.textContent = `${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}`;
+            appointmentDay.textContent = `Available Appointments for ${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}`;
 
             // Clear existing appointments
             appointmentGrid.innerHTML = "";
@@ -351,7 +352,8 @@ if ($mysqli->connect_error) {
             appointmentDay.textContent = `${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}`;
 
 
-            fetch(`get_appointments.php?year=${currentYear}&month=${currentMonth}&day=${day}&weekday=${weekday}`)
+            // Call to the database to retrieve the appointments
+            fetch(`get_appointments.php?year=${currentYear}&month=${currentMonth}&day=${day}&weekday=${weekday}`) // Go to get_appointments.php
             .then(response => response.json())
             .then(data => {
                 appointmentsData = data;
@@ -359,7 +361,8 @@ if ($mysqli->connect_error) {
                     appointments = appointmentsData;
                 }
             }).then(response => {
-// Create grid items dynamically
+                // Create grid items dynamically
+                // Populate the popup with appointment timeslots, creating a button for each
                     appointments.forEach(appointment => {
                         let item = document.createElement('button');
                         if (appointments[0] == "No appointments") {
@@ -384,19 +387,38 @@ if ($mysqli->connect_error) {
         }
 
         function openAppointmentInfo(appointment, day) {
+            // Appointment information popup for a specific timeslot
             const popup = document.getElementById('appointmentPopup');
-            const appointmentText = document.getElementById('appointmentText');
             const appointmentGrid = document.getElementById('appointmentGrid');
             const appointmentDay = document.getElementById('appointmentDay');
 
-            // Clear existing appointments
+            // Clear the popup
             appointmentGrid.innerHTML = "";
-            appointmentDay.textContent = `${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}
-                                    \n\nTime: ${(appointment.Time <= 12 ? appointment.Time : appointment.Time-12) + (appointment.Time < 12 ? "AM" : "PM")}
-                                    \nBarber: ${appointment.Barber}`;
+
+            // Currently the title, but has all appointment information populated from sent in appointment. e.g. appointment.Time, appointment.BarberID, appointment.[columnName from database]
+            // BarberID needs to be changed in database to actually be the ID and reference the barber information table to get the name.
+            appointmentDay.textContent = `Selected Appointment`;
+            let appointmentInfoPara = document.createElement('p');
+            appointmentInfoPara.innerHTML = `Date: ${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}
+                                    \nTime: ${(appointment.Time <= 12 ? appointment.Time : appointment.Time-12) + (appointment.Time < 12 ? "AM" : "PM")}
+                                    \nBarber: ${appointment.BarberID}`;
+            appointmentGrid.appendChild(appointmentInfoPara);
+
+            let bookButton = document.createElement('button');
+            bookButton.textContent = "Book Appointment";
+            bookButton.addEventListener('click', () => {
+                bookAppointment(appointment);
+            });
+
+            appointmentGrid.appendChild(bookButton);
 
             // Show popup
             popup.style.display = 'block';
+
+        }
+
+        function bookAppointment(appointment) {
+            // Function to show client a space to add their information and confirm their appointment.
 
         }
 
