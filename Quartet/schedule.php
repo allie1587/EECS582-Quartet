@@ -256,6 +256,7 @@ if ($mysqli->connect_error) {
             'July', 'August', 'September', 'October', 'November', 'December'
         ];
         let dayNames = ['Monday', "Tuesday", 'Wednesday', 'Thursday', 'Friday', "Saturday", 'Sunday'];
+        let appointmentsData = [];
 
         // Function to render the calendar
         function renderCalendar() {
@@ -293,10 +294,11 @@ if ($mysqli->connect_error) {
                 let weekday = new Date(currentYear, currentMonth, day-1).getDay();
 
                 // Fetch appointment count from backend
-                fetch(`countAppointments.php?year=${currentYear}&month=${currentMonth}&day=${day}&weekday=${weekday}`)
+                fetch(`get_appointments.php?year=${currentYear}&month=${currentMonth}&day=${day}&weekday=${weekday}`)
                     .then(response => response.json())
                     .then(data => {
-                        button.textContent = `${data.count} Appointment(s) Found`;
+                        appointmentsData = data;
+                        button.textContent = `${appointmentsData.length} Appointment(s) Found`;
                     })
                     .catch(error => {
                         console.error("Error fetching appointment count:", error);
@@ -331,20 +333,6 @@ if ($mysqli->connect_error) {
             renderCalendar(); // Re-render the calendar for the new month
         }
 
-        function addAppointments() {
-            calendar.querySelectorAll('.day').forEach(day => {
-                // if sql.has appointment
-            });
-        }
-
-        // Sample appointment data (replace with SQL or API data)
-        const appointmentsData = {
-            1: ["Meeting @ 10 AM", "Doctor @ 3 PM"],
-            2: ["Lunch with Sarah @ 12 PM"],
-            5: ["Gym @ 6 AM", "Work Call @ 2 PM", "Dinner @ 7 PM"],
-            // Add more appointments for other days
-        };
-
         function openAppointmentInfo(day) {
             const popup = document.getElementById('appointmentPopup');
             const appointmentText = document.getElementById('appointmentText');
@@ -358,29 +346,41 @@ if ($mysqli->connect_error) {
             appointmentGrid.innerHTML = "";
 
             // Get appointments for the selected day
-            const appointments = getAppointments(day) || ["No appointments"];
+            let appointments = ["No appointments"];
+            let weekday = new Date(currentYear, currentMonth, day-1).getDay();
+            appointmentDay.textContent = `${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}`;
 
-            // Create grid items dynamically
-            appointments.forEach(appointment => {
-                let item = document.createElement('div');
-                item.classList.add('appointment-item');
-                item.textContent = appointment;
-                appointmentGrid.appendChild(item);
+
+            fetch(`get_appointments.php?year=${currentYear}&month=${currentMonth}&day=${day}&weekday=${weekday}`)
+            .then(response => response.json())
+            .then(data => {
+                appointmentsData = data;
+                if (appointmentsData.length != 0) {
+                    appointments = appointmentsData;
+                }
+            }).then(response => {
+// Create grid items dynamically
+appointments.forEach(appointment => {
+                        let item = document.createElement('div');
+                        item.classList.add('appointment-item');
+                        item.textContent = appointment;
+                        appointmentGrid.appendChild(item);
+                    });
+
+                    // Show popup
+                    popup.style.display = 'block';
+            
+            }
+        )
+            .catch(error => {
+                console.error("Error fetching appointment count:", error);
             });
-
-            // Show popup
-            popup.style.display = 'block';
         }
 
         // Close popup when clicking X button
         document.querySelector('.close-btn').addEventListener('click', () => {
             document.getElementById('appointmentPopup').style.display = 'none';
         });
-
-
-        function getAppointments(day) {
-            appointmentDay.textContent = `${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}`;
-        }
 
         // Initial render
         renderCalendar();
