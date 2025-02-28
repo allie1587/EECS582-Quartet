@@ -1,10 +1,12 @@
 <!-- 
     schedule.php
     A page to hold the appointment calendar and scheduler.
-    Author: Alexandra Stratton, Ben Renner, Brinley Hull, Jose Leyba, Kyle Moore
+    Authors: Alexandra Stratton, Ben Renner, Brinley Hull, Jose Leyba, Kyle Moore
     Revisions:
         2/25/2025 -- Brinley, add calendar
+        2/27/2025 -- Brinley, add appointment button popups
     Creation date:
+    Other sources: ChatGPT
 -->
 
 <!DOCTYPE html>
@@ -82,6 +84,7 @@
         /* Calendar styles */
         .calendar-container {
             margin-top: 30px;
+            position: relative;
         }
 
         .month-name {
@@ -135,6 +138,47 @@
             padding: 5px;
         }
 
+        /* Popup styling */
+        .popup {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 10%;
+            left: 10%;
+            right: 10%;
+            bottom: 10%;
+            background: white;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            z-index: 1000;
+        }
+
+        /* Close button */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Grid container inside the popup */
+        .appointment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Adjust columns dynamically */
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        /* Individual appointment items */
+        .appointment-item {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 14px;
+        }
+
     </style>
 </head>
 <body>
@@ -183,6 +227,16 @@
             <button onclick="changeMonth(-1)">Previous</button>
             <button onclick="changeMonth(1)">Next</button>
         </div>
+
+                <!-- Popup Modal -->
+        <div id="appointmentPopup" class="popup">
+            <div class="popup-content">
+                <span class="close-btn">&times;</span>
+                <h2>Available appointments for <span id="appointmentDay"></span></h2>
+                <div id="appointmentGrid" class="appointment-grid"></div>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -193,6 +247,7 @@
             'January', 'February', 'March', 'April', 'May', 'June', 
             'July', 'August', 'September', 'October', 'November', 'December'
         ];
+        let dayNames = ['Monday', "Tuesday", 'Wednesday', 'Thursday', 'Friday', "Saturday", 'Sunday'];
 
         // Function to render the calendar
         function renderCalendar() {
@@ -203,7 +258,7 @@
             // Update month name
             document.getElementById('monthName').innerHTML = `${monthNames[currentMonth]} ${currentYear}`;
 
-            // Clear the previous calendar days
+            // Clear the previous calendar month
             let calendar = document.querySelector('.calendar');
             calendar.querySelectorAll('.day').forEach(day => day.remove());
 
@@ -225,7 +280,7 @@
 
                 // Create a button
                 let button = document.createElement('button');
-                button.textContent = 'Appointments Found';
+                button.textContent = 'X Appointments Found';
                 button.addEventListener('click', () => {
                     openAppointmentInfo(day);
                 });
@@ -260,8 +315,51 @@
             });
         }
 
+        // Sample appointment data (replace with SQL or API data)
+        const appointmentsData = {
+            1: ["Meeting @ 10 AM", "Doctor @ 3 PM"],
+            2: ["Lunch with Sarah @ 12 PM"],
+            5: ["Gym @ 6 AM", "Work Call @ 2 PM", "Dinner @ 7 PM"],
+            // Add more appointments for other days
+        };
+
         function openAppointmentInfo(day) {
-            
+            const popup = document.getElementById('appointmentPopup');
+            const appointmentText = document.getElementById('appointmentText');
+            const appointmentGrid = document.getElementById('appointmentGrid');
+            const appointmentDay = document.getElementById('appointmentDay');
+
+            // Update the popup title
+            appointmentDay.textContent = `${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}`;
+
+            // Clear existing appointments
+            appointmentGrid.innerHTML = "";
+
+            // Get appointments for the selected day
+            const appointments = appointmentsData[day] || ["No appointments"];
+
+            // Create grid items dynamically
+            appointments.forEach(appointment => {
+                let item = document.createElement('div');
+                item.classList.add('appointment-item');
+                item.textContent = appointment;
+                appointmentGrid.appendChild(item);
+            });
+
+            // Show popup
+            popup.style.display = 'block';
+        }
+
+        // Close popup when clicking X button
+        document.querySelector('.close-btn').addEventListener('click', () => {
+            document.getElementById('appointmentPopup').style.display = 'none';
+        });
+
+
+        function addAppointments() {
+            calendar.querySelectorAll('.day').forEach(day => {
+                
+            });
         }
 
         // Initial render
