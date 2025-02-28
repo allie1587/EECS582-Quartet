@@ -360,10 +360,14 @@ if ($mysqli->connect_error) {
                 }
             }).then(response => {
 // Create grid items dynamically
-appointments.forEach(appointment => {
+                    appointments.forEach(appointment => {
                         let item = document.createElement('div');
                         item.classList.add('appointment-item');
-                        item.textContent = appointment;
+                        if (appointments[0] == "No appointments") {
+                            item.textContent = "No appointments";
+                        } else {
+                            item.textContent = (appointment.Time <= 12 ? appointment.Time : appointment.Time-12) + (appointment.Time < 12 ? "AM" : "PM");
+                        }
                         appointmentGrid.appendChild(item);
                     });
 
