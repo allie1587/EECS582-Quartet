@@ -21,7 +21,8 @@ $weekday = isset($_GET['weekday']) ? $_GET['weekday'] : 0;
 // Prepare SQL query
 $query = "SELECT * FROM Appointment_Availability 
           WHERE Available='Y' 
-          AND (Weekday=? OR (Month=? AND Day=? AND Year=?))";
+          AND (Weekday=? OR (Month=? AND Day=? AND Year=?))
+          ORDER BY Time";
 
 $stmt = $mysqli->prepare($query);
 if (!$stmt) {

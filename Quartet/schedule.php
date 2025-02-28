@@ -306,7 +306,7 @@ if ($mysqli->connect_error) {
                     });
                 
                 button.addEventListener('click', () => {
-                    openAppointmentInfo(day);
+                    openAppointments(day);
                 });
                 button.classList.add('day-button');
 
@@ -333,7 +333,7 @@ if ($mysqli->connect_error) {
             renderCalendar(); // Re-render the calendar for the new month
         }
 
-        function openAppointmentInfo(day) {
+        function openAppointments(day) {
             const popup = document.getElementById('appointmentPopup');
             const appointmentText = document.getElementById('appointmentText');
             const appointmentGrid = document.getElementById('appointmentGrid');
@@ -361,12 +361,14 @@ if ($mysqli->connect_error) {
             }).then(response => {
 // Create grid items dynamically
                     appointments.forEach(appointment => {
-                        let item = document.createElement('div');
-                        item.classList.add('appointment-item');
+                        let item = document.createElement('button');
                         if (appointments[0] == "No appointments") {
                             item.textContent = "No appointments";
                         } else {
                             item.textContent = (appointment.Time <= 12 ? appointment.Time : appointment.Time-12) + (appointment.Time < 12 ? "AM" : "PM");
+                            item.addEventListener('click', () => {
+                                openAppointmentInfo(appointment, day);
+                            });
                         }
                         appointmentGrid.appendChild(item);
                     });
@@ -379,6 +381,23 @@ if ($mysqli->connect_error) {
             .catch(error => {
                 console.error("Error fetching appointment count:", error);
             });
+        }
+
+        function openAppointmentInfo(appointment, day) {
+            const popup = document.getElementById('appointmentPopup');
+            const appointmentText = document.getElementById('appointmentText');
+            const appointmentGrid = document.getElementById('appointmentGrid');
+            const appointmentDay = document.getElementById('appointmentDay');
+
+            // Clear existing appointments
+            appointmentGrid.innerHTML = "";
+            appointmentDay.textContent = `${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}
+                                    \n\nTime: ${(appointment.Time <= 12 ? appointment.Time : appointment.Time-12) + (appointment.Time < 12 ? "AM" : "PM")}
+                                    \nBarber: ${appointment.Barber}`;
+
+            // Show popup
+            popup.style.display = 'block';
+
         }
 
         // Close popup when clicking X button
