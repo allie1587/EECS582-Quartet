@@ -1,13 +1,55 @@
 <!--
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 02/12/2025
-Last modified: 02/16/2025
-Purpose: Creating a new account
+Last modified: 02/28/2025
+Purpose: Creating a new barber account
 -->
 <?php
-// Start the session to remember user info
-include("db_connection.php");
+//Start the session to remember user info
 session_start();
+include("db_connection.php");
+$error_message = "failed to connect";
+// Check if the register form was submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    //Get form data
+    $fname = trim($_POST['fname']);
+    $lname = trim($_POST['lname']);
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
+    $confirm_password = trim($_POST['confirm_password']);
+    //Validate input
+    if (empty($fname) || empty($lname) || empty($username) || empty($password) || empty($confirm_password)) {
+        $error_message = "All fields are required.";
+    } elseif ($password !== $confirm_password) {
+        $error_message = "Passwords do not match.";
+    } else {
+        //Attempt to secure password
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        //Prepare SQL statement to insert data into the database
+        $sql = "INSERT INTO Users (fname, lname, username, password) VALUES (?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        if ($stmt) {
+            //Bind parameters to the prepared statement
+            $stmt->bind_param("ssss", $fname, $lname, $username, $hashed_password);
+            //run the statement
+            if ($stmt->execute()) {
+                //Set session username
+                $_SESSION["user"] = $username;
+                // Redirect to the dashboard page
+                header("Location: dashboard.php");
+                exit();
+            } else {
+                $error_message = "Error: " . $stmt->error;
+            }
+            //close the statement
+            $stmt->close();
+        } else {
+            $error_message = "Error: " . $conn->error;
+        }
+    }
+    //Close the database connection
+    $conn->close();
+}
 ?>
 
 <!DOCTYPE html>
