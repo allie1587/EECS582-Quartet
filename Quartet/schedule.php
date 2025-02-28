@@ -8,6 +8,14 @@
     Creation date:
     Other sources: ChatGPT
 -->
+<?php
+// Start the session to remember user info
+session_start();
+$conn = new mysqli('sql312.infinityfree.com', 'if0_38323969', 'Quartet44', 'if0_38323969_quartet');
+if ($mysqli->connect_error) {
+    die("Connection failed: " . $mysqli->connect_error);
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -280,7 +288,21 @@
 
                 // Create a button
                 let button = document.createElement('button');
-                button.textContent = 'X Appointments Found';
+
+                // Get the weekday
+                let weekday = new Date(currentYear, currentMonth, day-1).getDay();
+
+                // Fetch appointment count from backend
+                fetch(`countAppointments.php?year=${currentYear}&month=${currentMonth}&day=${day}&weekday=${weekday}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        button.textContent = `${data.count} Appointment(s) Found`;
+                    })
+                    .catch(error => {
+                        console.error("Error fetching appointment count:", error);
+                        button.textContent = "Error";
+                    });
+                
                 button.addEventListener('click', () => {
                     openAppointmentInfo(day);
                 });
@@ -336,7 +358,7 @@
             appointmentGrid.innerHTML = "";
 
             // Get appointments for the selected day
-            const appointments = appointmentsData[day] || ["No appointments"];
+            const appointments = getAppointments(day) || ["No appointments"];
 
             // Create grid items dynamically
             appointments.forEach(appointment => {
@@ -356,10 +378,8 @@
         });
 
 
-        function addAppointments() {
-            calendar.querySelectorAll('.day').forEach(day => {
-                
-            });
+        function getAppointments(day) {
+            appointmentDay.textContent = `${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}`;
         }
 
         // Initial render
