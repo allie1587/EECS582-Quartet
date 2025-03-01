@@ -391,6 +391,7 @@ if ($mysqli->connect_error) {
             const popup = document.getElementById('appointmentPopup');
             const appointmentGrid = document.getElementById('appointmentGrid');
             const appointmentDay = document.getElementById('appointmentDay');
+            const time = (appointment.Time <= 12 ? appointment.Time : appointment.Time-12) + (appointment.Time < 12 ? "AM" : "PM");
 
             // Clear the popup
             appointmentGrid.innerHTML = "";
@@ -400,14 +401,14 @@ if ($mysqli->connect_error) {
             appointmentDay.textContent = `Selected Appointment`;
             let appointmentInfoPara = document.createElement('p');
             appointmentInfoPara.innerHTML = `Date: ${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}
-                                    \nTime: ${(appointment.Time <= 12 ? appointment.Time : appointment.Time-12) + (appointment.Time < 12 ? "AM" : "PM")}
+                                    \nTime: ${time}
                                     \nBarber: ${appointment.BarberID}`;
             appointmentGrid.appendChild(appointmentInfoPara);
 
             let bookButton = document.createElement('button');
             bookButton.textContent = "Book Appointment";
             bookButton.addEventListener('click', () => {
-                bookAppointment(appointment);
+                bookAppointment(appointment, day, monthNames[currentMonth], currentYear, time);
             });
 
             appointmentGrid.appendChild(bookButton);
@@ -417,9 +418,30 @@ if ($mysqli->connect_error) {
 
         }
 
-        function bookAppointment(appointment) {
+        function bookAppointment(appointment, day, month, year, time) {
             // Function to show client a space to add their information and confirm their appointment.
-
+            fetch('set_appointment.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ appointment: appointment,
+                                        day: day,
+                                        month: month,
+                                        year: year,
+                                        time: time
+                 })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    window.location.href = "confirm_appointment.php"; // Redirect after session is set
+                } else {
+                    console.error("Error:", data.message);
+                }
+            })
+            .catch(error => console.error("Fetch error:", error));
+        
         }
 
         // Close popup when clicking X button
