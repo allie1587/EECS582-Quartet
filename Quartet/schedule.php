@@ -6,6 +6,7 @@
         2/25/2025 -- Brinley, add calendar
         2/27/2025 -- Brinley, add appointment button popups
         2/28/2025 -- Brinley, add timeslots and populate appointment details
+        3/1/2025  -- Jose, Stylizing Choices to page
     Creation date:
     Other sources: ChatGPT
 -->
@@ -32,64 +33,72 @@ if ($mysqli->connect_error) {
     <style>
         /* Applies styles to the entire body */
         body {
-            text-align: center; /* Centers text content */
-            font-family: Arial, sans-serif; /* Sets the font */
+            margin: 0;
+            padding-top: -5px;
+            text-align: center;
+            font-family: 'Georgia', serif; 
         }
-
-        /* Styles the top navigation bar */
+        /* Top Bar at Top with Pages and Login */
         .top-bar {
-            background-color: green; /* Sets background color to green */
-            padding: 10px; /* Adds padding around the content */
-            display: flex; /* Uses flexbox for layout */
-            justify-content: space-between; /* Spaces elements evenly */
-            align-items: center; /* Centers elements vertically */
-            color: white; /* Sets text color to white */
-            height: 50px; /* Sets the height of the bar */
+            background-color: #006400; /* Darker green */
+            padding: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            height: 70px; /* Increased height */
+            position: relative; /* Changed from fixed to relative */
         }
-
-        /* Styles the heading inside the top bar */
+        /* Size of Letters on it's header */
         .top-bar h1 {
-            margin: 0; /* Removes default margin */
-            padding-left: 20px; /* Adds left padding */
-            font-size: 24px; /* Sets font size */
+            margin: 0;
+            padding-left: 20px;
+            font-size: 28px;
         }
-
-        /* Styles the container for the login button */
+        /* Space for the login button on the right */
         .login-container {
-            display: flex; /* Uses flexbox for layout */
-            align-items: center; /* Aligns items in the center */
-            padding-right: 20px; /* Adds right padding */
+            display: flex;
+            align-items: center;
+            padding-right: 20px;
         }
-
-        /* Styles the login button */
+        /* Login Button Format*/
         .login-button {
-            width: 40px; /* Sets button width */
-            height: 40px; /* Sets button height */
-            border-radius: 50%; /* Makes the button circular */
-            background-color: #007BFF; /* Sets button background color */
-            color: white; /* Sets button text color */
-            border: none; /* Removes border */
-            font-size: 16px; /* Sets font size */
-            cursor: pointer; /* Changes cursor to pointer on hover */
-            margin-left: 10px; /* Adds margin to the left */
-            display: flex; /* Uses flexbox for layout */
-            align-items: center; /* Centers content vertically */
-            justify-content: center; /* Centers content horizontally */
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        /* Styles the menu section */
+        /* Style for the Menu taht will have the navigation buttons */
         .menu {
-            margin-top: 20px; /* Adds space above the menu */
+            display: flex;
+            flex-grow: 1;
+            justify-content: center;
+            height: 100%;
         }
-
-        /* Styles buttons inside the menu */
+        /* Style of Navigation Buttons */
         .menu button {
-            margin: 5px; /* Adds space between buttons */
-            padding: 10px 20px; /* Adds padding inside buttons */
-            font-size: 16px; /* Sets font size */
-            cursor: pointer; /* Changes cursor to pointer on hover */
+            background-color: #006400; 
+            color: white;
+            border: none;
+            padding: 20px 25px; 
+            font-size: 18px;
+            cursor: pointer;
+            flex-grow: 1;
+            text-align: center;
+            font-family: 'Georgia', serif; 
         }
-
+        /* Color gets darker when hovering the buttons */
+        .menu button:hover {
+            background-color: #004d00; 
+        }
         /* Calendar styles */
         .calendar-container {
             margin-top: 30px;
@@ -193,11 +202,19 @@ if ($mysqli->connect_error) {
 <body>
     <!-- The top navigation bar containing the barbershop name and login button -->
     <div class="top-bar">
-        <h1>Quartet's Amazing Barbershop</h1>
-        <!-- Login button container -->
+        <!--Name of Page followed by Navigation Bar of The pages-->
+        <h1>Quartet's Barbershop</h1>
+        <div class="menu">
+            <button onclick="location.href='index.php'">Home</button>
+            <button onclick="location.href='schedule.php'">Schedule</button>
+            <button onclick="location.href='store.php'">Store</button>
+            <button onclick="location.href='page4.html'">Page 4</button>
+            <button onclick="location.href='page5.html'">Page 5</button>
+        </div>
+
+        <!--Stylized Button to be circular, when clicked takes you to login.html-->
         <div class="login-container">
             <span>Login</span>
-            <!-- Clicking this button redirects to the login page -->
             <button class="login-button" onclick="location.href='login.php'">&#10132;</button>
         </div>
     </div>
@@ -205,14 +222,6 @@ if ($mysqli->connect_error) {
     <!-- Page title -->
     <h1>Schedule</h1>
 
-    <!-- Navigation menu with buttons linking to different pages -->
-    <div class="menu">
-        <button onclick="location.href='index.php'">Home</button>
-        <button onclick="location.href='schedule.php'">Schedule</button>
-        <button onclick="location.href='store.php'">Store</button>
-        <button onclick="location.href='page4.html'">Page 4</button>
-        <button onclick="location.href='page5.html'">Page 5</button>
-    </div>
 
     <div class="calendar-container">
         <div class="month-name" id="monthName">

@@ -1,7 +1,8 @@
 <!--
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 02/12/2025
-Last modified: 02/16/2025
+    Revisions:
+        3/1/2025  -- Jose, Stylizing Choices to page
 Purpose: Main Page to see the barbershops, Barbers, Cuts, and Availabilities
 -->
 <?php
@@ -25,39 +26,42 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
     <title>Home Page</title>
     <!--Style choices for page, they include font used, margins, alignation, background color, display types, and some others-->
     <style>
-        body { /*Centers text and sets the font */
+        /* Applies styles to the entire body */
+        body {
+            margin: 0;
+            padding-top: 70px;
             text-align: center;
-            font-family: Arial, sans-serif;
+            font-family: 'Georgia', serif; 
+            background-color:rgba(59, 65, 59, 0.29); 
         }
-        .menu { /* Adds spacing for the menu*/
-            margin-top: 20px;
-        }
-        .menu button { /*Styles the menu buttons */
-            margin: 5px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .top-bar { /*Creates a top navigation bar with a green background, white text, and flexible layout */
-            background-color: green;
-            padding: 10px;
+        /* Top Bar at Top with Pages and Login */
+        .top-bar {
+            background-color: #006400; 
+            padding: 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
             color: white;
-            height: 50px;
+            height: 70px; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
         }
-        .top-bar h1 { /*Styles the header text in the top bar */
+        /* Size of Letters on it's header */
+        .top-bar h1 {
             margin: 0;
             padding-left: 20px;
-            font-size: 24px;
+            font-size: 28px;
         }
-        .login-container { /*Aligns login button and text */
+        /* Space for the login button on the right */
+        .login-container {
             display: flex;
             align-items: center;
             padding-right: 20px;
         }
-        .login-button { /*Styles a circular login button */
+        /* Login Button Format*/
+        .login-button {
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -71,61 +75,97 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
             align-items: center;
             justify-content: center;
         }
-        .db-box { /*Adds margin above the database input section */
-            margin-top: 20px;
+        /* Style for the Menu taht will have the navigation buttons */
+        .menu {
+            display: flex;
+            flex-grow: 1;
+            justify-content: center;
+            height: 100%;
         }
-        .store-info { /*Arranges store information in a flexbox */
+        /* Style of Navigation Buttons */
+        .menu button {
+            background-color: #006400; 
+            color: white;
+            border: none;
+            padding: 20px 25px; 
+            font-size: 18px;
+            cursor: pointer;
+            flex-grow: 1;
+            text-align: center;
+            font-family: 'Georgia', serif; 
+        }
+        /* Color gets darker when hovering the buttons */
+        .menu button:hover {
+            background-color: #004d00; 
+        }
+
+        /* Store info section */
+        .store-info {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            margin: 20px;
         }
-        .store-info img { /*Sizes the store image and adds spacing */
+        .store-info img {
             width: 400px;
             height: auto;
+            border-radius: 10px;
             margin-right: 20px;
         }
-        .store-text { /*Aligns store text */
+        .store-text {
             text-align: left;
         }
-        .barbers { /*Creates a flexbox for barber profiles */
+
+        /* Barber profiles */
+        .barbers {
             margin-top: 40px;
             display: flex;
             justify-content: center;
             gap: 20px;
+            flex-wrap: wrap;
         }
-        .barber-container { /*Organizes barber profile content */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 20px;
+        .barber-container {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 320px;
         }
-        .barber-name { /*Styles barber names */
-            font-size: 18px;
+        .barber-name {
+            font-size: 20px;
             font-weight: bold;
             margin-bottom: 10px;
+            color: #004d00;
         }
-        .barber-images { /*Centers barber image containers */
+        .availability {
+            font-weight: bold;
+            color: green;
+            margin-bottom: 10px;
+        }
+        .barber-images {
+            position: relative;
+            width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            max-width: 600px;
         }
-        .barber-images img { /*Initially hides images */
-            width: 300px;
+        .barber-images img {
+            width: 100%;
             height: auto;
             display: none;
+            border-radius: 10px;
         }
-    
-        .availability { /*Highlights barber availability */
-            font-weight: bold;
-            color: green;
-        }
-        .barber-images img.active { /*Ensures only the selected image is visible */
+        .barber-images img.active {
             display: block;
         }
-        .arrow { /*Styles navigation arrows for scrolling through barber images */
+
+        /* Arrows for scrolling */
+        .arrow {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
@@ -135,13 +175,28 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
             color: white;
             padding: 10px;
             border: none;
+            border-radius: 5px;
+            transition: 0.3s;
         }
-        .arrow-left { /*Positions the left arrow */
-            left: 0;
+        .arrow:hover {
+            background: rgba(0, 0, 0, 0.7);
         }
-        .arrow-right { /*Positions the right arrow */
-            right: 0;
+        .arrow-left {
+            left: 10px;
         }
+        .arrow-right {
+            right: 10px;
+        }
+
+        /* Reviews section */
+        .reviews {
+            background: white;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
 
     </style>
     <script>
@@ -188,7 +243,15 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
 <body>
     <!--The green Bar at the top that has the name and button that takes you to the login page-->
     <div class="top-bar">
-        <h1>Quartet's Amazing Barbershop</h1>
+        <h1>Quartet's Barbershop</h1>
+        <div class="menu">
+            <button onclick="location.href='index.php'">Home</button>
+            <button onclick="location.href='schedule.php'">Schedule</button>
+            <button onclick="location.href='store.php'">Store</button>
+            <button onclick="location.href='page4.html'">Page 4</button>
+            <button onclick="location.href='page5.html'">Page 5</button>
+        </div>
+
         <!--Stylized Button to be circular, when clicked takes you to login.html-->
         <div class="login-container">
             <span>Login</span>
@@ -197,20 +260,12 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
     </div>
     <!--let's user know the current page they are on-->
     <h1>Home</h1>
-    <!--Menu with all possible pages-->
-    <div class="menu">
-        <button onclick="location.href='index.php'">Home</button>
-        <button onclick="location.href='schedule.php'">Schedule</button>
-        <button onclick="location.href='store.php'">Store</button>
-        <button onclick="location.href='page4.html'">Page 4</button>
-        <button onclick="location.href='page5.html'">Page 5</button>
-    </div>
-    
     <div class="db-box">
         <input type="text" id="dbInput" placeholder="Enter data">
         <button onclick="sendData()">Submit</button>
         <p id="dbOutput"></p>
     </div>
+
     <!--Section that holds image of barbershop, followed by the Sotre Information-->
     <div class="store-info">
         <img src="images/store.jpg" alt="Store Image">
