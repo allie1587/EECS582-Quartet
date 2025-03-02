@@ -255,6 +255,12 @@ if ($mysqli->connect_error) {
                 <div id="appointmentGrid" class="appointment-grid"></div>
             </div>
         </div>
+        <br><br>
+    <h3>Need to cancel an appointment?</h3>
+        <a href="cancel_appointment.php">Cancel here</a>
+        <br><br><br><br>
+
+
 
     </div>
 
