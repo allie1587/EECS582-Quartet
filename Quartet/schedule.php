@@ -8,6 +8,7 @@
         2/28/2025 -- Brinley, add timeslots and populate appointment details
         3/1/2025  -- Jose, Stylizing Choices to page
         3/1/2025 -- Brinley, add confirm appointment abilities
+        3/2/2025 -- Ben, added 'search' feature
     Creation date:
     Other sources: ChatGPT
 -->
@@ -197,6 +198,32 @@ if ($mysqli->connect_error) {
             text-align: center;
             font-size: 14px;
         }
+        .search-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .search-container input,
+        .search-container select,
+        .search-container button {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .search-container button {
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+
+        .search-container button:hover {
+            background-color: #0056b3;
+        }
 
     </style>
 </head>
@@ -222,7 +249,36 @@ if ($mysqli->connect_error) {
 
     <!-- Page title -->
     <h1>Schedule</h1>
+    
+    <!-- Search Feature -->
+    <div class="search-container">
+        <input type="text" id="dayInput" placeholder="Enter day of the week">
 
+        <select id="barberSelect">
+            <option value="">Select Barber</option>
+            <option value="John Doe">John Doe</option>
+            <option value="Jan Smith">Jan Smith</option>
+            <option value="Billy Bob">Billy Bob</option>
+            <option value="Fred Bread">Fred Bread</option>
+        </select>
+
+        <select id="timeSelect">
+            <option value="">Select Time</option>
+            <option value="8:00 AM">8:00 AM</option>
+            <option value="9:00 AM">9:00 AM</option>
+            <option value="10:00 AM">10:00 AM</option>
+            <option value="11:00 AM">11:00 AM</option>
+            <option value="12:00 PM">12:00 PM</option>
+            <option value="1:00 PM">1:00 PM</option>
+            <option value="2:00 PM">2:00 PM</option>
+            <option value="3:00 PM">3:00 PM</option>
+            <option value="4:00 PM">4:00 PM</option>
+            <option value="5:00 PM">5:00 PM</option>
+        </select>
+
+        <button onclick="fakeSearch()">Search</button>
+    </div>
+    <!-- End Search Feature -->
 
     <div class="calendar-container">
         <div class="month-name" id="monthName">
@@ -265,6 +321,14 @@ if ($mysqli->connect_error) {
     </div>
 
     <script>
+        function fakeSearch() {
+            let day = document.getElementById("dayInput").value;
+            let barber = document.getElementById("barberSelect").value;
+            let time = document.getElementById("timeSelect").value;
+
+            alert(`Searching for appointments on ${day}, with ${barber}, in the ${time}. (This is just a placeholder!)`);
+        }
+
         // ChatGPT help start
         let currentMonth = new Date().getMonth(); // Current month (0-11)
         let currentYear = new Date().getFullYear(); // Current year
