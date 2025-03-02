@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 //Set session username
                 $_SESSION["user"] = $username;
                 //Redirect to the dashboard page
-                header("Location: BarberSide/dashboard.php");
+                header("Location: dashboard.php");
                 exit();
             } else {
                 $error_message = "Error: " . $stmt->error;
