@@ -1,18 +1,27 @@
 <!-- 
-    week_schedule.php
-    A page to hold the appointment calendar and scheduler.
+    barber.php
+    A page that holds the information about the barbers
     Author: Alexandra Stratton, Ben Renner, Brinley Hull, Jose Leyba, Kyle Moore
     Revisions:
-        2/27/2025 -- Alexandra Stratton, add about barber page
-    Creation date:
+        02/27/2025 -- Alexandra Stratton, add about barber page
+        02/28/2025 -- Alexandra Stratton, fixed barber information
+        03/02/2025 -- Jose Leyba, Modifieid UI Looks/ Added Barber Images
+    Sources:
+        - https://www.freshkillsbarbershop.com/barber-bios
+            -- Grabbed professional headshots for the hardcoded barbers
+    Creation date: 2/27/2025
 -->
+
+
+<!-- Hardcode information about the "barbers" for video purposes -->
+
 <?php
 $barbers = [
     [
-        "name" => "Danny DeVito",
+        "name" => "John Doe",
         "role" => "Owner, Barber",
-        "photo" => "images/danny_DeVito.jpg",
-        "services" => ["Classic Fades", "Razor Shaves", "Beard Grooming", "Custom Hair Designs"],
+        "photo" => "images/barber1.png",
+        "services" => ["Haircut", "Beard Trim"],
         "hours" => [
             "Monday" => "9:00AM - 8:00PM",
             "Tuesday" => "9:00AM - 8:00PM",
@@ -23,18 +32,16 @@ $barbers = [
             "Sunday" => "9:00AM - 8:00PM"
         ],
         "gallery" => ["images/haircut1.jpg", "images/haircut2.jpg", "images/haircut3.jpg"],
-        "bio" => "bio",
         "contact" => [
-            "instagram" => "https://instagram.com/dannydevito9",
-            "phone" => "+1234567890",
-            "email" => "danny@devitosbarbers.com"
+            "phone" => "6181234567",
+            "email" => "jDoe@jmail.com"
         ]
     ],
     [
-        "name" => "Pitbull",
-        "role" => "Master Barber",
-        "photo" => "images/pitbull.jpg",
-        "services" => ["Shaved Head", "Beard Grooming"],
+        "name" => "Jan Smith",
+        "role" => "Owner, Barber",
+        "photo" => "images/barber3.png",
+        "services" => ["Shave" , "Haircut"],
         "hours" => [
             "Monday" => "9:00AM - 8:00PM",
             "Tuesday" => "9:00AM - 8:00PM",
@@ -45,18 +52,16 @@ $barbers = [
             "Sunday" => "9:00AM - 8:00PM"
         ],
         "gallery" => ["images/haircut1.jpg", "images/haircut2.jpg", "images/haircut3.jpg"],
-        "bio" => "bio",
         "contact" => [
-            "instagram" => "https://instagram.com/pitbull",
-            "phone" => "+9876543210",
-            "email" => "pitbull@devitosbarbers.com"
+            "phone" => "9876543210",
+            "email" => "jSmith@coldmail.com"
         ]
     ],
     [
-            "name" => "Guy Fieri",
-            "role" => "Licensed Barber",
-            "photo" => "images/guy_fieri.jpeg",
-            "services" => ["Modern Styles", "Razor Shaves", "Beard Grooming"],
+            "name" => "Fred Bread",
+            "role" => "Master Barber",
+            "photo" => "images/barber2.png",
+            "services" => ["Fade", "Beard Trim"],
             "hours" => [
                 "Monday" => "9:00AM - 8:00PM",
                 "Tuesday" => "9:00AM - 8:00PM",
@@ -67,19 +72,38 @@ $barbers = [
                 "Sunday" => "9:00AM - 8:00PM"
             ],
             "gallery" => ["images/haircut1.jpg", "images/haircut2.jpg", "images/haircut3.jpg"],
-            "bio" => "bio.",
             "contact" => [
-                "instagram" => "https://instagram.com/guyfieri",
-                "phone" => "+9876543210",
-                "email" => "guy@devitosbarbers.com"
+                "phone" => "1231230123",
+                "email" => "fBread@yippie.com"
             ]
-    ]
+        
+        ],
+        [
+                "name" => "Billy Bob",
+                "role" => "Master Barber",
+                "photo" => "images/barber4.png",
+                "services" => ["Buzz Cut", "Hot Towel Shave"],
+                "hours" => [
+                    "Monday" => "9:00AM - 8:00PM",
+                    "Tuesday" => "9:00AM - 8:00PM",
+                    "Wednesday" => "9:00AM - 8:00PM",
+                    "Thursday" => "9:00AM - 8:00PM",
+                    "Friday" => "9:00AM - 8:00PM",
+                    "Saturday" => "9:00AM - 8:00PM",
+                    "Sunday" => "9:00AM - 8:00PM"
+                ],
+                "gallery" => ["images/haircut1.jpg", "images/haircut2.jpg", "images/haircut3.jpg"],
+                "contact" => [
+                    "phone" => "4566544567",
+                    "email" => "bBob@inlook.com"
+            ]
+        ]
 ];
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!--Define character encoding-->
+    <!-- Define character encoding-->
     <meta charset="UTF-8">
     <!--Ensure proper rendering and touch zooming on mobile devices-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -87,11 +111,13 @@ $barbers = [
     <title>Barber Page</title>
     <!--Style choices for page, they include font used, margins, alignation, background color, display types, and some others-->
     <style>
+        /* Style for the entire page */
         body {
             text-align: center;
             font-family: Arial, sans-serif;
             background-color: #f9f9f9;
         }
+        /* Styles for the top navigation bar */ 
         .top-bar {
             background-color: green;
             padding: 10px;
@@ -107,6 +133,7 @@ $barbers = [
             font-size: 24px;
             color: white;
         }
+        /* Style for the login button */
         .login-container {
             display: flex;
             align-items: center;
@@ -126,6 +153,7 @@ $barbers = [
             align-items: center;
             justify-content: center;
         }
+        /* Style for the menu */
         .menu {
             margin-top: 20px;
         }
@@ -135,6 +163,7 @@ $barbers = [
             font-size: 16px;
             cursor: pointer;
         }
+        /* Style for each barber profile */
         .barber-container{
             width: 320px;
             background: white;
@@ -186,6 +215,7 @@ $barbers = [
             
             margin-bottom: 10px;
         }
+        /* Style for their portfolio images */
         .gallery-container { 
             display: flex;
             justify-content: center;
@@ -226,7 +256,7 @@ $barbers = [
         .arrow-right {
             right: -50px; 
         }
-    
+        
         .availability { 
             font-weight: bold;
             color: green;
@@ -236,9 +266,12 @@ $barbers = [
             display: inline;
             font-weight: bold;
         }
+        
 
     </style>
+    <!-- JavaScript for handling barber image gallery -->
     <script>
+        /* Function to show a specific image in the barber's portfolio */
         function showImage(barberIndex, index) {
             let images = document.querySelectorAll(`.barber-${barberIndex} img`);
             if (images.length === 0) return;
@@ -246,7 +279,7 @@ $barbers = [
             images.forEach(img => img.classList.remove("active"));
             images[index].classList.add("active");
         }
-
+        /* Function to show the next image in the barber's portfolio */
         function nextImage(barberIndex) {
             let images = document.querySelectorAll(`.barber-${barberIndex} img`);
             if (images.length === 0) return;
@@ -255,7 +288,7 @@ $barbers = [
             currentIndex = (currentIndex + 1) % images.length;
             showImage(barberIndex, currentIndex);
         }
-
+        /* Function to show the previous image in the barber's portfolio */
         function prevImage(barberIndex) {
             let images = document.querySelectorAll(`.barber-${barberIndex} img`);
             if (images.length === 0) return;
@@ -264,7 +297,7 @@ $barbers = [
             currentIndex = (currentIndex - 1 + images.length) % images.length;
             showImage(barberIndex, currentIndex);
         }
-
+        /* Ensures the first image is displayed when the page loads */
         document.addEventListener("DOMContentLoaded", () => {
             document.querySelectorAll('.gallery-container').forEach((gallery, index) => {
                 showImage(index, 0);
@@ -275,37 +308,39 @@ $barbers = [
 <body>
     <!--The green Bar at the top that has the name and button that takes you to the login page-->
     <div class="top-bar">
-        <h1>Quartet's Amazing Barbershop</h1>
+        <h1>Quartet's Barbershop</h1>
+        <div class="menu">
+            <button onclick="location.href='index.php'">Home</button>
+            <button onclick="location.href='schedule.php'">Schedule</button>
+            <button onclick="location.href='store.php'">Store</button>
+            <button onclick="location.href='barbers.php'">Barbers</button>
+            <button onclick="location.href='about.php'">About Us</button>
+        </div>
+
         <!--Stylized Button to be circular, when clicked takes you to login.html-->
         <div class="login-container">
             <span>Login</span>
             <button class="login-button" onclick="location.href='login.php'">&#10132;</button>
         </div>
     </div>
-    <!--Menu with all possible pages-->
-    <div class="menu">
-        <button onclick="location.href='index.php'">Home</button>
-        <button onclick="location.href='schedule.php'">Schedule</button>
-        <button onclick="location.href='store.php'">Store</button>
-        <button onclick="location.href='barbers.php'">Barbers</button>
-        <button onclick="location.href='page5.html'">Page 5</button>
-    </div>
 <h1>Barbers</h1>
 <div class="barbers">
+    <!-- Loop through PHP array to display each barber's profile dynamically -->
     <?php foreach ($barbers as $index => $barber): ?>
         <div class="barber-container">
+            <!-- Displays the barber's name, role, and services -->
             <img src="<?php echo $barber['photo']; ?>" alt="<?php echo $barber['name']; ?>" class="barber-photo">
             <div class="barber-name"><?php echo $barber['name']; ?></div>
             <div class="barber-role"><strong>Role: </strong><?php echo $barber['role']; ?></div>
             <div class="services"><strong>Services: </strong><?php echo implode(", ", $barber['services']); ?></div>
-            
+            <!-- Displays the barbers usually hours -->
             <div class="hours">
                 <h3>Availability</h3>
                 <?php foreach ($barber['hours'] as $day => $hours): ?>
                     <p><strong><?php echo $day; ?></strong>: <?php echo $hours; ?></p>
                 <?php endforeach; ?>
             </div>
-
+            <!-- Displays the barbers portfolio images -->
             <h3>Portfolio</h3>
             <div class="gallery-container barber-<?php echo $index; ?>">
                 <button class="arrow arrow-left" onclick="prevImage(<?php echo $index; ?>)">&#9664;</button>
@@ -314,21 +349,15 @@ $barbers = [
                 <?php endforeach; ?>
                 <button class="arrow arrow-right" onclick="nextImage(<?php echo $index; ?>)">&#9654;</button>
             </div>
-
-            <h3>About <?php echo $barber['name']; ?></h3>
-            <p><?php echo $barber['bio']; ?></p>
-
+            <!-- Displays the contact information of the barbers -->
             <div class="contact">
                 <h3>Contact</h3>
                 <p class=contact-info>Phone: </p>
                 <a href="tel:<?php echo $barber['contact']['phone']; ?>"> <?php echo $barber['contact']['phone']; ?></a><br>
                 <p class=contact-info>Email: </p>
                 <a href="mailto:<?php echo $barber['contact']['email']; ?>"><?php echo $barber['contact']['email']; ?></a><br>
-                <p class=contact-info>Social Media: </p>
-                <a href="<?php echo $barber['contact']['instagram']; ?>" target="_blank">Instagram</a><br>
             </div>
         </div>
     <?php endforeach; ?>
 </div>
 </body>
-</html>

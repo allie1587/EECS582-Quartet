@@ -1,12 +1,16 @@
-<!--
-Authors: Alexandra, Jose, Brinley, Ben, Kyle
-Date: 02/12/2025
-Last modified: 02/16/2025
-Purpose: Store Page thaat will (later) allow users to see different products up to sale at the barbershop and their price
--->
 <?php
+// Authors: Alexandra Stratton, Ben Renner, Brinley Hull, Jose Leyba, Kyle Moore
+// Creation Date: 03/01/2025
+// Revisions: 
+// Purpose: A page where clients can enter their information and confirm their appointments (sending info back to database).
+
 // Start the session to remember user info
 session_start();
+if (!isset($_SESSION['appointment'])) {
+    echo "Session variable 'appointment' is not set!";
+} else {
+    echo "Appointment session: " . $_SESSION['appointment'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -17,7 +21,7 @@ session_start();
     <!--Ensure proper rendering and touch zooming on mobile devices-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!--Name of Page-->
-    <title>Store</title>
+    <title>Home Page</title>
     <!--Style choices for page, they include font used, margins, alignation, background color, display types, and some others-->
     <style>
         /* Applies styles to the entire body */
@@ -92,41 +96,22 @@ session_start();
         .menu button:hover {
             background-color: #004d00; 
         }
-        .menu {
-            margin-top: 20px;
-        }
-        .menu button {
-            margin: 5px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .store-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            padding: 20px;
-            max-width: 900px;
-            margin: auto;
-        }
-        .product-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
-        .product-container img {
-            width: 100%;
-            max-width: 200px;
-            height: auto;
-        }
-        .product-name {
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
+
     </style>
+    <script>
+        function sendData() { //Sends input data to a PHP backend using
+            let inputData = document.getElementById("dbInput").value;
+            fetch("server.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ data: inputData })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("dbOutput").innerText = data.message;
+            });
+        }
+    </script>
 </head>
 <body>
     <!--The green Bar at the top that has the name and button that takes you to the login page-->
@@ -147,47 +132,44 @@ session_start();
         </div>
     </div>
     <!--let's user know the current page they are on-->
-    <h1>Store</h1>
-    <!--Menu with all possible pages-->
+    <h1>Confirm Appointment</h1>
 
-    <!--Styled grid 3x3 That shows in each space a different product available with a picture and it's name-->
-    <div class="store-grid">
-        <div class="product-container">
-            <img src="images/product1.jpg" alt="Product 1">
-            <div class="product-name">Product 1</div>
+    <div class="appointment_info">
+        <p id="appointment_info"></p>
         </div>
-        <div class="product-container">
-            <img src="images/product1.jpg" alt="Product 2">
-            <div class="product-name">Product 2</div>
-        </div>
-        <div class="product-container">
-            <img src="images/product1.jpg" alt="Product 3">
-            <div class="product-name">Product 3</div>
-        </div>
-        <div class="product-container">
-            <img src="images/product1.jpg" alt="Product 4">
-            <div class="product-name">Product 4</div>
-        </div>
-        <div class="product-container">
-            <img src="images/product1.jpg" alt="Product 5">
-            <div class="product-name">Product 5</div>
-        </div>
-        <div class="product-container">
-            <img src="images/product1.jpg" alt="Product 6">
-            <div class="product-name">Product 6</div>
-        </div>
-        <div class="product-container">
-            <img src="images/product1.jpg" alt="Product 7">
-            <div class="product-name">Product 7</div>
-        </div>
-        <div class="product-container">
-            <img src="images/product1.jpg" alt="Product 8">
-            <div class="product-name">Product 8</div>
-        </div>
-        <div class="product-container">
-            <img src="images/product1.jpg" alt="Product 9">
-            <div class="product-name">Product 9</div>
-        </div>
-    </div>
+    
+   <div class="info_form">
+        <form action="confirm.php" method="POST">
+            <label for="fname">First name:</label><br>
+            <input type="text" id="fname" name="fname" required><br><br>
+            <label for="lname">Last name:</label><br>
+            <input type="text" id="lname" name="lname" required><br><br>
+            <label for="email">Email:</label><br>
+            <input type="text" id="email" name="email" required><br><br>
+            <label for="phone">Phone:</label><br>
+            <input type="text" id="phone" name="phone" required><br><br>
+            
+            <label for="appointment_date">Date:</label><br>
+            <input type="text" id="appointment_date" name="appointment_date" value="<?php echo $_SESSION['month']?> <?php echo $_SESSION['day']?>, <?php echo $_SESSION['year']?>" readonly><br><br>
+            
+            <label for="appointment_time">Time:</label><br>
+            <input type="text" id="appointment_time" name="appointment_time" value="<?php echo $_SESSION['time']?>" readonly><br><br>
+            
+            <label for="appointment_barber">Barber:</label><br>
+            <input type="text" id="appointment_barber" name="appointment_barber" value="<?php echo $_SESSION['appointment']["BarberID"]?>" readonly><br><br>
+            
+            <button type="submit">Confirm Appointment</button>
+        </form>
+   </div>
 </body>
+    <script>
+        // let urlParams = new URLSearchParams(window.location.search);
+        // let time = urlParams.get('time');
+        // let date = urlParams.get('date');
+        // let barber = urlParams.get('barber');
+        // document.getElementById("appointment_date").value = date;
+        // document.getElementById("appointment_time").value = (time <= 12 ? (time == 12 ? time + "PM" : time + "AM") : time-12 + "PM");
+        // document.getElementById("appointment_barber").value = barber;
+        
+    </script>
 </html>

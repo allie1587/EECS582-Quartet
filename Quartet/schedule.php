@@ -5,6 +5,11 @@
     Revisions:
         2/25/2025 -- Brinley, add calendar
         2/27/2025 -- Brinley, add appointment button popups
+        2/28/2025 -- Brinley, add timeslots and populate appointment details
+        3/1/2025  -- Jose, Stylizing Choices to page
+        3/1/2025 -- Brinley, add confirm appointment abilities
+        3/2/2025 -- Ben, added 'search' feature
+        3/2/2025 -- Allie upcoming and past appointments
     Creation date:
     Other sources: ChatGPT
 -->
@@ -31,64 +36,72 @@ if ($mysqli->connect_error) {
     <style>
         /* Applies styles to the entire body */
         body {
-            text-align: center; /* Centers text content */
-            font-family: Arial, sans-serif; /* Sets the font */
+            margin: 0;
+            padding-top: -5px;
+            text-align: center;
+            font-family: 'Georgia', serif; 
         }
-
-        /* Styles the top navigation bar */
+        /* Top Bar at Top with Pages and Login */
         .top-bar {
-            background-color: green; /* Sets background color to green */
-            padding: 10px; /* Adds padding around the content */
-            display: flex; /* Uses flexbox for layout */
-            justify-content: space-between; /* Spaces elements evenly */
-            align-items: center; /* Centers elements vertically */
-            color: white; /* Sets text color to white */
-            height: 50px; /* Sets the height of the bar */
+            background-color: #006400; /* Darker green */
+            padding: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            height: 70px; /* Increased height */
+            position: relative; /* Changed from fixed to relative */
         }
-
-        /* Styles the heading inside the top bar */
+        /* Size of Letters on it's header */
         .top-bar h1 {
-            margin: 0; /* Removes default margin */
-            padding-left: 20px; /* Adds left padding */
-            font-size: 24px; /* Sets font size */
+            margin: 0;
+            padding-left: 20px;
+            font-size: 28px;
         }
-
-        /* Styles the container for the login button */
+        /* Space for the login button on the right */
         .login-container {
-            display: flex; /* Uses flexbox for layout */
-            align-items: center; /* Aligns items in the center */
-            padding-right: 20px; /* Adds right padding */
+            display: flex;
+            align-items: center;
+            padding-right: 20px;
         }
-
-        /* Styles the login button */
+        /* Login Button Format*/
         .login-button {
-            width: 40px; /* Sets button width */
-            height: 40px; /* Sets button height */
-            border-radius: 50%; /* Makes the button circular */
-            background-color: #007BFF; /* Sets button background color */
-            color: white; /* Sets button text color */
-            border: none; /* Removes border */
-            font-size: 16px; /* Sets font size */
-            cursor: pointer; /* Changes cursor to pointer on hover */
-            margin-left: 10px; /* Adds margin to the left */
-            display: flex; /* Uses flexbox for layout */
-            align-items: center; /* Centers content vertically */
-            justify-content: center; /* Centers content horizontally */
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        /* Styles the menu section */
+        /* Style for the Menu taht will have the navigation buttons */
         .menu {
-            margin-top: 20px; /* Adds space above the menu */
+            display: flex;
+            flex-grow: 1;
+            justify-content: center;
+            height: 100%;
         }
-
-        /* Styles buttons inside the menu */
+        /* Style of Navigation Buttons */
         .menu button {
-            margin: 5px; /* Adds space between buttons */
-            padding: 10px 20px; /* Adds padding inside buttons */
-            font-size: 16px; /* Sets font size */
-            cursor: pointer; /* Changes cursor to pointer on hover */
+            background-color: #006400; 
+            color: white;
+            border: none;
+            padding: 20px 25px; 
+            font-size: 18px;
+            cursor: pointer;
+            flex-grow: 1;
+            text-align: center;
+            font-family: 'Georgia', serif; 
         }
-
+        /* Color gets darker when hovering the buttons */
+        .menu button:hover {
+            background-color: #004d00; 
+        }
         /* Calendar styles */
         .calendar-container {
             margin-top: 30px;
@@ -186,32 +199,87 @@ if ($mysqli->connect_error) {
             text-align: center;
             font-size: 14px;
         }
+        .search-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .search-container input,
+        .search-container select,
+        .search-container button {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .search-container button {
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+
+        .search-container button:hover {
+            background-color: #0056b3;
+        }
 
     </style>
 </head>
 <body>
     <!-- The top navigation bar containing the barbershop name and login button -->
     <div class="top-bar">
-        <h1>Quartet's Amazing Barbershop</h1>
-        <!-- Login button container -->
+        <!--Name of Page followed by Navigation Bar of The pages-->
+        <h1>Quartet's Barbershop</h1>
+        <div class="menu">
+            <button onclick="location.href='index.php'">Home</button>
+            <button onclick="location.href='schedule.php'">Schedule</button>
+            <button onclick="location.href='store.php'">Store</button>
+            <button onclick="location.href='barbers.php'">Barbers</button>
+            <button onclick="location.href='about.php'">About Us</button>
+        </div>
+
+        <!--Stylized Button to be circular, when clicked takes you to login.html-->
         <div class="login-container">
             <span>Login</span>
-            <!-- Clicking this button redirects to the login page -->
             <button class="login-button" onclick="location.href='login.php'">&#10132;</button>
         </div>
     </div>
 
     <!-- Page title -->
     <h1>Schedule</h1>
+    
+    <!-- Search Feature -->
+    <div class="search-container">
+        <input type="text" id="dayInput" placeholder="Enter day of the week">
 
-    <!-- Navigation menu with buttons linking to different pages -->
-    <div class="menu">
-        <button onclick="location.href='index.php'">Home</button>
-        <button onclick="location.href='schedule.php'">Schedule</button>
-        <button onclick="location.href='store.php'">Store</button>
-        <button onclick="location.href='page4.html'">Page 4</button>
-        <button onclick="location.href='page5.html'">Page 5</button>
+        <select id="barberSelect">
+            <option value="">Select Barber</option>
+            <option value="John Doe">John Doe</option>
+            <option value="Jan Smith">Jan Smith</option>
+            <option value="Billy Bob">Billy Bob</option>
+            <option value="Fred Bread">Fred Bread</option>
+        </select>
+
+        <select id="timeSelect">
+            <option value="">Select Time</option>
+            <option value="8:00 AM">8:00 AM</option>
+            <option value="9:00 AM">9:00 AM</option>
+            <option value="10:00 AM">10:00 AM</option>
+            <option value="11:00 AM">11:00 AM</option>
+            <option value="12:00 PM">12:00 PM</option>
+            <option value="1:00 PM">1:00 PM</option>
+            <option value="2:00 PM">2:00 PM</option>
+            <option value="3:00 PM">3:00 PM</option>
+            <option value="4:00 PM">4:00 PM</option>
+            <option value="5:00 PM">5:00 PM</option>
+        </select>
+
+        <button onclick="fakeSearch()">Search</button>
     </div>
+    <!-- End Search Feature -->
 
     <div class="calendar-container">
         <div class="month-name" id="monthName">
@@ -240,14 +308,28 @@ if ($mysqli->connect_error) {
         <div id="appointmentPopup" class="popup">
             <div class="popup-content">
                 <span class="close-btn">&times;</span>
-                <h2>Available appointments for <span id="appointmentDay"></span></h2>
+                <h2><span id="appointmentDay"></span></h2>
                 <div id="appointmentGrid" class="appointment-grid"></div>
             </div>
         </div>
+        <br><br>
+    <h3>Need to cancel an appointment?</h3>
+        <a href="cancel_appointment.php">Cancel here</a>
+        <br><br><br><br>
+
+
 
     </div>
 
     <script>
+        function fakeSearch() {
+            let day = document.getElementById("dayInput").value;
+            let barber = document.getElementById("barberSelect").value;
+            let time = document.getElementById("timeSelect").value;
+
+            alert(`Searching for appointments on ${day}, with ${barber}, in the ${time}. (This is just a placeholder!)`);
+        }
+
         // ChatGPT help start
         let currentMonth = new Date().getMonth(); // Current month (0-11)
         let currentYear = new Date().getFullYear(); // Current year
@@ -256,6 +338,7 @@ if ($mysqli->connect_error) {
             'July', 'August', 'September', 'October', 'November', 'December'
         ];
         let dayNames = ['Monday', "Tuesday", 'Wednesday', 'Thursday', 'Friday', "Saturday", 'Sunday'];
+        let appointmentsData = [];
 
         // Function to render the calendar
         function renderCalendar() {
@@ -293,10 +376,11 @@ if ($mysqli->connect_error) {
                 let weekday = new Date(currentYear, currentMonth, day-1).getDay();
 
                 // Fetch appointment count from backend
-                fetch(`countAppointments.php?year=${currentYear}&month=${currentMonth}&day=${day}&weekday=${weekday}`)
+                fetch(`get_appointments.php?year=${currentYear}&month=${currentMonth}&day=${day}&weekday=${weekday}`)
                     .then(response => response.json())
                     .then(data => {
-                        button.textContent = `${data.count} Appointment(s) Found`;
+                        appointmentsData = data;
+                        button.textContent = `${appointmentsData.length} Appointment(s) Found`;
                     })
                     .catch(error => {
                         console.error("Error fetching appointment count:", error);
@@ -304,7 +388,7 @@ if ($mysqli->connect_error) {
                     });
                 
                 button.addEventListener('click', () => {
-                    openAppointmentInfo(day);
+                    openAppointments(day);
                 });
                 button.classList.add('day-button');
 
@@ -331,45 +415,114 @@ if ($mysqli->connect_error) {
             renderCalendar(); // Re-render the calendar for the new month
         }
 
-        function addAppointments() {
-            calendar.querySelectorAll('.day').forEach(day => {
-                // if sql.has appointment
-            });
-        }
-
-        // Sample appointment data (replace with SQL or API data)
-        const appointmentsData = {
-            1: ["Meeting @ 10 AM", "Doctor @ 3 PM"],
-            2: ["Lunch with Sarah @ 12 PM"],
-            5: ["Gym @ 6 AM", "Work Call @ 2 PM", "Dinner @ 7 PM"],
-            // Add more appointments for other days
-        };
-
-        function openAppointmentInfo(day) {
+        function openAppointments(day) {
+            // Functiont to show all appointment timeslots for a specific day
             const popup = document.getElementById('appointmentPopup');
-            const appointmentText = document.getElementById('appointmentText');
             const appointmentGrid = document.getElementById('appointmentGrid');
             const appointmentDay = document.getElementById('appointmentDay');
 
             // Update the popup title
-            appointmentDay.textContent = `${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}`;
+            appointmentDay.textContent = `Available Appointments for ${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}`;
 
             // Clear existing appointments
             appointmentGrid.innerHTML = "";
 
             // Get appointments for the selected day
-            const appointments = getAppointments(day) || ["No appointments"];
+            let appointments = ["No appointments"];
+            let weekday = new Date(currentYear, currentMonth, day-1).getDay();
+            appointmentDay.textContent = `${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}`;
 
-            // Create grid items dynamically
-            appointments.forEach(appointment => {
-                let item = document.createElement('div');
-                item.classList.add('appointment-item');
-                item.textContent = appointment;
-                appointmentGrid.appendChild(item);
+
+            // Call to the database to retrieve the appointments
+            fetch(`get_appointments.php?year=${currentYear}&month=${currentMonth}&day=${day}&weekday=${weekday}`) // Go to get_appointments.php
+            .then(response => response.json())
+            .then(data => {
+                appointmentsData = data;
+                if (appointmentsData.length != 0) {
+                    appointments = appointmentsData;
+                }
+            }).then(response => {
+                // Create grid items dynamically
+                // Populate the popup with appointment timeslots, creating a button for each
+                    appointments.forEach(appointment => {
+                        let item = document.createElement('button');
+                        if (appointments[0] == "No appointments") {
+                            item.textContent = "No appointments";
+                        } else {
+                            item.textContent = (appointment.Time <= 12 ? appointment.Time : appointment.Time-12) + (appointment.Time < 12 ? "AM" : "PM");
+                            item.addEventListener('click', () => {
+                                openAppointmentInfo(appointment, day);
+                            });
+                        }
+                        appointmentGrid.appendChild(item);
+                    });
+
+                    // Show popup
+                    popup.style.display = 'block';
+            
+            }
+        )
+            .catch(error => {
+                console.error("Error fetching appointment count:", error);
             });
+        }
+
+        function openAppointmentInfo(appointment, day) {
+            // Appointment information popup for a specific timeslot
+            const popup = document.getElementById('appointmentPopup');
+            const appointmentGrid = document.getElementById('appointmentGrid');
+            const appointmentDay = document.getElementById('appointmentDay');
+            const time = (appointment.Time <= 12 ? appointment.Time : appointment.Time-12) + (appointment.Time < 12 ? "AM" : "PM");
+
+            // Clear the popup
+            appointmentGrid.innerHTML = "";
+
+            // Currently the title, but has all appointment information populated from sent in appointment. e.g. appointment.Time, appointment.BarberID, appointment.[columnName from database]
+            // BarberID needs to be changed in database to actually be the ID and reference the barber information table to get the name.
+            appointmentDay.textContent = `Selected Appointment`;
+            let appointmentInfoPara = document.createElement('p');
+            appointmentInfoPara.innerHTML = `Date: ${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}
+                                    \nTime: ${time}
+                                    \nBarber: ${appointment.BarberID}`;
+            appointmentGrid.appendChild(appointmentInfoPara);
+
+            let bookButton = document.createElement('button');
+            bookButton.textContent = "Book Appointment";
+            bookButton.addEventListener('click', () => {
+                bookAppointment(appointment, day, monthNames[currentMonth], currentYear, time);
+            });
+
+            appointmentGrid.appendChild(bookButton);
 
             // Show popup
             popup.style.display = 'block';
+
+        }
+
+        function bookAppointment(appointment, day, month, year, time) {
+            // Function to show client a space to add their information and confirm their appointment.
+            fetch('set_appointment.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ appointment: appointment,
+                                        day: day,
+                                        month: month,
+                                        year: year,
+                                        time: time
+                 })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    window.location.href = "confirm_appointment.php"; // Redirect after session is set
+                } else {
+                    console.error("Error:", data.message);
+                }
+            })
+            .catch(error => console.error("Fetch error:", error));
+        
         }
 
         // Close popup when clicking X button
@@ -377,14 +530,65 @@ if ($mysqli->connect_error) {
             document.getElementById('appointmentPopup').style.display = 'none';
         });
 
-
-        function getAppointments(day) {
-            appointmentDay.textContent = `${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}`;
-        }
-
         // Initial render
         renderCalendar();
         //ChatGPT end
     </script>
+    </div>
+<!-- Link to display past and upcoming appointments -->
+<div class="user-appointments">
+            <a href="#" onclick="openAppointmentsModal()">View Upcoming/Past Appointments</a>
+        </div>
+        <!-- Past and Upcoming Appointment popup -->
+        <div id="appointment-modal" class="popup">
+            <span class="close-btn" onclick="closeAppointmentsModal()">&times;</span>
+            <h2>Your Appointments</h2>
+            <h3>Upcoming Appointment</h3>
+            <p>Date: March 10, 2025</p>
+            <p>Time: 2:00 PM</p>
+            <p>Barber: John Doe</p>
+
+            <h3>Past Appointment</h3>
+            <p>Date: February 15, 2025</p>
+            <p>Time: 11:00 AM</p>
+            <p>Barber: John Doe</p>
+            </div>
+        </div>
+</div>
+<style>
+    /* Popup styling */
+    .popup {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 10%;
+            left: 10%;
+            right: 10%;
+            bottom: 10%;
+            background: white;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            z-index: 1000;
+        }
+
+        /* Close button */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+</style>
+<script>
+    // Open the appointment modal
+    function openAppointmentsModal() {
+        document.getElementById('appointment-modal').style.display = 'block';
+    }
+    //Close the appointment modal
+    function closeAppointmentsModal() {
+        document.getElementById('appointment-modal').style.display = 'none';
+    }
+</script>
 </body>
 </html>
