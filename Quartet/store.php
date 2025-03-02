@@ -92,15 +92,6 @@ session_start();
         .menu button:hover {
             background-color: #004d00; 
         }
-        .menu {
-            margin-top: 20px;
-        }
-        .menu button {
-            margin: 5px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
         .store-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);

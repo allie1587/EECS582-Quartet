@@ -9,10 +9,16 @@ Purpose: Main Page to see the barbershops, Barbers, Cuts, and Availabilities
 // Start the session to remember user info
 session_start();
 
-// check to see if the user is logged in and give them a cute little welcome messagef
-if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
-    echo "<p class='welcome-message'>Welcome back, " . htmlspecialchars($_SESSION["user"], ENT_QUOTES, 'UTF-8') . "!</p>";
-}
+$reviews = [
+    "Best barber in town! Always leaves me looking sharp.",
+    "Great atmosphere and amazing cuts. Highly recommend!",
+    "Professional and friendly service every time.",
+];
+$hours = [
+    "Monday - Saturday: 9 AM - 8 PM"
+
+];
+$summary = "Welcome to our barbershop! With years of experience and a passion for perfecting every cut, we guarantee top-quality service in a relaxing atmosphere.";
 ?>
 
 <!DOCTYPE html>
@@ -32,13 +38,18 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
             padding-top: 70px;
             text-align: center;
             font-family: 'Georgia', serif; 
-            background-color:rgba(59, 65, 59, 0.29); 
+            background: url('https://img.freepik.com/free-photo/client-doing-hair-cut-barber-shop-salon_1303-20824.jpg') no-repeat center center fixed;
+            background-size: cover;
+            backdrop-filter: blur(10px);
+            color: white;
+            text-align: center;
         }
+
         /* Top Bar at Top with Pages and Login */
         .top-bar {
             background-color: #006400; 
             padding: 0;
-            display: flex;
+            display: flex;  
             justify-content: space-between;
             align-items: center;
             color: white;
@@ -53,6 +64,7 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
             margin: 0;
             padding-left: 20px;
             font-size: 28px;
+            color: white;
         }
         /* Space for the login button on the right */
         .login-container {
@@ -99,146 +111,24 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
             background-color: #004d00; 
         }
 
-        /* Store info section */
-        .store-info {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: white;
+        .container {
+            max-width: 800px;
+            margin: auto;
             padding: 20px;
+            background: rgba(50, 50, 50, 0.9);
             border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            margin: 20px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
         }
-        .store-info img {
-            width: 400px;
-            height: auto;
-            border-radius: 10px;
-            margin-right: 20px;
+        .section {
+            margin-bottom: 20px;
         }
-        .store-text {
-            text-align: left;
+        h2 {
+            color:white;
         }
-
-        /* Barber profiles */
-        .barbers {
-            margin-top: 40px;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .barber-container {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            width: 320px;
-        }
-        .barber-name {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #004d00;
-        }
-        .availability {
-            font-weight: bold;
-            color: green;
-            margin-bottom: 10px;
-        }
-        .barber-images {
-            position: relative;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .barber-images img {
-            width: 100%;
-            height: auto;
-            display: none;
-            border-radius: 10px;
-        }
-        .barber-images img.active {
-            display: block;
-        }
-
-        /* Arrows for scrolling */
-        .arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 24px;
-            cursor: pointer;
-            background: rgba(0, 0, 0, 0.5);
+        h1{
             color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            transition: 0.3s;
         }
-        .arrow:hover {
-            background: rgba(0, 0, 0, 0.7);
-        }
-        .arrow-left {
-            left: 10px;
-        }
-        .arrow-right {
-            right: 10px;
-        }
-
-        /* Reviews section */
-        .reviews {
-            background: white;
-            padding: 20px;
-            margin: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-
     </style>
-    <script>
-        // Selects image from query and shows you the currently selected image
-        function showImage(barberIndex, index) {
-            let images = document.querySelectorAll(`.barber-${barberIndex} img`);
-            images.forEach(img => img.classList.remove("active"));
-            images[index].classList.add("active");
-        }
-        //Scrolls to the next image by indexing foward through them
-        function nextImage(barberIndex) {
-            let images = document.querySelectorAll(`.barber-${barberIndex} img`);
-            let currentIndex = Array.from(images).findIndex(img => img.classList.contains("active"));
-            currentIndex = (currentIndex + 1) % images.length;
-            showImage(barberIndex, currentIndex);
-        }
-        //Scrolls to the previous image by indexing backwards through them
-        function prevImage(barberIndex) {
-            let images = document.querySelectorAll(`.barber-${barberIndex} img`);
-            let currentIndex = Array.from(images).findIndex(img => img.classList.contains("active"));
-            currentIndex = (currentIndex - 1 + images.length) % images.length;
-            showImage(barberIndex, currentIndex);
-        }
-        document.addEventListener("DOMContentLoaded", () => {
-            for (let i = 1; i <= 3; i++) {
-                showImage(i, 0);
-            }
-        });
-
-        function sendData() { //Sends input data to a PHP backend using
-            let inputData = document.getElementById("dbInput").value;
-            fetch("server.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ data: inputData })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("dbOutput").innerText = data.message;
-            });
-        }
-    </script>
 </head>
 <body>
     <!--The green Bar at the top that has the name and button that takes you to the login page-->
@@ -248,8 +138,8 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
             <button onclick="location.href='index.php'">Home</button>
             <button onclick="location.href='schedule.php'">Schedule</button>
             <button onclick="location.href='store.php'">Store</button>
-            <button onclick="location.href='barbers.html'">Page 4</button>
-            <button onclick="location.href='about.html'">Page 5</button>
+            <button onclick="location.href='barbers.php'">Barbers</button>
+            <button onclick="location.href='about.php'">About us</button>
         </div>
 
         <!--Stylized Button to be circular, when clicked takes you to login.html-->
@@ -259,67 +149,34 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
         </div>
     </div>
     <!--let's user know the current page they are on-->
-    <h1>Home</h1>
-    <div class="db-box">
-        <input type="text" id="dbInput" placeholder="Enter data">
-        <button onclick="sendData()">Submit</button>
-        <p id="dbOutput"></p>
+    <h1>About Us</h1>
+    <br><br>
+    <div class="container">
+        <div class="section">
+            <h2>About the Barber</h2>
+            <p><?php echo $summary; ?></p>
+        </div>
     </div>
+    <br><br>
+    <div class="container">
+        <div class="section">
+            <h2>Hours</h2>
+            <ul>
+                <?php foreach ($hours as $hour) { echo "<li>$hour</li>"; } ?>
+            </ul>
+        </div>
+    </div>
+    <br><br>
+    <div class="container">
+        <div class="section">
+            <h2>Customer Reviews</h2>
+            <ul>
+                <?php foreach ($reviews as $review) { echo "<li>$review</li>"; } ?>
+            </ul>
+        </div>
+    </div>
+    <br><br>
+    <br><br>
+    <br><br><br>
 
-    <!--Section that holds image of barbershop, followed by the Sotre Information-->
-    <div class="store-info">
-        <img src="images/store.jpg" alt="Store Image">
-        <div class="store-text">
-            <p><strong>Location:</strong> 123 Main St, Cityville</p>
-            <p><strong>Hours:</strong> Mon-Sat: 9 AM - 8 PM, Sun: Closed</p>
-            <p><strong>Information:</strong> Our store offers top-notch haircuts and grooming services.</p>
-        </div>
-    </div>
-    <!--Section where we can see the cuts different barbers have made-->
-    <h2> Barbers</h2>
-    <div class="barbers">
-        <!--Contains the name of Barber, availability, and scrollable images using the fuctions we defined earlier-->
-        <div class="barber-container">
-            <div class="barber-name">Pedro</div>
-            <p class="availability">Available: Tue, Fri, Sat 2:00PM-8:00PM</p>
-            <div class="barber-images barber-1">
-                <button class="arrow arrow-left" onclick="prevImage(1)">&#9664;</button>
-                <img src="images/haircut1.jpg" alt="Haircut 1-1" class="active">
-                <img src="images/haircut2.jpg" alt="Haircut 1-2">
-                <img src="images/haircut3.jpg" alt="Haircut 1-3">
-                <button class="arrow arrow-right" onclick="nextImage(1)">&#9654;</button>
-            </div>
-        </div>
-        <!--Contains the name of Barber, availability, and scrollable images using the fuctions we defined earlier-->
-        <div class="barber-container">
-            <div class="barber-name">Sebastian</div>
-            <p class="availability">Available: Mon-Wed 9:00AM-8:00PM</p>
-            <div class="barber-images barber-2">
-                <button class="arrow arrow-left" onclick="prevImage(2)">&#9664;</button>
-                <img src="images/haircut1.jpg" alt="Haircut 2-1" class="active">
-                <img src="images/haircut2.jpg" alt="Haircut 2-2">
-                <img src="images/haircut3.jpg" alt="Haircut 2-3">
-                <button class="arrow arrow-right" onclick="nextImage(2)">&#9654;</button>
-            </div>
-        </div>
-        <!--Contains the name of Barber, availability, and scrollable images using the fuctions we defined earlier-->
-        <div class="barber-container">
-            <div class="barber-name">Jean Marque III, future King of Zambodia</div>
-            <p class="availability">Available: Mon-Sat 9:00AM-8:00PM</p>
-            <div class="barber-images barber-3">
-                <button class="arrow arrow-left" onclick="prevImage(3)">&#9664;</button>
-                <img src="images/haircut1.jpg" alt="Haircut 3-1" class="active">
-                <img src="images/haircut2.jpg" alt="Haircut 3-2">
-                <img src="images/haircut3.jpg" alt="Haircut 3-3">
-                <button class="arrow arrow-right" onclick="nextImage(3)">&#9654;</button>
-            </div>
-        </div>
-    </div>
-
-    <!--Added section to work on the future for the reviews of the page-->
-    <div class="reviews">
-        <h2>Reviews</h2>
-        <p>(Coming soon...)</p>
-    </div>
 </body>
-</html>

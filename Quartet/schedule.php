@@ -10,6 +10,7 @@
         3/1/2025 -- Brinley, add confirm appointment abilities
         3/2/2025 -- Ben, added 'search' feature
         3/2/2025 -- Allie upcoming and past appointments
+        03/02/2025 -- Jose Leyba, Changed Style of Calendar + Cancelation button
     Creation date:
     Other sources: ChatGPT
 -->
@@ -40,6 +41,8 @@ if ($mysqli->connect_error) {
             padding-top: -5px;
             text-align: center;
             font-family: 'Georgia', serif; 
+            background-color:rgba(36, 35, 35, 0.97);
+            color: white;
         }
         /* Top Bar at Top with Pages and Login */
         .top-bar {
@@ -104,13 +107,16 @@ if ($mysqli->connect_error) {
         }
         /* Calendar styles */
         .calendar-container {
-            margin-top: 30px;
-            position: relative;
+            background: rgba(36, 35, 35, 0.97);
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
         }
 
         .month-name {
             font-size: 24px;
             font-weight: bold;
+            margin-bottom: 10px;
         }
 
         .calendar {
@@ -118,17 +124,23 @@ if ($mysqli->connect_error) {
             margin-top: 10px;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 0px;
+            gap: 5px;
             text-align: center;
+            background:rgb(42, 39, 39);
         }
 
         .day {
             position: relative; /* Ensures child elements are positioned relative to this */
             aspect-ratio: 1/.75;
-            border: 1px solid black;
+            background:rgb(56, 51, 51);
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+            min-height: 60px;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
         }
 
         .day span {
@@ -142,21 +154,26 @@ if ($mysqli->connect_error) {
 
 
         .dayHead {
-            background-color: #f2f2f2;
+            background-color:rgb(1, 77, 1);
+            color: white;
             font-weight: bold;
             padding: 10px;
+            border-radius: 5px;
         }
 
         .calendar-nav {
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         /* appointment button styling */
         .day-button {
-            margin: 5px;
+            background-color:rgba(40, 167, 70, 0.74);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
             cursor: pointer;
-            width: 90%;
-            padding: 5px;
+            margin-top: 5px;
         }
 
         /* Popup styling */
@@ -212,7 +229,6 @@ if ($mysqli->connect_error) {
         .search-container button {
             padding: 8px;
             font-size: 16px;
-            border: 1px solid #ccc;
             border-radius: 5px;
         }
 
@@ -224,6 +240,17 @@ if ($mysqli->connect_error) {
 
         .search-container button:hover {
             background-color: #0056b3;
+        }
+        .cancel-alert {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color:rgb(220, 94, 90);
+            background-color:rgb(111, 39, 45);
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #d9534f;
+            display: inline-block;
         }
 
     </style>
@@ -312,14 +339,12 @@ if ($mysqli->connect_error) {
                 <div id="appointmentGrid" class="appointment-grid"></div>
             </div>
         </div>
-        <br><br>
-    <h3>Need to cancel an appointment?</h3>
-        <a href="cancel_appointment.php">Cancel here</a>
-        <br><br><br><br>
-
-
-
     </div>
+    <br>
+    <div class="cancel-alert">Need to cancel an appointment? </div>
+        <br>
+        <a href="cancel_appointment.php">Cancel here</a>
+        <br><br>
 
     <script>
         function fakeSearch() {
@@ -554,6 +579,7 @@ if ($mysqli->connect_error) {
             <p>Barber: John Doe</p>
             </div>
         </div>
+        <br><br><br>
 </div>
 <style>
     /* Popup styling */

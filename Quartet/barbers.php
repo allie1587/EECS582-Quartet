@@ -113,32 +113,39 @@ $barbers = [
     <style>
         /* Style for the entire page */
         body {
+            margin: 0;
+            padding-top: 70px;
             text-align: center;
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
+            font-family: 'Georgia', serif; 
+            background-color:rgba(59, 65, 59, 0.29); 
         }
-        /* Styles for the top navigation bar */ 
+        /* Top Bar at Top with Pages and Login */
         .top-bar {
-            background-color: green;
-            padding: 10px;
+            background-color: #006400; 
+            padding: 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
             color: white;
-            height: 50px;
+            height: 70px; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
         }
+        /* Size of Letters on it's header */
         .top-bar h1 {
             margin: 0;
             padding-left: 20px;
-            font-size: 24px;
-            color: white;
+            font-size: 28px;
         }
-        /* Style for the login button */
+        /* Space for the login button on the right */
         .login-container {
             display: flex;
             align-items: center;
             padding-right: 20px;
         }
+        /* Login Button Format*/
         .login-button {
             width: 40px;
             height: 40px;
@@ -153,15 +160,28 @@ $barbers = [
             align-items: center;
             justify-content: center;
         }
-        /* Style for the menu */
+        /* Style for the Menu taht will have the navigation buttons */
         .menu {
-            margin-top: 20px;
+            display: flex;
+            flex-grow: 1;
+            justify-content: center;
+            height: 100%;
         }
+        /* Style of Navigation Buttons */
         .menu button {
-            margin: 5px;
-            padding: 10px 20px;
-            font-size: 16px;
+            background-color: #006400; 
+            color: white;
+            border: none;
+            padding: 20px 25px; 
+            font-size: 18px;
             cursor: pointer;
+            flex-grow: 1;
+            text-align: center;
+            font-family: 'Georgia', serif; 
+        }
+        /* Color gets darker when hovering the buttons */
+        .menu button:hover {
+            background-color: #004d00; 
         }
         /* Style for each barber profile */
         .barber-container{
@@ -314,7 +334,7 @@ $barbers = [
             <button onclick="location.href='schedule.php'">Schedule</button>
             <button onclick="location.href='store.php'">Store</button>
             <button onclick="location.href='barbers.php'">Barbers</button>
-            <button onclick="location.href='about.php'">About Us</button>
+            <button onclick="location.href='about.php'">About us</button>
         </div>
 
         <!--Stylized Button to be circular, when clicked takes you to login.html-->
