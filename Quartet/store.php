@@ -20,29 +20,41 @@ session_start();
     <title>Store</title>
     <!--Style choices for page, they include font used, margins, alignation, background color, display types, and some others-->
     <style>
+        /* Applies styles to the entire body */
         body {
+            margin: 0;
+            padding-top: 70px;
             text-align: center;
-            font-family: Arial, sans-serif;
+            font-family: 'Georgia', serif; 
+            background-color:rgba(59, 65, 59, 0.29); 
         }
+        /* Top Bar at Top with Pages and Login */
         .top-bar {
-            background-color: green;
-            padding: 10px;
+            background-color: #006400; 
+            padding: 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
             color: white;
-            height: 50px;
+            height: 70px; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
         }
+        /* Size of Letters on it's header */
         .top-bar h1 {
             margin: 0;
             padding-left: 20px;
-            font-size: 24px;
+            font-size: 28px;
         }
+        /* Space for the login button on the right */
         .login-container {
             display: flex;
             align-items: center;
             padding-right: 20px;
         }
+        /* Login Button Format*/
         .login-button {
             width: 40px;
             height: 40px;
@@ -56,6 +68,29 @@ session_start();
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+        /* Style for the Menu taht will have the navigation buttons */
+        .menu {
+            display: flex;
+            flex-grow: 1;
+            justify-content: center;
+            height: 100%;
+        }
+        /* Style of Navigation Buttons */
+        .menu button {
+            background-color: #006400; 
+            color: white;
+            border: none;
+            padding: 20px 25px; 
+            font-size: 18px;
+            cursor: pointer;
+            flex-grow: 1;
+            text-align: center;
+            font-family: 'Georgia', serif; 
+        }
+        /* Color gets darker when hovering the buttons */
+        .menu button:hover {
+            background-color: #004d00; 
         }
         .menu {
             margin-top: 20px;
@@ -96,7 +131,15 @@ session_start();
 <body>
     <!--The green Bar at the top that has the name and button that takes you to the login page-->
     <div class="top-bar">
-        <h1>Quartet's Amazing Barbershop</h1>
+        <h1>Quartet's Barbershop</h1>
+        <div class="menu">
+            <button onclick="location.href='index.php'">Home</button>
+            <button onclick="location.href='schedule.php'">Schedule</button>
+            <button onclick="location.href='store.php'">Store</button>
+            <button onclick="location.href='page4.html'">Page 4</button>
+            <button onclick="location.href='page5.html'">Page 5</button>
+        </div>
+
         <!--Stylized Button to be circular, when clicked takes you to login.html-->
         <div class="login-container">
             <span>Login</span>
@@ -106,13 +149,7 @@ session_start();
     <!--let's user know the current page they are on-->
     <h1>Store</h1>
     <!--Menu with all possible pages-->
-    <div class="menu">
-        <button onclick="location.href='index.php'">Home</button>
-        <button onclick="location.href='schedule.php'">Schedule</button>
-        <button onclick="location.href='store.php'">Store</button>
-        <button onclick="location.href='page4.html'">Page 4</button>
-        <button onclick="location.href='page5.html'">Page 5</button>
-    </div>
+
     <!--Styled grid 3x3 That shows in each space a different product available with a picture and it's name-->
     <div class="store-grid">
         <div class="product-container">
