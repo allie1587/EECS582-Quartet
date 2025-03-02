@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         //Attempt to secure password
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         //Prepare SQL statement to insert data into the User table
-        $sql = "INSERT INTO Users (fname, lname, username, password) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO Barber_Information (First_Name, Last_name, Username, Password) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         if ($stmt) {
             //Bind parameters to the prepared statement
@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- Ensure proper rendering and touch zooming on mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Set the title of the page -->
-    <title>Register Page</title>
+    <title>Register Barber Page</title>
     <!-- Link to external CSS file -->
     <link rel="stylesheet" href="style/styles.css">
 </head>
