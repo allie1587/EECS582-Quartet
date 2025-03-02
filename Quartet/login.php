@@ -51,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     //set session variables
                     $_SESSION["username"] = $db_username;
                     //redirect to the barber dashboard page
-                    header("Location: dashboard.php");
+                    header("Location: BarberSide/dashboard.php");
                     exit();
                 } else {
                     $error_message = "Invalid username or password.";
@@ -114,6 +114,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <a href="register.php" class="login-register">Create Account</a>
         </p>
     </div>
-    <script src ="scripts/login.js"></script>
 </body>
 </html>
