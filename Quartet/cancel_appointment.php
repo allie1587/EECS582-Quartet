@@ -121,8 +121,8 @@ if (!isset($_SESSION['appointment'])) {
             <button onclick="location.href='index.php'">Home</button>
             <button onclick="location.href='schedule.php'">Schedule</button>
             <button onclick="location.href='store.php'">Store</button>
-            <button onclick="location.href='page4.html'">Page 4</button>
-            <button onclick="location.href='page5.html'">Page 5</button>
+            <button onclick="location.href='barbers.php'">Barbers</button>
+            <button onclick="location.href='about.php'">About Us</button>
         </div>
 
         <!--Stylized Button to be circular, when clicked takes you to login.html-->

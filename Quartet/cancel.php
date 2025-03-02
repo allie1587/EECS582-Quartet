@@ -147,8 +147,8 @@ $mysqli->close();
             <button onclick="location.href='index.php'">Home</button>
             <button onclick="location.href='schedule.php'">Schedule</button>
             <button onclick="location.href='store.php'">Store</button>
-            <button onclick="location.href='page4.html'">Page 4</button>
-            <button onclick="location.href='page5.html'">Page 5</button>
+            <button onclick="location.href='barbers.php'">Barbers</button>
+            <button onclick="location.href='about.php'">About Us</button>
         </div>
 
         <!--Stylized Button to be circular, when clicked takes you to login.html-->
@@ -156,7 +156,7 @@ $mysqli->close();
             <span>Login</span>
             <button class="login-button" onclick="location.href='login.php'">&#10132;</button>
         </div>
-    </div>
+</div>
     <h1>Cancellation Status</h1>
     <p>Canceled Correctly! Redirecting to Home Page...</p>
 
