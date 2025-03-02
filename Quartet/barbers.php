@@ -117,8 +117,12 @@ $barbers = [
             padding-top: 70px;
             text-align: center;
             font-family: 'Georgia', serif; 
-            background-color:rgba(59, 65, 59, 0.29); 
+            background: url('https://th.bing.com/th/id/R.69941b7bd8bbf6c5a425e501d643deb5?rik=nfqWoo9%2flwrCrg&riu=http%3a%2f%2fwww.raphaelsbeautyschool.edu%2fwp-content%2fuploads%2f2019%2f01%2fBarbershop.jpg&ehk=TFRsXzsM6InbmqSx4mvX%2fqF9p0%2fCwEmQV3cXH3vO6uM%3d&risl=&pid=ImgRaw&r=0') no-repeat center center fixed;
+            background-size: cover;
+            text-align: center;
+            color:  rgba(27, 27, 27, 0.9);
         }
+
         /* Top Bar at Top with Pages and Login */
         .top-bar {
             background-color: #006400; 
@@ -186,7 +190,7 @@ $barbers = [
         /* Style for each barber profile */
         .barber-container{
             width: 320px;
-            background: white;
+            background: rgba(50, 50, 50, 0.9);
             padding: 20px;
             border-radius: 10px;
             text-align: center;
@@ -194,11 +198,13 @@ $barbers = [
             display: flex;
             flex-direction: column;
             align-items: center;
+            color: white;
 
         }
         .barbers { 
             gap: 20px;
-            background-color: #f4f4f4;
+            background: url('https://th.bing.com/th/id/R.69941b7bd8bbf6c5a425e501d643deb5?rik=nfqWoo9%2flwrCrg&riu=http%3a%2f%2fwww.raphaelsbeautyschool.edu%2fwp-content%2fuploads%2f2019%2f01%2fBarbershop.jpg&ehk=TFRsXzsM6InbmqSx4mvX%2fqF9p0%2fCwEmQV3cXH3vO6uM%3d&risl=&pid=ImgRaw&r=0') no-repeat center center fixed;
+            background-size: cover;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
@@ -379,5 +385,6 @@ $barbers = [
             </div>
         </div>
     <?php endforeach; ?>
+    <br><br>
 </div>
 </body>

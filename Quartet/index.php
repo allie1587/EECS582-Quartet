@@ -3,6 +3,7 @@ Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 02/12/2025
     Revisions:
         3/1/2025  -- Jose, Stylizing Choices to page
+        03/02/2025 -- Dark Mode Added
 Purpose: Main Page to see the barbershops, Barbers, Cuts, and Availabilities
 -->
 <?php
@@ -32,7 +33,8 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
             padding-top: 70px;
             text-align: center;
             font-family: 'Georgia', serif; 
-            background-color:rgba(59, 65, 59, 0.29); 
+            background-color:rgba(36, 35, 35);
+            color:white;
         }
         /* Top Bar at Top with Pages and Login */
         .top-bar {
@@ -104,10 +106,9 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: white;
+            background:rgba(36, 35, 35);
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             margin: 20px;
         }
         .store-info img {
@@ -128,11 +129,11 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
             gap: 20px;
             flex-wrap: wrap;
         }
-        .barber-container {
-            background: white;
+        .barber-container { 
+            background:rgba(36, 35, 35);
             padding: 15px;
             border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
             text-align: center;
             width: 320px;
         }
@@ -140,7 +141,7 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 10px;
-            color: #004d00;
+            color:rgb(31, 95, 31);
         }
         .availability {
             font-weight: bold;
@@ -190,7 +191,7 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
 
         /* Reviews section */
         .reviews {
-            background: white;
+            background: rgba(36, 35, 35, 0.97);
             padding: 20px;
             margin: 20px;
             border-radius: 10px;

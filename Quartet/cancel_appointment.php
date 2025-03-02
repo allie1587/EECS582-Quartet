@@ -30,7 +30,8 @@ if (!isset($_SESSION['appointment'])) {
             padding-top: 70px;
             text-align: center;
             font-family: 'Georgia', serif; 
-            background-color:rgba(59, 65, 59, 0.29); 
+            background-color:rgba(50, 50, 50, 0.86); 
+            color: white;
         }
         /* Top Bar at Top with Pages and Login */
         .top-bar {
@@ -95,6 +96,45 @@ if (!isset($_SESSION['appointment'])) {
         /* Color gets darker when hovering the buttons */
         .menu button:hover {
             background-color: #004d00; 
+        }
+        
+        /*Dark Format for Fillable Fields */
+        .info_form {
+            background-color: #333; /* Dark background */
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Form inputs */
+        input[type="text"] {
+            width: 90%;
+            padding: 10px;
+            margin-top: 5px;
+            background-color: #444;
+            color: white;
+            border: 1px solid #666;
+            border-radius: 5px;
+        }
+
+        /* Submit button */
+        button[type="submit"] {
+            background-color: #008000; /* Green */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        /* Submit button hover */
+        button[type="submit"]:hover {
+            background-color: #00A000; /* Brighter green */
         }
 
     </style>

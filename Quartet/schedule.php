@@ -178,30 +178,42 @@ if ($mysqli->connect_error) {
 
         /* Popup styling */
         .popup {
-            display: none; /* Hidden by default */
             position: fixed;
-            top: 10%;
-            left: 10%;
-            right: 10%;
-            bottom: 10%;
-            background: white;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #333;
+            color: white;
             padding: 20px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
             border-radius: 10px;
-            z-index: 1000;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            display: none; /* Start hidden */
         }
 
-        /* Close button */
+        .popup-content {
+            background: #333; /* Dark background */
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+        }
+
         .close-btn {
             position: absolute;
             top: 10px;
             right: 15px;
             font-size: 20px;
             cursor: pointer;
+            color: white;
         }
+
 
         /* Grid container inside the popup */
         .appointment-grid {
+            background-color: rgba(50, 50, 50, 0.9);;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Adjust columns dynamically */
             gap: 10px;
@@ -210,7 +222,7 @@ if ($mysqli->connect_error) {
 
         /* Individual appointment items */
         .appointment-item {
-            background: #f0f0f0;
+            background:rgb(39, 37, 37);
             padding: 10px;
             border-radius: 5px;
             text-align: center;
@@ -581,31 +593,7 @@ if ($mysqli->connect_error) {
         </div>
         <br><br><br>
 </div>
-<style>
-    /* Popup styling */
-    .popup {
-            display: none; /* Hidden by default */
-            position: fixed;
-            top: 10%;
-            left: 10%;
-            right: 10%;
-            bottom: 10%;
-            background: white;
-            padding: 20px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            z-index: 1000;
-        }
 
-        /* Close button */
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 20px;
-            cursor: pointer;
-        }
-</style>
 <script>
     // Open the appointment modal
     function openAppointmentsModal() {

@@ -1,7 +1,8 @@
 <!--
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 02/12/2025
-Last modified: 02/16/2025
+Revisions:
+    03/02/2025 -- Jose Leyba -- Changed UI to look better and dark mode implemented
 Purpose: Store Page thaat will (later) allow users to see different products up to sale at the barbershop and their price
 -->
 <?php
@@ -26,7 +27,8 @@ session_start();
             padding-top: 70px;
             text-align: center;
             font-family: 'Georgia', serif; 
-            background-color:rgba(59, 65, 59, 0.29); 
+            background-color:rgba(36, 35, 35);
+            color:white; 
         }
         /* Top Bar at Top with Pages and Login */
         .top-bar {
@@ -94,29 +96,40 @@ session_start();
         }
         .store-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
-            padding: 20px;
-            max-width: 900px;
+            padding: 40px;
+            max-width: 1000px;
             margin: auto;
         }
         .product-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            border: 1px solid #ccc;
-            padding: 10px;
+            background: #333;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .product-container:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(255, 255, 255, 0.3);
         }
         .product-container img {
             width: 100%;
             max-width: 200px;
-            height: auto;
+            border-radius: 10px;
+            transition: opacity 0.3s ease;
+        }
+        .product-container img:hover {
+            opacity: 0.85;
         }
         .product-name {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             margin-top: 10px;
-        }
+        } 
     </style>
 </head>
 <body>
@@ -143,42 +156,14 @@ session_start();
 
     <!--Styled grid 3x3 That shows in each space a different product available with a picture and it's name-->
     <div class="store-grid">
-        <div class="product-container">
-            <img src="images/product1.jpg" alt="Product 1">
-            <div class="product-name">Product 1</div>
-        </div>
-        <div class="product-container">
-            <img src="images/product1.jpg" alt="Product 2">
-            <div class="product-name">Product 2</div>
-        </div>
-        <div class="product-container">
-            <img src="images/product1.jpg" alt="Product 3">
-            <div class="product-name">Product 3</div>
-        </div>
-        <div class="product-container">
-            <img src="images/product1.jpg" alt="Product 4">
-            <div class="product-name">Product 4</div>
-        </div>
-        <div class="product-container">
-            <img src="images/product1.jpg" alt="Product 5">
-            <div class="product-name">Product 5</div>
-        </div>
-        <div class="product-container">
-            <img src="images/product1.jpg" alt="Product 6">
-            <div class="product-name">Product 6</div>
-        </div>
-        <div class="product-container">
-            <img src="images/product1.jpg" alt="Product 7">
-            <div class="product-name">Product 7</div>
-        </div>
-        <div class="product-container">
-            <img src="images/product1.jpg" alt="Product 8">
-            <div class="product-name">Product 8</div>
-        </div>
-        <div class="product-container">
-            <img src="images/product1.jpg" alt="Product 9">
-            <div class="product-name">Product 9</div>
-        </div>
+        <?php 
+        for ($i = 1; $i <= 9; $i++) {
+            echo "<div class='product-container'>
+                    <img src='images/product1.jpg' alt='Product $i'>
+                    <div class='product-name'>Product $i</div>
+                  </div>";
+        }
+        ?>
     </div>
 </body>
 </html>
