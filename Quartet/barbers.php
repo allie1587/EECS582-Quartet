@@ -3,9 +3,8 @@
     A page that holds the information about the barbers
     Author: Alexandra Stratton, Ben Renner, Brinley Hull, Jose Leyba, Kyle Moore
     Revisions:
-        02/27/2025 -- Alexandra Stratton, add about barber page
-        02/28/2025 -- Alexandra Stratton, fixed barber information
-        03/02/2025 -- Jose Leyba, Modifieid UI Looks/ Added Barber Images
+        2/27/2025 -- Alexandra Stratton, add about barber page
+        2/28/2025 -- Alexandra Stratton, fixed barber information
     Sources:
         - https://www.freshkillsbarbershop.com/barber-bios
             -- Grabbed professional headshots for the hardcoded barbers
@@ -308,20 +307,20 @@ $barbers = [
 <body>
     <!--The green Bar at the top that has the name and button that takes you to the login page-->
     <div class="top-bar">
-        <h1>Quartet's Barbershop</h1>
-        <div class="menu">
-            <button onclick="location.href='index.php'">Home</button>
-            <button onclick="location.href='schedule.php'">Schedule</button>
-            <button onclick="location.href='store.php'">Store</button>
-            <button onclick="location.href='barbers.php'">Barbers</button>
-            <button onclick="location.href='about.php'">About Us</button>
-        </div>
-
+        <h1>Quartet's Amazing Barbershop</h1>
         <!--Stylized Button to be circular, when clicked takes you to login.html-->
         <div class="login-container">
             <span>Login</span>
             <button class="login-button" onclick="location.href='login.php'">&#10132;</button>
         </div>
+    </div>
+    <!--Menu with all possible pages-->
+    <div class="menu">
+        <button onclick="location.href='index.php'">Home</button>
+        <button onclick="location.href='schedule.php'">Schedule</button>
+        <button onclick="location.href='store.php'">Store</button>
+        <button onclick="location.href='barbers.php'">Barbers</button>
+        <button onclick="location.href='page5.html'">Page 5</button>
     </div>
 <h1>Barbers</h1>
 <div class="barbers">
@@ -360,60 +359,5 @@ $barbers = [
         </div>
     <?php endforeach; ?>
 </div>
-<!-- Link to display past and upcoming appointments -->
-<div class="user-appointments">
-            <a href="#" onclick="openAppointmentsModal()">View Upcoming/Past Appointments</a>
-        </div>
-        <!-- Past and Upcoming Appointment popup -->
-        <div id="appointment-modal" class="popup">
-            <span class="close-btn" onclick="closeAppointmentsModal()">&times;</span>
-            <h2>Your Appointments</h2>
-            <h3>Upcoming Appointment</h3>
-            <p>Date: March 10, 2025</p>
-            <p>Time: 2:00 PM</p>
-            <p>Barber: John Doe</p>
-
-            <h3>Past Appointment</h3>
-            <p>Date: February 15, 2025</p>
-            <p>Time: 11:00 AM</p>
-            <p>Barber: John Doe</p>
-            </div>
-        </div>
-</div>
-<style>
-    /* Popup styling */
-    .popup {
-            display: none; /* Hidden by default */
-            position: fixed;
-            top: 10%;
-            left: 10%;
-            right: 10%;
-            bottom: 10%;
-            background: white;
-            padding: 20px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            z-index: 1000;
-        }
-
-        /* Close button */
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 20px;
-            cursor: pointer;
-        }
-</style>
-<script>
-    // Open the appointment modal
-    function openAppointmentsModal() {
-        document.getElementById('appointment-modal').style.display = 'block';
-    }
-    //Close the appointment modal
-    function closeAppointmentsModal() {
-        document.getElementById('appointment-modal').style.display = 'none';
-    }
-</script>
 </body>
 </html>
