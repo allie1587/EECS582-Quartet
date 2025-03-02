@@ -1,4 +1,7 @@
 <?php
+/*
+Creation date: 3/1/2025
+*/
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

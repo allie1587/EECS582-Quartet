@@ -7,6 +7,7 @@
         2/27/2025 -- Brinley, add appointment button popups
         2/28/2025 -- Brinley, add timeslots and populate appointment details
         3/1/2025  -- Jose, Stylizing Choices to page
+        3/1/2025 -- Brinley, add confirm appointment abilities
     Creation date:
     Other sources: ChatGPT
 -->
