@@ -3,8 +3,9 @@
     A page that holds the information about the barbers
     Author: Alexandra Stratton, Ben Renner, Brinley Hull, Jose Leyba, Kyle Moore
     Revisions:
-        2/27/2025 -- Alexandra Stratton, add about barber page
-        2/28/2025 -- Alexandra Stratton, fixed barber information
+        02/27/2025 -- Alexandra Stratton, add about barber page
+        02/28/2025 -- Alexandra Stratton, fixed barber information
+        03/02/2025 -- Jose Leyba, Modifieid UI Looks/ Added Barber Images
     Sources:
         - https://www.freshkillsbarbershop.com/barber-bios
             -- Grabbed professional headshots for the hardcoded barbers
@@ -307,20 +308,20 @@ $barbers = [
 <body>
     <!--The green Bar at the top that has the name and button that takes you to the login page-->
     <div class="top-bar">
-        <h1>Quartet's Amazing Barbershop</h1>
+        <h1>Quartet's Barbershop</h1>
+        <div class="menu">
+            <button onclick="location.href='index.php'">Home</button>
+            <button onclick="location.href='schedule.php'">Schedule</button>
+            <button onclick="location.href='store.php'">Store</button>
+            <button onclick="location.href='barbers.php'">Barbers</button>
+            <button onclick="location.href='about.php'">About Us</button>
+        </div>
+
         <!--Stylized Button to be circular, when clicked takes you to login.html-->
         <div class="login-container">
             <span>Login</span>
             <button class="login-button" onclick="location.href='login.php'">&#10132;</button>
         </div>
-    </div>
-    <!--Menu with all possible pages-->
-    <div class="menu">
-        <button onclick="location.href='index.php'">Home</button>
-        <button onclick="location.href='schedule.php'">Schedule</button>
-        <button onclick="location.href='store.php'">Store</button>
-        <button onclick="location.href='barbers.php'">Barbers</button>
-        <button onclick="location.href='page5.html'">Page 5</button>
     </div>
 <h1>Barbers</h1>
 <div class="barbers">
@@ -360,4 +361,3 @@ $barbers = [
     <?php endforeach; ?>
 </div>
 </body>
-</html>
