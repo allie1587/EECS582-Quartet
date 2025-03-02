@@ -3,13 +3,11 @@
     A page for the barber to find any client information
     Author: Alexandra Stratton, Ben Renner, Brinley Hull, Jose Leyba, Kyle Moore
     Revisions:
-        3/2/2025 -- Kyle Moore, add menu buttons
+        3/2/2025 -- Kyle Moore, add menu buttons and list of clients from db
     Creation date: 3/2/2025
 -->
 
 <?php
-error_reporting(E_ALL); // Report all PHP errors
-ini_set('display_errors', 1); // Display errors to the browser
 include ("db_connection.php");
 $query = "
     SELECT First_name, Last_name, Email, Phone, BarberID
@@ -18,7 +16,6 @@ $query = "
 ";
 // Execute the query
 $result = $conn->query($query);
-
 // Fetch all rows as an associative array
 $clients = $result->fetch_all(MYSQLI_ASSOC);
 // Close the connection
