@@ -1,24 +1,13 @@
 <!--
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
-Date: 02/12/2025
-    Revisions:
-        3/1/2025  -- Jose, Stylizing Choices to page
-Purpose: Main Page to see the barbershops, Barbers, Cuts, and Availabilities
+Date: 03/02/2025
+    Revision:
+Purpose: Allows user to send comments that will reach the barbers email for feedback/questions purposes
 -->
 <?php
 // Start the session to remember user info
 session_start();
 
-$reviews = [
-    "Best barber in town! Always leaves me looking sharp.",
-    "Great atmosphere and amazing cuts. Highly recommend!",
-    "Professional and friendly service every time.",
-];
-$hours = [
-    "Monday - Saturday: 9 AM - 8 PM"
-
-];
-$summary = "Welcome to our barbershop! With years of experience and a passion for perfecting every cut, we guarantee top-quality service in a relaxing atmosphere.";
 ?>
 
 <!DOCTYPE html>
@@ -128,6 +117,28 @@ $summary = "Welcome to our barbershop! With years of experience and a passion fo
         h1{
             color: white;
         }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: rgba(18, 11, 11, 0.7);
+
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
     </style>
 </head>
 <body>
@@ -150,34 +161,25 @@ $summary = "Welcome to our barbershop! With years of experience and a passion fo
         </div>
     </div>
     <!--let's user know the current page they are on-->
-    <h1>About Us</h1>
+    <h1>Give Us Your Feedback!</h1>
     <br><br>
     <div class="container">
         <div class="section">
-            <h2>About the Barber</h2>
-            <p><?php echo $summary; ?></p>
+            <p>You need to give us some feedback, comments, questions about our service? Please send us a message and we will respond as soon as possible!<p>
         </div>
+        <form action="send_mail.php" method="POST">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            
+            <label for="comment">Comment:</label>
+            <textarea id="comment" name="comment" rows="4" required></textarea>
+            
+            <button type="submit">Send</button>
+        </form>
     </div>
-    <br><br>
-    <div class="container">
-        <div class="section">
-            <h2>Hours</h2>
-            <ul>
-                <?php foreach ($hours as $hour) { echo "<li>$hour</li>"; } ?>
-            </ul>
-        </div>
-    </div>
-    <br><br>
-    <div class="container">
-        <div class="section">
-            <h2>Customer Reviews</h2>
-            <ul>
-                <?php foreach ($reviews as $review) { echo "<li>$review</li>"; } ?>
-            </ul>
-        </div>
-    </div>
-    <br><br>
-    <br><br>
-    <br><br><br>
+    <br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br>
+
+
 
 </body>
