@@ -251,6 +251,8 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
             <button onclick="location.href='store.php'">Store</button>
             <button onclick="location.href='barbers.php'">Barbers</button>
             <button onclick="location.href='about.php'">About Us</button>
+            <button onclick="location.href='feedback.php'">Contact us</button>
+
         </div>
 
         <!--Stylized Button to be circular, when clicked takes you to login.html-->
