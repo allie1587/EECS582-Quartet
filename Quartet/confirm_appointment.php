@@ -1,16 +1,33 @@
 <?php
-// Authors: Alexandra Stratton, Ben Renner, Brinley Hull, Jose Leyba, Kyle Moore
-// Creation Date: 03/01/2025
-// Revisions: 
-// Purpose: A page where clients can enter their information and confirm their appointments (sending info back to database).
+/*
+    confirm_appointment.php
+    A page where clients can enter their information and confirm their appointments.
+    Authors: Ben Renner, Jose Leyba, Brinley Hull, Kyle Moore, Alexandra Stratton
+    Other sources of code: ChatGPT
+    Creation date: 3/1/2025
+    Revisions:
+        3/2/2025 - Brinley, commenting and deleting unnecessary code
+    Preconditions:
+        Acceptable inputs: 
+            Previously set session information for month, day, year, time, and appointment
+            Appointment session info is in the form of an array with a BarberID element
+            All variables are in string form
+        Unacceptable inputs:
+            Null values
+    Postconditions:
+        None
+    Error/exceptions:
+        None
+    Side effects:
+        None
+    Invariants: 
+        None
+    Known faults:
+        None
+*/
 
 // Start the session to remember user info
 session_start();
-if (!isset($_SESSION['appointment'])) {
-    echo "Session variable 'appointment' is not set!";
-} else {
-    echo "Appointment session: " . $_SESSION['appointment'];
-}
 ?>
 
 <!DOCTYPE html>
@@ -138,20 +155,6 @@ if (!isset($_SESSION['appointment'])) {
         }
 
     </style>
-    <script>
-        function sendData() { //Sends input data to a PHP backend using
-            let inputData = document.getElementById("dbInput").value;
-            fetch("server.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ data: inputData })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("dbOutput").innerText = data.message;
-            });
-        }
-    </script>
 </head>
 <body>
     <!--The green Bar at the top that has the name and button that takes you to the login page-->
@@ -175,13 +178,13 @@ if (!isset($_SESSION['appointment'])) {
     </div>
     <!--let's user know the current page they are on-->
     <h1>Confirm Appointment</h1>
-
-    <div class="appointment_info">
-        <p id="appointment_info"></p>
-        </div>
     
+    <!-- Form for user to put in their information  -->
    <div class="info_form">
+        <!-- Set form action to post and redirect to confirm.php on submit -->
         <form action="confirm.php" method="POST">
+
+            <!-- User information (required)-->
             <label for="fname">First name:</label><br>
             <input type="text" id="fname" name="fname" required><br><br>
             <label for="lname">Last name:</label><br>
@@ -191,6 +194,7 @@ if (!isset($_SESSION['appointment'])) {
             <label for="phone">Phone:</label><br>
             <input type="text" id="phone" name="phone" required><br><br>
             
+            <!-- Appointment information (readonly) that uses the session variables-->
             <label for="appointment_date">Date:</label><br>
             <input type="text" id="appointment_date" name="appointment_date" value="<?php echo $_SESSION['month']?> <?php echo $_SESSION['day']?>, <?php echo $_SESSION['year']?>" readonly><br><br>
             
@@ -204,14 +208,4 @@ if (!isset($_SESSION['appointment'])) {
         </form>
    </div>
 </body>
-    <script>
-        // let urlParams = new URLSearchParams(window.location.search);
-        // let time = urlParams.get('time');
-        // let date = urlParams.get('date');
-        // let barber = urlParams.get('barber');
-        // document.getElementById("appointment_date").value = date;
-        // document.getElementById("appointment_time").value = (time <= 12 ? (time == 12 ? time + "PM" : time + "AM") : time-12 + "PM");
-        // document.getElementById("appointment_barber").value = barber;
-        
-    </script>
 </html>
