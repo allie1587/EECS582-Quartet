@@ -281,7 +281,7 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
     <div class="barbers">
         <!--Contains the name of Barber, availability, and scrollable images using the fuctions we defined earlier-->
         <div class="barber-container">
-            <div class="barber-name">Pedro</div>
+            <div class="barber-name">John Doe</div>
             <p class="availability">Available: Tue, Fri, Sat 2:00PM-8:00PM</p>
             <div class="barber-images barber-1">
                 <button class="arrow arrow-left" onclick="prevImage(1)">&#9664;</button>
@@ -293,7 +293,7 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
         </div>
         <!--Contains the name of Barber, availability, and scrollable images using the fuctions we defined earlier-->
         <div class="barber-container">
-            <div class="barber-name">Sebastian</div>
+            <div class="barber-name">Jan Smith</div>
             <p class="availability">Available: Mon-Wed 9:00AM-8:00PM</p>
             <div class="barber-images barber-2">
                 <button class="arrow arrow-left" onclick="prevImage(2)">&#9664;</button>
@@ -305,7 +305,7 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
         </div>
         <!--Contains the name of Barber, availability, and scrollable images using the fuctions we defined earlier-->
         <div class="barber-container">
-            <div class="barber-name">Jean Marque III, future King of Zambodia</div>
+            <div class="barber-name">Fred Bread</div>
             <p class="availability">Available: Mon-Sat 9:00AM-8:00PM</p>
             <div class="barber-images barber-3">
                 <button class="arrow arrow-left" onclick="prevImage(3)">&#9664;</button>
@@ -313,6 +313,17 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
                 <img src="images/haircut2.jpg" alt="Haircut 3-2">
                 <img src="images/haircut3.jpg" alt="Haircut 3-3">
                 <button class="arrow arrow-right" onclick="nextImage(3)">&#9654;</button>
+            </div>
+        </div>
+        <div class="barber-container">
+            <div class="barber-name">Billy Bob</div>
+            <p class="availability">Available: Mon-Sat 9:00AM-8:00PM</p>
+            <div class="barber-images barber-4">
+                <button class="arrow arrow-left" onclick="prevImage(4)">&#9664;</button>
+                <img src="images/haircut1.jpg" alt="Haircut 3-1" class="active">
+                <img src="images/haircut2.jpg" alt="Haircut 3-2">
+                <img src="images/haircut3.jpg" alt="Haircut 3-3">
+                <button class="arrow arrow-right" onclick="nextImage(4)">&#9654;</button>
             </div>
         </div>
     </div>
