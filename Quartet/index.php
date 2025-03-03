@@ -141,7 +141,7 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 10px;
-            color:rgb(31, 95, 31);
+            color:green;
         }
         .availability {
             font-weight: bold;
