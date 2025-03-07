@@ -52,6 +52,7 @@ $conn->close();
     <button onclick="location.href='calendar.php'">Calendar</button>
     <button onclick="location.href='clients.php'">Clients</button>
     <button onclick="location.href='customize.php'">Customize</button>
+    <button onclick="location.href='testing.html'">TESTING</button>
     </div>
   
     <button onclick="location.href='index.php'">Back to Customer Site</button>
