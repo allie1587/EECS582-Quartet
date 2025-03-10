@@ -358,7 +358,7 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
     <!--Added section to work on the future for the reviews of the page-->
     <div class="reviews">
         <h2>Reviews</h2>
-            <form action="reviews.php" method="POST">
+            <form action="submit_review.php" method="POST">
                 <!-- User information (required)-->
                 <label for="name">Name:</label><br>
                 <input type="text" id="name" name="Anonymous" required><br><br>
