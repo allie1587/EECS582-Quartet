@@ -2,6 +2,7 @@
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 03/02/2025
     Revision:
+        03/09/2025 -- Jose -- Fixed mistake so text inputed is visible (white)
 Purpose: Allows user to send comments that will reach the barbers email for feedback/questions purposes
 -->
 <?php
@@ -124,6 +125,7 @@ session_start();
             border: 1px solid #ccc;
             border-radius: 5px;
             background: rgba(18, 11, 11, 0.7);
+            color:white;
 
         }
         button {

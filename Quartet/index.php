@@ -4,6 +4,7 @@ Date: 02/12/2025
     Revisions:
         3/1/2025  -- Jose, Stylizing Choices to page
         03/02/2025 -- Dark Mode Added
+        03/09/2025 -- Jose -- Started Review Work
 Purpose: Main Page to see the barbershops, Barbers, Cuts, and Availabilities
 -->
 <?php
@@ -197,6 +198,30 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
             border-radius: 10px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: rgba(50, 50, 50, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            color:white;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: rgba(18, 11, 11, 0.7);
+            color:white;
+        }
+        input{
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: rgba(18, 11, 11, 0.7);
+            color:white;
+        }
 
 
     </style>
@@ -333,7 +358,16 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
     <!--Added section to work on the future for the reviews of the page-->
     <div class="reviews">
         <h2>Reviews</h2>
-        <p>(Coming soon...)</p>
+            <form action="reviews.php" method="POST">
+                <!-- User information (required)-->
+                <label for="name">Name:</label><br>
+                <input type="text" id="name" name="Anonymous" required><br><br>
+                <label for="rating">Rating:</label><br>
+                <input type="number" id="rating" name="rating" min="1" max="5" required><br><br>
+                <label for="comment">Comment:</label><br>
+                <textarea type="text" id="comment" name="comment" required></textarea><br><br>
+                <button type="submit">Send your Review!</button>
+            </form>
     </div>
 </body>
 </html>
