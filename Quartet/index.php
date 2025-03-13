@@ -59,14 +59,14 @@ $mysqli->close();
         }
         /* Top Bar at Top with Pages and Login */
         .top-bar {
-            background-color: rgb(243, 63, 18);
+            background-color: #c4454d;
             padding: 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
             color: white;
             height: 70px; 
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
@@ -88,7 +88,7 @@ $mysqli->close();
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: #007BFF;
+            background-color:rgb(110, 7, 7);
             color: white;
             border: none;
             font-size: 16px;
@@ -107,7 +107,7 @@ $mysqli->close();
         }
         /* Style of Navigation Buttons */
         .menu button {
-            background-color:rgb(243, 63, 18);
+            background-color: #c4454d;
             color: white;
             border: none;
             padding: 20px 25px; 
@@ -119,7 +119,7 @@ $mysqli->close();
         }
         /* Color gets darker when hovering the buttons */
         .menu button:hover {
-            background-color:rgb(177, 46, 13);
+            background-color:rgb(143, 48, 55);
         }
 
         /* Store info section */
@@ -162,11 +162,11 @@ $mysqli->close();
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 10px;
-            color:rgb(243, 63, 18);
+            color: #c4454d;
         }
         .availability {
             font-weight: bold;
-            color: rgb(243, 63, 18);;
+            color:  #c4454d;
             margin-bottom: 10px;
         }
         .barber-images {
@@ -221,7 +221,7 @@ $mysqli->close();
         .average-rating {
             font-size: 20px;
             font-weight: bold;
-            background: rgb(243, 63, 18);
+            background: #c4454d;
             padding: 10px;
             border-radius: 5px;
         }
@@ -240,7 +240,7 @@ $mysqli->close();
             font-size: 18px;
         }
         .rating {
-            color:rgb(243, 63, 18);
+            color: #c4454d;
         }
         .container {
             max-width: 800px;

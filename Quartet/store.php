@@ -33,7 +33,7 @@ session_start();
         }
         /* Top Bar at Top with Pages and Login */
         .top-bar {
-            background-color: #006400; 
+            background-color: #c4454d;; 
             padding: 0;
             display: flex;
             justify-content: space-between;
@@ -62,7 +62,7 @@ session_start();
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: #007BFF;
+            background-color: rgb(110,7,7);
             color: white;
             border: none;
             font-size: 16px;
@@ -81,7 +81,7 @@ session_start();
         }
         /* Style of Navigation Buttons */
         .menu button {
-            background-color: #006400; 
+            background-color:  #c4454d;
             color: white;
             border: none;
             padding: 20px 25px; 
@@ -93,7 +93,7 @@ session_start();
         }
         /* Color gets darker when hovering the buttons */
         .menu button:hover {
-            background-color: #004d00; 
+            background-color: rgb(143, 48, 55); 
         }
         .store-grid {
             display: grid;
