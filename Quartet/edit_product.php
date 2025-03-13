@@ -3,6 +3,7 @@ Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 03/12/2025
 Revisions:
     03/12/2025 -- Alexandra Stratton -- Made code for this page
+    03/13/2025 -- Jose Leyba -- Trying to test why it's not working correclty, added the name variable to the tags for adding products
 Purpose: This allows for users to edit the products seen on the product page
 Issues:
     - NOT adding to the database
@@ -292,16 +293,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <h2>Add Product</h2>
         <form method="POST" enctype="multipart/form-data">
             <span class="close-btn" onclick="closeAddModal()">&times;</span>
-            <label>Name: <br><input type="text" id="product_name" required></label><br>
-            <label>Description:<br><input type="text" id="product_description" required></label><br>
+            <label>Name: <br><input type="text" id="product_name" name="product_name" required></label><br>
+            <label>Description:<br><input type="text" id="product_description" name="product_description" required></label><br>
             <label>Price:<br>
                 <div class="price-input">
                     <span>$</span>
-                    <input type="text" id="product_price_dollars" oninput="validateDollars()" placeholder="0">
+                    <input type="text" id="product_price_dollars" name="product_price_dollars" oninput="validateDollars()" placeholder="0">
                     <span>.</span>
-                    <input type="text" id="product_price_cents" maxlength="2" oninput="validateCents()" placeholder="00">
+                    <input type="text" id="product_price_cents" name="product_price_cents" maxlength="2" oninput="validateCents()" placeholder="00">
                 </div></label><br>
-            <label>Image:<br><input type="file" id="product_image" ></label><br>
+            <label>Image:<br><input type="file" id="product_image" name="product_image" ></label><br>
             <button type="submit" name="add">Add Product</button>
         </form>
     </div>
