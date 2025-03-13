@@ -29,7 +29,23 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Barber Calendar</title>
     <style>
-      
+        /* Times grid styling */
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 5px;
+            margin: 20px;
+            justify-items: center;
+            align-items: center;
+        }
+        .time-label {
+            justify-self: end;
+            margin-right: 10px;
+        }
+        .calendar-table th {
+            padding: 5px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -59,6 +75,18 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
             }
             ?>
         </tr>
+        <?php
+        /* Checkbox time grid */
+        $times = range(8, 17); // make range of valid times
+        foreach ($times as $hour) { // create each row of times and checkboxees
+            $timeLabel = ($hour < 12) ? $hour . ' AM' : (($hour === 12) ? '12 PM' : ($hour - 12) . ' PM'); 
+            echo '<tr><td class="time-label">' . $timeLabel . '</td>'; // show the time
+            foreach ($daysOfWeek as $day) { //create 7 checkboxes in line with the name of the day and hour for ease of database manipulation
+                echo '<td><input type="checkbox" name="' . $day . '_' . $hour . '"></td>';
+            }
+            echo '</tr>';
+        }
+        ?>
     </table>
 </body>
 <script>
