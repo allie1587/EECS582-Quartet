@@ -3,6 +3,7 @@
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 03/09/2025
     Revisions:
+    03/13/2025 -- Jose Leyba -- Finished implementation, added working ReviewID's method
 
 Purpose: Send reviews submited from the user to the database
     Preconditions:
@@ -32,15 +33,20 @@ if ($mysqli->connect_error) { // catch database connection failure error
     die("Connection failed: " . $mysqli->connect_error);
 }
 
+// Get latest ID from the table
+$result = $mysqli->query("SELECT MAX(ReviewID) AS ReviewID FROM Reviews");
+$row = $result->fetch_assoc();
+$new_id = $row['ReviewID'] ? $row['ReviewID'] + 1 : 1;
+
 // set corresponding variables from the form post from the confirm appointment page and from the previously-set session variables from schedule.php
-$name = $_POST['name'];
-$rating = $_POST['rating'];
-$comment = $_POST['comment'];
+$Name = $_POST['Name'];
+$Rating = $_POST['Rating'];
+$Review = $_POST['Review'];
 
 
 // prepare a query to insert a row into the confirmed appointments table in the database with the corresponding info
 $query = "INSERT INTO Reviews 
-          VALUES (1, ?, ?, ?)";
+          VALUES (?, ?, ?, ?)";
 
 // prepare the query 
 $stmt = $mysqli->prepare($query);
@@ -49,7 +55,7 @@ if (!$stmt) { // if the query is not valid, throw error
 }
 
 // Bind parameters to put them into the SQL query
-$stmt->bind_param("sss", $name, $rating, $comment);
+$stmt->bind_param("ssss", $new_id, $Name, $Rating, $Review);
 $stmt->execute(); // execute the SQL query
 
 // close the connections
@@ -163,8 +169,8 @@ $mysqli->close();
             <button class="login-button" onclick="location.href='login.php'">&#10132;</button>
         </div>
 </div>
-    <h1>Cancellation Status</h1>
-    <p>Canceled Correctly! Redirecting to Home Page...</p>
+    <h1>Review Status</h1>
+    <p>Your Review was submitted correctly! Redirecting to Home Page...</p>
 
 </body>
 </html>

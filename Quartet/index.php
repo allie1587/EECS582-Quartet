@@ -5,6 +5,7 @@ Date: 02/12/2025
         3/1/2025  -- Jose, Stylizing Choices to page
         03/02/2025 -- Dark Mode Added
         03/09/2025 -- Jose -- Started Review Work
+        3/13/2025 -- Jose -- Added implementation to see the previous reviews and average score of the baarbershop, started to change color scheme to red
 Purpose: Main Page to see the barbershops, Barbers, Cuts, and Availabilities
 -->
 <?php
@@ -15,6 +16,25 @@ session_start();
 if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
     echo "<p class='welcome-message'>Welcome back, " . htmlspecialchars($_SESSION["user"], ENT_QUOTES, 'UTF-8') . "!</p>";
 }
+
+//Connects to database to get the Reviews table information
+$mysqli = new mysqli('sql312.infinityfree.com', 'if0_38323969', 'Quartet44', 'if0_38323969_quartet');
+if ($mysqli->connect_error) {
+    die("Connection failed: " . $mysqli->connect_error);
+}
+
+// Get the reviews from the table
+$reviewsQuery = "SELECT Name, Rating, Review FROM Reviews ORDER BY ReviewID DESC";
+$reviewsResult = $mysqli->query($reviewsQuery);
+
+// Fetch the average rating
+$avgRatingQuery = "SELECT AVG(Rating) AS avg_rating FROM Reviews";
+$avgRatingResult = $mysqli->query($avgRatingQuery);
+$avgRatingRow = $avgRatingResult->fetch_assoc();
+$averageRating = $avgRatingRow['avg_rating'] ? number_format($avgRatingRow['avg_rating'], 2) : "N/A";
+
+// Close the database connection
+$mysqli->close();
 ?>
 
 <!DOCTYPE html>
@@ -39,7 +59,7 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
         }
         /* Top Bar at Top with Pages and Login */
         .top-bar {
-            background-color: #006400; 
+            background-color: rgb(243, 63, 18);
             padding: 0;
             display: flex;
             justify-content: space-between;
@@ -87,7 +107,7 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
         }
         /* Style of Navigation Buttons */
         .menu button {
-            background-color: #006400; 
+            background-color:rgb(243, 63, 18);
             color: white;
             border: none;
             padding: 20px 25px; 
@@ -99,7 +119,7 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
         }
         /* Color gets darker when hovering the buttons */
         .menu button:hover {
-            background-color: #004d00; 
+            background-color:rgb(177, 46, 13);
         }
 
         /* Store info section */
@@ -142,11 +162,11 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 10px;
-            color:green;
+            color:rgb(243, 63, 18);
         }
         .availability {
             font-weight: bold;
-            color: green;
+            color: rgb(243, 63, 18);;
             margin-bottom: 10px;
         }
         .barber-images {
@@ -197,6 +217,30 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
             margin: 20px;
             border-radius: 10px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .average-rating {
+            font-size: 20px;
+            font-weight: bold;
+            background: rgb(243, 63, 18);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .review-container {
+            max-width: 600px;
+            margin: 50px auto;
+        }
+        .review {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .review strong {
+            display: block;
+            font-size: 18px;
+        }
+        .rating {
+            color:rgb(243, 63, 18);
         }
         .container {
             max-width: 800px;
@@ -360,14 +404,38 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
         <h2>Reviews</h2>
             <form action="submit_review.php" method="POST">
                 <!-- User information (required)-->
-                <label for="name">Name:</label><br>
-                <input type="text" id="name" name="Anonymous" required><br><br>
-                <label for="rating">Rating:</label><br>
-                <input type="number" id="rating" name="rating" min="1" max="5" required><br><br>
-                <label for="comment">Comment:</label><br>
-                <textarea type="text" id="comment" name="comment" required></textarea><br><br>
+                <label for="Name">Name:</label><br>
+                <input type="text" id="Name" name="Name" required><br><br>
+                <label for="Rating">Rating:</label><br>
+                <input type="number" id="Rating" name="Rating" min="1" max="5" required><br><br>
+                <label for="Review">Add your Review Here!</label><br>
+                <textarea type="text" id="Review" name="Review" required></textarea><br><br>
                 <button type="submit">Send your Review!</button>
             </form>
+            <br><br>
+            <!--Shows the average rating to the users-->
+            <div class="average-rating">
+                Average Rating: <?php echo $averageRating; ?>
+            </div>
+            
+            <div class="review-container">
+                <h2>Reviews</h2>
+                <!--Shows the reviews already stored in the database, if there is not then Print it to the screen-->
+                <?php
+                if ($reviewsResult->num_rows > 0) {
+                    while ($row = $reviewsResult->fetch_assoc()) {
+                        echo "<div class='review'>";
+                        echo "<strong>" . htmlspecialchars($row['Name']) . "</strong>";
+                        echo "<span class='rating'>Rating: " . htmlspecialchars($row['Rating']) . "/5</span>";
+                        echo "<p>" . nl2br(htmlspecialchars($row['Review'])) . "</p>";
+                        echo "</div>";
+                    }
+                } else {
+                    echo "<p>No reviews available.</p>";
+                }
+                ?>
+            </div>
     </div>
+
 </body>
 </html>
