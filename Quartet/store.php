@@ -3,6 +3,7 @@ Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 02/12/2025
 Revisions:
     03/02/2025 -- Jose Leyba -- Changed UI to look better and dark mode implemented
+    03/12/2025 -- Alexandra Stratton -- Added Edit Product menu button that allow users to edit the product page
 Purpose: Store Page thaat will (later) allow users to see different products up to sale at the barbershop and their price
 -->
 <?php
@@ -143,6 +144,7 @@ session_start();
             <button onclick="location.href='barbers.php'">Barbers</button>
             <button onclick="location.href='about.php'">About Us</button>
             <button onclick="location.href='feedback.php'">Contact us</button>
+            <button onclick="location.href='edit_product.php'">Edit Products</button>
 
         </div>
 
