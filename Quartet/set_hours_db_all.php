@@ -1,7 +1,7 @@
 <?php
 /*
-    set_hours_db.php
-    Sends specific week barber hour information to the database.
+    set_hours_db_all.php
+    Sends reoccurring barber hour information to the database.
     Author: Alexandra Stratton, Ben Renner, Brinley Hull, Jose Leyba, Kyle Moore
     Revisions:
     Other sources of code: ChatGPT
@@ -32,16 +32,13 @@ if ($mysqli->connect_error) { // catch database connection failure error
 $daysOfWeek = range(0, 6); // initialize days of the week list
 $times = range(8, 17); // make range of valid times
 $barber = "Jim"; // $_POST["barber"];
-$month = (int)$_SESSION["month"] - 1;
-$startDate = $_SESSION["startDate"];
-$year = $_SESSION["year"];
 foreach ($times as $hour) { // create each row of times and checkboxees
     foreach ($daysOfWeek as $day) { //create variables for every day and time combo
         $varName = $day . $hour;
         $$varName = isset($_POST[$varName]) ? $_POST[$varName] : "unchecked"; // Dynamically create the variable
         
         // delete any previous rows to avoid duplicates
-        $query = "DELETE FROM Appointment_Availability WHERE BarberID=? AND Time = ? AND Month = ? AND Day = ? AND Year = ?";
+        $query = "DELETE FROM Appointment_Availability WHERE BarberID=? AND Weekday = ? AND Time = ?";
 
         // prepare the query 
         $stmt = $mysqli->prepare($query);
@@ -49,16 +46,15 @@ foreach ($times as $hour) { // create each row of times and checkboxees
         die(json_encode(["error" => "SQL prepare failed: " . $mysqli->error]));
         }
 
-        $date = $day + (int)$startDate;
         $available = $$varName != "unchecked" ? "Y" : "N";
 
         // Bind parameters to put them into the SQL query
-        $stmt->bind_param("sssss", $barber, $hour, $month, $date, $year);
+        $stmt->bind_param("sss", $barber, $day, $time);
         $stmt->execute(); // execute the SQL query
 
         // prepare a query to insert a row into the confirmed appointments table in the database with the corresponding info
         $query = "INSERT INTO Appointment_Availability 
-        VALUES (?, -1, ?, -1, ?, ?, ?, ?)";
+        VALUES (?, ?, ?, -1, -1, -1, -1, ?)";
 
         // prepare the query 
         $stmt = $mysqli->prepare($query);
@@ -67,7 +63,7 @@ foreach ($times as $hour) { // create each row of times and checkboxees
         }
 
         // Bind parameters to put them into the SQL query
-        $stmt->bind_param("ssssss", $barber, $hour, $month, $date, $year, $available);
+        $stmt->bind_param("ssss", $barber, $day, $hour, $available);
         $stmt->execute(); // execute the SQL query
 
         $stmt->close();

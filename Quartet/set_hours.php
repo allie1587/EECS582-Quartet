@@ -64,7 +64,7 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
         <a href="<?php echo $_SERVER['PHP_SELF'].'?week='.($week+1).'&year='.$year; ?>">&#9654;</a>
     </div>
 
-    <form action="set_hours_db.php" method="POST">
+    <form method="POST" id="calendarForm">
         <table class="calendar-table">
             <tr>
                 <?php
@@ -92,7 +92,8 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
             }
             ?>
         </table>
-        <button type="submit" name="update">Update</button>
+        <button type="submit" name="update" onclick="setFormAction('set_hours_db.php')">Update</button>
+        <button type="submit" name="updateall" onclick="setFormAction('set_hours_db_all.php')">Update Reoccurring</button>
     </form>
 </body>
 <script>
@@ -117,6 +118,11 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
             const date = new Date(year, month-1, day); //create a new date object
             const weekNumber = Math.round(((date - new Date(date.getFullYear(), 0, 1)) / 86400000 + date.getDay() + 1) / 7); // calculate the week
             window.location.href = `?week=${weekNumber}&year=${year}`; // reset the calender
+        }
+        function setFormAction(action) {
+            const form = document.getElementById("calendarForm");
+            form.action = action;
+            form.submit(); // Manually submit the form after setting the action
         }
     </script>
 </html>
