@@ -65,6 +65,7 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
     </div>
 
     <form method="POST" id="calendarForm">
+        <input type="text" placeholder="Username" name="barber">
         <table class="calendar-table">
             <tr>
                 <?php

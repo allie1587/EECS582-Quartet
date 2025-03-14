@@ -31,7 +31,21 @@ if ($mysqli->connect_error) { // catch database connection failure error
 
 $daysOfWeek = range(0, 6); // initialize days of the week list
 $times = range(8, 17); // make range of valid times
-$barber = "Jim"; // $_POST["barber"];
+$barber = $_POST["barber"];
+
+$query = "SELECT COUNT(*) AS count FROM Barber_Information WHERE Username = ?";
+$stmt = $mysqli->prepare($query);
+$stmt->bind_param("s", $barber);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+
+if ($row['count'] == 0) {
+    die("Invalid barber value: " . htmlspecialchars($barber));
+}
+
+$stmt->close();
+
 $month = (int)$_SESSION["month"] - 1;
 $startDate = $_SESSION["startDate"];
 $year = $_SESSION["year"];
