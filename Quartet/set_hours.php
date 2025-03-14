@@ -1,5 +1,5 @@
 <!-- 
-    set_hours
+    set_hours.php
     A page for the barber to set their hours.
     Author: Alexandra Stratton, Ben Renner, Brinley Hull, Jose Leyba, Kyle Moore
     Revisions:
@@ -9,6 +9,7 @@
     Creation date:
 -->
 <?php
+session_start();
 $dt = new DateTime;
 if (isset($_GET['year']) && isset($_GET['week'])) {
     $dt->setISODate($_GET['year'], $_GET['week']);
@@ -17,7 +18,9 @@ if (isset($_GET['year']) && isset($_GET['week'])) {
 }
 $year = $dt->format('o');
 $week = $dt->format('W');
-
+$_SESSION["year"] = $year;
+$_SESSION["month"] = $dt->format("m");
+$_SESSION["startDate"] = $dt->format("d");
 
 $monthYear = $dt->format('m/d/y'); // Get the numerical date
 ?>
@@ -61,33 +64,36 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
         <a href="<?php echo $_SERVER['PHP_SELF'].'?week='.($week+1).'&year='.$year; ?>">&#9654;</a>
     </div>
 
-    <table class="calendar-table">
-        <tr>
-            <?php
-            $daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']; // initialize days of the week list
-            $startDayOfWeek = $dt->format('N'); 
-            $startDate = clone $dt; 
-            $startDate->modify('-' . ($startDayOfWeek - 1) . ' days');
+    <form action="set_hours_db.php" method="POST">
+        <table class="calendar-table">
+            <tr>
+                <?php
+                $daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']; // initialize days of the week list
+                $startDayOfWeek = $dt->format('N'); 
+                $startDate = clone $dt; 
+                $startDate->modify('-' . ($startDayOfWeek - 1) . ' days');
 
-            foreach ($daysOfWeek as $day) { //show the date on the head of each calendar week
-                echo '<th>' . $day . ', ' . $startDate->format('n/j') . '</th>';
-                $startDate->modify('+1 day');
+                foreach ($daysOfWeek as $day) { //show the date on the head of each calendar week
+                    echo '<th>' . $day . ', ' . $startDate->format('n/j') . '</th>';
+                    $startDate->modify('+1 day');
+                }
+                ?>
+            </tr>
+            <?php
+            /* Checkbox time grid */
+            $times = range(8, 17); // make range of valid times
+            foreach ($times as $hour) { // create each row of times and checkboxees
+                $timeLabel = ($hour < 12) ? $hour . ' AM' : (($hour === 12) ? '12 PM' : ($hour - 12) . ' PM'); 
+                echo '<tr><td class="time-label">' . $timeLabel . '</td>'; // show the time
+                foreach (range(0, 6) as $day) { //create 7 checkboxes in line with the name of the day and hour for ease of database manipulation
+                    echo '<td><input type="checkbox" name="' . $day . $hour . '"></td>';
+                }
+                echo '</tr>';
             }
             ?>
-        </tr>
-        <?php
-        /* Checkbox time grid */
-        $times = range(8, 17); // make range of valid times
-        foreach ($times as $hour) { // create each row of times and checkboxees
-            $timeLabel = ($hour < 12) ? $hour . ' AM' : (($hour === 12) ? '12 PM' : ($hour - 12) . ' PM'); 
-            echo '<tr><td class="time-label">' . $timeLabel . '</td>'; // show the time
-            foreach ($daysOfWeek as $day) { //create 7 checkboxes in line with the name of the day and hour for ease of database manipulation
-                echo '<td><input type="checkbox" name="' . $day . '_' . $hour . '"></td>';
-            }
-            echo '</tr>';
-        }
-        ?>
-    </table>
+        </table>
+        <button type="submit" name="update">Update</button>
+    </form>
 </body>
 <script>
         function jumpToDate() {
