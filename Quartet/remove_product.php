@@ -2,10 +2,9 @@
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 03/12/2025
 Revisions:
-    03/12/2025 -- Alexandra Stratton -- Created the edit product page
-    03/15/2025  -- Alexandra Stratton  -- Commenting and fixing format
+    03/12/2025 -- Alexandra Stratton -- Created the remove product page
+    03/15/2025  -- Alexandra Stratton  -- Commenting
 Purpose: Allow barbers to remove a product from the store
-
 -->
 <?php
 //Connects to the database

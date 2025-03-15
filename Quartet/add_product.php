@@ -2,12 +2,11 @@
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 03/12/2025
 Revisions:
-    03/12/2025 -- Alexandra Stratton -- Created the edit product page
+    03/12/2025 -- Alexandra Stratton -- Created the add product page
     03/14/2025 -- Alexandra Stratton -- Implemented header.php
     03/15/2025  -- Alexandra Stratton  -- Commenting and fixing format
 Other Sources: ChatGTP
 Purpose: Allow barbers to add the products seen in the store
-
 -->
 <?php
 // Connects to the database
