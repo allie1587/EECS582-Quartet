@@ -75,49 +75,52 @@ if (isset($_GET['product_id'])) {
 include('header.php');
 ?>
 <head>
-    <style>
-        table {
-            width: 80%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            background: white;
-            color: black;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: center;
-        }
-        .update-btn {
-            width: 200px;
+<!-- Title for Page --> 
+<title>Edit Product</title>
+<!-- Internal CSS for styling the page -->
+<style>
+    table {
+        width: 80%;
+        margin: 20px auto;
+        border-collapse: collapse;
+        background: white;
+        color: black;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+    }
+    .update-btn {
+        width: 200px;
 
-            background: #c4454d;
-            color: white;
-            font-size: 18px;
-            border: none;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .update-btn:hover {
-            background: rgb(143, 48, 55);
-        }
-        img {
-            max-width: 100px;
-            height: auto;
-        }
-        .container {
-            background: white;
-            color: black;
-            width: 50%;
-            margin: 50px auto;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            text-align: center;
-    
-        }
+        background: #c4454d;
+        color: white;
+        font-size: 18px;
+        border: none;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .update-btn:hover {
+        background: rgb(143, 48, 55);
+    }
+    img {
+        max-width: 100px;
+        height: auto;
+    }
+    .container {
+        background: white;
+        color: black;
+        width: 50%;
+        margin: 50px auto;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        text-align: center;
+
+    }
     </style>
 </head>
 <body>

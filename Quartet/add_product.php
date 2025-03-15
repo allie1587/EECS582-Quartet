@@ -75,6 +75,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 include('header.php');
 ?>
 <head>
+<!-- Title for Page --> 
+<title>Add Product</title>
+<!-- Internal CSS for styling the page -->
 <style>
     table {
         width: 80%;

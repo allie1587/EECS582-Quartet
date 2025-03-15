@@ -22,7 +22,11 @@ if ($result->num_rows > 0) {
 <?php
 include('header.php');
 ?>
+
 <head>
+    <!-- Title for Page --> 
+    <title>Product</title>
+    <!-- Internal CSS for styling the page -->
     <style>
          
         table {
