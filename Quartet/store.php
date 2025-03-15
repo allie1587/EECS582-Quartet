@@ -38,6 +38,9 @@ include('header.php');
 ?>
 
 <head>
+    <!-- Title for Page --> 
+    <title>Store</title>
+    <!-- Internal CSS for styling the page -->
     <style>
         .store-grid {
             display: grid;
