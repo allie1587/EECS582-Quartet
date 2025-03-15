@@ -17,7 +17,7 @@ if (isset($_GET['product_id'])) {
     $sql = "DELETE FROM products WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $product_id);
-    // Execute the statement and check if the insertion was successful
+    // Execute the statement and check if the Delete was successful
     if ($stmt->execute()) {
         header('Location: product.php');
         exit();

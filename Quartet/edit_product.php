@@ -69,7 +69,7 @@ if (isset($_GET['product_id'])) {
         $sql = "UPDATE products SET name = ?, description = ?, price = ?, image = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssdss", $product_name, $product_description, $product_price, $product_image, $product_id);
-        // Execute the statement and check if the insertion was successful
+        // Execute the statement and check if the update was successful
         if ($stmt->execute()) {
             header('Location: product.php');
             exit();
