@@ -4,6 +4,7 @@ Date: 03/12/2025
 Revisions:
     03/12/2025 -- Alexandra Stratton -- Created the remove product page
     03/15/2025  -- Alexandra Stratton  -- Commenting
+    03/15/2025  -- Alexandra Strattoon -- When a product is deleted it also deletes those products from everyones cart
 Purpose: Allow barbers to remove a product from the store
 -->
 <?php
@@ -13,16 +14,21 @@ require 'db_connection.php';
 if (isset($_GET['product_id'])) {
     //Gets the product_id
     $product_id = $_GET['product_id'];
-    // Prepares the SQL to delete the product with that id from the database
-    $sql = "DELETE FROM products WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $product_id);
-    // Execute the statement and check if the Delete was successful
-    if ($stmt->execute()) {
-        header('Location: product.php');
-        exit();
-    } else {
-        echo "Error: " . $stmt->error;
+    // Delete this product from everyone's shopping cart
+    $sql_delete_cart = "DELETE FROM cart WHERE product_id = ?";
+    $stmt_delete_cart = $conn->prepare($sql_delete_cart);
+    $stmt_delete_cart->bind_param("i", $product_id);
+    if ($stmt_delete_cart->execute()) {
+        $sql = "DELETE FROM products WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $product_id);
+        // Execute the statement and check if the Delete was successful
+        if ($stmt->execute()) {
+            header('Location: product.php');
+            exit();
+        } else {
+            echo "Error: " . $stmt->error;
+        }
     }
 }
 ?>
