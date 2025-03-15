@@ -5,6 +5,7 @@ Revisions:
     03/12/2025 -- Alexandra Stratton -- Created the add product page
     03/14/2025 -- Alexandra Stratton -- Implemented header.php
     03/15/2025  -- Alexandra Stratton  -- Commenting and fixing format
+    03/15/2025 -- Alexandra Stratton -- Added error messaging 
 Other Sources: ChatGTP
 Purpose: Allow barbers to add the products seen in the store
 -->
@@ -188,21 +189,24 @@ include_once('header.php');
     <h1>Add Product</h1>
     <!-- Allows barber's to add a new item to the store -->
     <div class="add-container">
-    <form action="add_product.php" method="POST" enctype="multipart/form-data">
+    <form action="add_product.php" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
             <label for="product_name">Product Name:</label>
-            <input type="text" name="product_name" required>
+            <input type="text" name="product_name" id="product_name" required onchange="validateName()">
+            <span id="name-error" style="color: red; display: none;"></span>
             <br>
             <label for="product_description">Product Description:</label>
             <textarea name="product_description" required></textarea>
             <br>
             <label for="product_price">Product Price:</label>
-            <input type="number" name="product_price" step="0.01" required>
+            <input type="number" name="product_price" id="product_price" step="0.01" required onchange="validatePrice()">
+            <span id="price-error" style="color: red; display: none;"></span>
             <br>
             <label for="product_image">Product Image:</label>
             <div class="file-input-container">
-                <input type="file" name="product_image" accept="image/*" required id="file-input" onchange="displayFileName()">
+                <input type="file" name="product_image" id="file-input" accept="image/*" required onchange="validateImage()">
                 <label for="file-input" class="file-input-label">Choose File</label>
                 <span id="file-name" class="file-name"></span>
+                <span id="image-error" style="color: red; display: none;"></span>
             </div>
             <br>
             <button type="submit" class="add-btn">Add Product</button>
@@ -213,19 +217,89 @@ include_once('header.php');
         <a href="product.php" class="back-btn"><button class="back-btn">Back to Product List</button></a>
     </div>
     <script>
-        // Function to display the selected file name
+         // Function to display the selected file name
         function displayFileName() {
             const fileInput = document.getElementById('file-input');
             const fileNameDisplay = document.getElementById('file-name');
 
             if (fileInput.files.length > 0) {
-                // Display the file name
                 fileNameDisplay.textContent = fileInput.files[0].name;
             } else {
-                // Clear the file name if no file is selected
                 fileNameDisplay.textContent = '';
             }
         }
+
+        // Validate product name
+        function validateName() {
+            const nameInput = document.getElementById('product_name');
+            const nameError = document.getElementById('name-error');
+            if (nameInput.value.length > 70) {
+                nameError.textContent = "Maximum 70 characters allowed";
+                nameError.style.display = 'inline';
+                return false;
+            } else {
+                nameError.style.display = 'none';
+                return true;
+            }
+        }
+
+        // Validate product price
+        function validatePrice() {
+            const priceInput = document.getElementById('product_price');
+            const priceError = document.getElementById('price-error');
+            if (priceInput.value <= 0 || isNaN(priceInput.value)) {
+                priceError.textContent = "Price must be a positive number";
+                priceError.style.display = 'inline';
+                return false;
+            } else {
+                priceError.style.display = 'none';
+                return true;
+            }
+        }
+        // Validate product image
+        function validateImage() {
+            const imageInput = document.getElementById('file-input');
+            const imageError = document.getElementById('image-error');
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            const maxSize = 10 * 1024 * 1024; // 10MB
+
+            if (imageInput.files.length > 0) {
+                const file = imageInput.files[0];
+                if (!allowedTypes.includes(file.type)) {
+                    imageError.textContent = "Only JPEG, PNG, and GIF images are allowed.";
+                    imageError.style.display = 'inline';
+                    return false;
+                } else if (file.size > maxSize) {
+                    imageError.textContent = "File size must be less than 10MB.";
+                    imageError.style.display = 'inline';
+                    return false;
+                } else {
+                    imageError.style.display = 'none';
+                    displayFileName();
+                    return true;
+                }
+            } else {
+                imageError.textContent = "Please upload an image.";
+                imageError.style.display = 'inline';
+                return false;
+            }
+        }
+
+        // Validate the entire form
+        function validateForm(event) {
+            const isNameValid = validateName();
+            const isPriceValid = validatePrice();
+            const isImageValid = validateImage();
+
+            if (!isNameValid || !isPriceValid || !isImageValid) {
+                event.preventDefault(); // Prevent form submission
+                return false;
+            }
+            return true; // Allow form submission
+        }
+
+        // Attach the validateForm function to the form's submit event
+        document.querySelector('form').addEventListener('submit', validateForm);
     </script>
 </body>
 </html>
