@@ -83,13 +83,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 <?php
 //Adds the header to the page reducing redunacny
-include_once('header.php');
+include('header.php');
 ?>
 <head>
 <!-- Title for Page --> 
 <title>Add Product</title>
 <!-- Internal CSS for styling the page -->
 <style>
+    body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
     /* Style for the form box */
     form {
         max-width: 600px;
