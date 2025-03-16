@@ -39,6 +39,21 @@ if ($productsResult) {
     }
 }
 
+// For our session, collect the id's for the products and see the amount we have of each
+$session_id = session_id();
+$cartQuery = "SELECT product_id, quantity FROM cart WHERE session_id = ?";
+$stmt = $mysqli->prepare($cartQuery);
+$stmt->bind_param("s", $session_id);
+$stmt->execute();
+$cartResult = $stmt->get_result();
+
+// Store the info of quantities in an array
+$cartQuantities = [];
+while ($row = $cartResult->fetch_assoc()) {
+    $cartQuantities[$row['product_id']] = $row['quantity'];
+}
+
+$stmt->close();
 $mysqli->close();
 
 //Remembers the Cart in your session, if you didn't had one set it to empty
@@ -80,6 +95,7 @@ include('header.php');
             padding: 15px;
             box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
         }
         .product-container:hover {
             transform: scale(1.05);
@@ -123,6 +139,21 @@ include('header.php');
             padding: 10px; 
             cursor: pointer; 
         }
+        .cart-quantity {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: #c4454d; 
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
     </style>
     <!-- Functions needed-->
     <script>
@@ -162,9 +193,14 @@ include('header.php');
             $description = htmlspecialchars(addslashes($product['description']));
             $image = htmlspecialchars($product['image']);
             $price = htmlspecialchars($product['price']);
+            $product_id = $product['id'];
+            $quantity = isset($cartQuantities[$product_id]) ? $cartQuantities[$product_id] : 0;
         ?>
             <div class='product-container' onclick="showDetails('<?php echo $name; ?>', '<?php echo $price; ?>', '<?php echo $image; ?>', '<?php echo $description; ?>')">
                 <img src='<?php echo $image; ?>' alt='<?php echo $name; ?>'>
+                <?php if ($quantity > 0) { ?>
+                    <div class="cart-quantity"><?php echo $quantity; ?></div>
+                <?php } ?>
                 <div class='product-name'><?php echo $product['name']; ?></div>
                 <div class='product-price'>$<?php echo $price; ?></div>
                 <form action="add_item.php" method="POST" style="display:inline;" onsubmit="event.stopPropagation();">

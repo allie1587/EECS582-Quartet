@@ -147,6 +147,15 @@ include('header.php');
             background: rgba(18, 11, 11, 0.7);
             color:white;
         }
+        .form-group {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Adds space between Name and Rating */
+        }
+
+        .form-group label {
+            white-space: nowrap; /* Prevents labels from wrapping */
+        }
 
 
     </style>
@@ -227,16 +236,18 @@ include('header.php');
     <!--Added section to work on the future for the reviews of the page-->
     <div class="reviews">
         <h2>Reviews</h2>
-            <form action="submit_review.php" method="POST">
-                <!-- User information (required)-->
-                <label for="Name">Name:</label><br>
-                <input type="text" id="Name" name="Name" required><br><br>
-                <label for="Rating">Rating:</label><br>
-                <input type="number" id="Rating" name="Rating" min="1" max="5" required><br><br>
-                <label for="Review">Add your Review Here!</label><br>
-                <textarea type="text" id="Review" name="Review" required></textarea><br><br>
-                <button type="submit">Send your Review!</button>
-            </form>
+        <form action="submit_review.php" method="POST">
+            <div class="form-group">
+                <label for="Name">Name:</label>
+                <input type="text" id="Name" name="Name">
+                <label for="Rating">Rating:</label>
+                <input type="number" id="Rating" name="Rating" min="1" max="5" required>
+            </div>
+            <br>
+            <label for="Review">Add your Review Here!</label><br>
+            <textarea type="text" id="Review" name="Review" required></textarea><br><br>
+            <button type="submit">Send your Review!</button>
+        </form>
             <br><br>
             <!--Shows the average rating to the users-->
             <div class="average-rating">

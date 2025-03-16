@@ -39,7 +39,7 @@ $row = $result->fetch_assoc();
 $new_id = $row['ReviewID'] ? $row['ReviewID'] + 1 : 1;
 
 // set corresponding variables from the form post from the confirm appointment page and from the previously-set session variables from schedule.php
-$Name = $_POST['Name'];
+$Name = isset($_POST['Name']) && !empty(trim($_POST['Name'])) ? trim($_POST['Name']) : "Anonymous";
 $Rating = $_POST['Rating'];
 $Review = $_POST['Review'];
 
