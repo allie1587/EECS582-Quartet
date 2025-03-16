@@ -54,4 +54,6 @@ if ($deleteStmt->execute()) {
 $stmt->close();
 $deleteStmt->close();
 $mysqli->close();
+header("Location: cancel_appointment.php");
+exit();
 ?>

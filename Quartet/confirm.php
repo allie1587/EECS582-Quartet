@@ -33,7 +33,7 @@
 
 // Start session to be able to get session information
 session_start();
-
+require 'config.php';
 // Connect to the database
 $mysqli = new mysqli('sql312.infinityfree.com', 'if0_38323969', 'Quartet44', 'if0_38323969_quartet');
 if ($mysqli->connect_error) { // Catch database connection failure error
@@ -107,8 +107,8 @@ try {
     $mail->isSMTP(); // Use SMTP
     $mail->Host = 'smtp.gmail.com'; // Replace with your SMTP server (e.g., smtp.gmail.com, smtp.sendgrid.net)
     $mail->SMTPAuth = true; // Enable SMTP authentication
-    $mail->Username = 'quartetbarber@gmail.com'; // SMTP username (your email)
-    $mail->Password = 'nfsp ymth tpmt zqky'; // SMTP password
+    $mail->Username = SMTP_USERNAME; // SMTP username (your email)
+    $mail->Password = SMTP_PASSWORD; // SMTP password
     $mail->SMTPSecure = 'tls'; // Enable TLS encryption (or 'ssl' if required)
     $mail->Port = 587; // TCP port (587 for TLS, 465 for SSL)
 
