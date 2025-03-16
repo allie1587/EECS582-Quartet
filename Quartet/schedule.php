@@ -462,50 +462,52 @@ if ($mysqli->connect_error) {
             
 
             // Add actual days of the WEEK
-for (let offset = 0; offset < 7; offset++) {
-    let wday = day - weekday + offset -1; // Correct calculation for the week day
-    let dayDiv = document.createElement('div');
-    dayDiv.classList.add('day');
-
-    // Create a span for the day number
-    let dayNumber = document.createElement('span');
-    dayNumber.textContent = wday;
-    dayDiv.appendChild(dayNumber);
-
-    // Append the dayDiv to the calendar before fetching data
-    calendar.appendChild(dayDiv);
-
-    // Fetch appointment count from backend
-    fetch(`get_appointments.php?year=${currentYear}&month=${currentMonth}&day=${wday}&weekday=${new Date(currentYear, currentMonth, wday - 1).getDay()}`)
-        .then(response => response.json())
-        .then(data => {
-            // Reset appointments for this day
-            let appointments = data.length ? data : ["No appointments"];
-
-            // Create grid items dynamically
-            appointments.forEach(appointment => {
-                let item = document.createElement('button');
-                if (appointment === "No appointments") {
-                    item.textContent = "No appointments";
-                } else {
-                    let time = (appointment.Time <= 12 ? appointment.Time : appointment.Time - 12);
-                    let period = (appointment.Time < 12 ? "AM" : "PM");
-                    item.textContent = time + period;
-
-                    // Add click event to show appointment details
-                    item.addEventListener('click', () => {
-                        openAppointmentInfo(appointment, wday);
-                    });
+            for (let offset = 0; offset < 7; offset++) {
+                let wday = day - weekday + offset -1; // Correct calculation for the week day
+                let dayDiv = document.createElement('div');
+                if (offset == weekday+1) { // if we're on the selected day
+                    dayDiv.style.backgroundColor = "gray"; // change background color to show it's selected
                 }
-                item.classList.add('day-button');
-                dayDiv.appendChild(item);
-            });
-        })
-        .catch(error => {
-            console.error("Error fetching appointment count:", error);
-        });
-}
+                dayDiv.classList.add('day');
 
+                // Create a span for the day number
+                let dayNumber = document.createElement('span');
+                dayNumber.textContent = wday;
+                dayDiv.appendChild(dayNumber);
+
+                // Append the dayDiv to the calendar before fetching data
+                calendar.appendChild(dayDiv);
+
+                // Fetch appointment count from backend
+                fetch(`get_appointments.php?year=${currentYear}&month=${currentMonth}&day=${wday}&weekday=${new Date(currentYear, currentMonth, wday - 1).getDay()}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Reset appointments for this day
+                        let appointments = data.length ? data : ["No appointments"];
+
+                        // Create grid items dynamically
+                        appointments.forEach(appointment => {
+                            let item = document.createElement('button');
+                            if (appointment === "No appointments") {
+                                item.textContent = "No appointments";
+                            } else {
+                                let time = (appointment.Time <= 12 ? appointment.Time : appointment.Time - 12);
+                                let period = (appointment.Time < 12 ? "AM" : "PM");
+                                item.textContent = time + period;
+
+                                // Add click event to show appointment details
+                                item.addEventListener('click', () => {
+                                    openAppointmentInfo(appointment, wday);
+                                });
+                            }
+                            item.classList.add('day-button');
+                            dayDiv.appendChild(item);
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Error fetching appointment count:", error);
+                    });
+            }
         }
     }
 
