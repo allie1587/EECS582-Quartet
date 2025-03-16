@@ -139,7 +139,7 @@ try {
     ";
 
     // Send the email
-    $mail->SMTPDebug = 2; // Enable verbose debug output
+    //$mail->SMTPDebug = 2; // Enable verbose debug output to debug SMPT email connection
     $mail->send();
     echo 'Confirmation email sent successfully!';
 } catch (Exception $e) {
@@ -147,6 +147,6 @@ try {
 }
 
 // Redirect to the home page
-//header("Location: index.php");
+header("Location: index.php");
 exit(); // Ensure no further code is executed after the redirect
 ?>
