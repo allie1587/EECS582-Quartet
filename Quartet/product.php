@@ -1,3 +1,14 @@
+<!--
+Authors: Alexandra, Jose, Brinley, Ben, Kyle
+Date: 02/12/2025
+Revisions:
+     03/12/2025 -- Alexandra Stratton -- Created the edit product page
+     03/14/2025 -- Alexandra Stratton -- Implemented header.php
+     03/15/2025  -- Alexandra Stratton  -- Commenting and fixing format
+     03/16/2025 -- Alexandra Stratton -- Got rid of the testing add to cart functionality
+ Purpose: Allow barbers to see the products seen in the store
+
+ -->
 <?php
 // Connects to the database
 require 'db_connection.php';
@@ -105,13 +116,6 @@ if ($result->num_rows > 0) {
         .delete-btn:hover {
             background: #FF8A3D;
         }
-        .add-to-cart-btn {
-            background: #28a745;
-            color: white;
-        }
-        .add-to-cart-btn:hover {
-            background: #218838;
-        }
     </style>
 </head>
 <body>
@@ -133,7 +137,6 @@ if ($result->num_rows > 0) {
                     <th>Image</th>
                     <th>Edit</th>
                     <th>Delete</th>
-                    <th>Add to Cart</th> <!-- Temporary -->
                 </tr>
             </thead>
             <tbody>
@@ -151,12 +154,6 @@ if ($result->num_rows > 0) {
                         </td>
                         <td>
                             <a href="remove_product.php?product_id=<?php echo $product['id']; ?>"><button class="btn delete-btn">Delete</button></a>
-                        </td>
-                        <td>
-                            <form action="add_item.php" method="POST" style="display:inline;">
-                                <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                                <button type="submit" class="btn add-to-cart-btn">Add to Cart</button>
-                            </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>

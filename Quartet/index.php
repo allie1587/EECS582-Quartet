@@ -8,8 +8,9 @@ Date: 02/12/2025
         3/13/2025 -- Jose -- Added implementation to see the previous reviews and average score of the baarbershop, started to change color scheme to red
         03/14/2025 -- Alexandra Stratton implementedd header.php
         03/14/2025 -- Alexandra Stratton Got rid of unnecessary information
+        03/16/2025 -- Jose Leyba -- UI Changes, makes the Name and Rating on the same horizontal level, replaced number of ratings with a star system
 Purpose: Main Page to see the barbershops, Barbers, Cuts, and Availabilities
--->
+--> 
 <?php
 // Start the session to remember user info
 session_start();
@@ -147,6 +148,31 @@ include('header.php');
             background: rgba(18, 11, 11, 0.7);
             color:white;
         }
+        .form-group {
+            display: flex;
+            align-items: center;
+            gap: 10px; 
+        }
+
+        .form-group label {
+            white-space: nowrap;
+        }
+        .rating-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stars {
+            display: flex;
+            cursor: pointer;
+        }
+
+        .star {
+            font-size: 25px;
+            color: black;
+            transition: color 0.3s;
+}
 
 
     </style>
@@ -189,6 +215,23 @@ include('header.php');
                 document.getElementById("dbOutput").innerText = data.message;
             });
         }
+        //Adds a listener that pays attention to every individual star (for rating)
+        document.addEventListener("DOMContentLoaded", function() {
+            const stars = document.querySelectorAll(".star");
+            const ratingInput = document.getElementById("Rating");
+            //For each start, when clicking on it it will assing that rating to the data and will fill the stars red
+            stars.forEach(star => {
+                star.addEventListener("click", function() {
+                    let rating = this.getAttribute("data-value");
+                    ratingInput.value = rating;
+
+                    // For eaach star before (including the selcted one), change colors from black to red
+                    stars.forEach(s => {
+                        s.style.color = s.getAttribute("data-value") <= rating ? "red" : "black";
+                    });
+                });
+            });
+        });
     </script>
 </head>
 <body>
@@ -227,16 +270,27 @@ include('header.php');
     <!--Added section to work on the future for the reviews of the page-->
     <div class="reviews">
         <h2>Reviews</h2>
-            <form action="submit_review.php" method="POST">
-                <!-- User information (required)-->
-                <label for="Name">Name:</label><br>
-                <input type="text" id="Name" name="Name" required><br><br>
-                <label for="Rating">Rating:</label><br>
-                <input type="number" id="Rating" name="Rating" min="1" max="5" required><br><br>
-                <label for="Review">Add your Review Here!</label><br>
-                <textarea type="text" id="Review" name="Review" required></textarea><br><br>
-                <button type="submit">Send your Review!</button>
-            </form>
+        <form action="submit_review.php" method="POST">
+            <div class="form-group">
+                <label for="Name">Name:</label>
+                <input type="text" id="Name" name="Name">
+                <div class="rating-container">
+                    <label for="Rating">Rating:</label>
+                    <div class="stars">
+                        <span class="star" data-value="1">&#9733;</span>
+                        <span class="star" data-value="2">&#9733;</span>
+                        <span class="star" data-value="3">&#9733;</span>
+                        <span class="star" data-value="4">&#9733;</span>
+                        <span class="star" data-value="5">&#9733;</span>
+                    </div>
+                    <input type="hidden" id="Rating" name="Rating" required>
+                </div>
+            </div>
+            <br>
+            <label for="Review">Add your Review Here!</label><br>
+            <textarea type="text" id="Review" name="Review" required></textarea><br><br>
+            <button type="submit">Send your Review!</button>
+        </form>
             <br><br>
             <!--Shows the average rating to the users-->
             <div class="average-rating">
