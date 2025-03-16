@@ -61,8 +61,8 @@ session_start();
             width: fit-content;
         }
     </style>
-    <script>
-        function fetchAppointment() {
+    <script> 
+        function fetchAppointment() { //used to fetch appointments when user enters an appointment id
             let appointmentID = document.getElementById("appointmentID").value;
             if (appointmentID === "") {
                 document.getElementById("appointmentDetails").innerHTML = "<p style='color: red;'>❌ Please enter an Appointment ID.</p>";
