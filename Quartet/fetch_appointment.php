@@ -18,17 +18,18 @@ $stmt = $mysqli->prepare($query);
 if (!$stmt) {
     die(json_encode(["error" => "SQL prepare failed: " . $mysqli->error]));
 }
-
+//Bind values
 $stmt->bind_param("i", $appointmentID);
 $stmt->execute();
 $stmt->bind_result($month, $day, $year, $time, $barberID);
 
-if ($stmt->fetch()) {
+//Display 
+if ($stmt->fetch()) { //if appointment is found
     echo "<p>📅 <b>Date:</b> $month/$day/$year</p>";
     echo "<p>⏰ <b>Time:</b> $time</p>";
     echo "<p>💈 <b>Barber ID:</b> $barberID</p>";
     echo "<script>document.getElementById('hiddenAppointmentID').value = $appointmentID;</script>";
-} else {
+} else { //no appointment found
     echo "<p style='color: red;'>❌ No appointment found.</p>";
 }
 
