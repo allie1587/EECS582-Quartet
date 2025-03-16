@@ -166,9 +166,9 @@ include('header.php');
                 <img src='<?php echo $image; ?>' alt='<?php echo $name; ?>'>
                 <div class='product-name'><?php echo $product['name']; ?></div>
                 <div class='product-price'>$<?php echo $price; ?></div>
-                <form method="post">
+                <form method="post" onsubmit="event.stopPropagation();">
                     <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                    <button type="submit">Add to Cart</button>
+                    <button type="submit" onclick="event.stopPropagation();">Add to Cart</button>
                 </form>
             </div>
         <?php } ?>
