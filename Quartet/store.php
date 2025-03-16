@@ -6,6 +6,7 @@ Revisions:
     03/12/2025 -- Alexandra Stratton -- Added Edit Product menu button that allow users to edit the product page
     03/13/2025 -- Jose Leyba -- Started the Revamped UI of the page
     03/14/2025 -- Included the header.php and added Shopping Cart to the menu
+    03/16/2024 -- Jose Leyba -- Connected to database, UI now reflects when product gets added to the cart
 Purpose: Store Page thaat will (later) allow users to see different products up to sale at the barbershop and their price
 
 -->
@@ -13,12 +14,31 @@ Purpose: Store Page thaat will (later) allow users to see different products up 
 // Start the session to remember user info
 session_start();
 
-//Placeholder for the Products table information
-$products = [
-    ['id' => 1, 'name' => 'Shampoo', 'price' => 10, 'image' => 'images/product1.jpg', 'description' => 'Cleans and nourishes hair.'],
-    ['id' => 2, 'name' => 'Beard Oil', 'price' => 15, 'image' => 'images/product1.jpg', 'description' => 'Softens and conditions beards.'],
-    ['id' => 3, 'name' => 'Hair Gel', 'price' => 12, 'image' => 'images/product1.jpg', 'description' => 'Provides strong hold and shine.'],
-];
+//Connects to database to get the Reviews table information
+$mysqli = new mysqli('sql312.infinityfree.com', 'if0_38323969', 'Quartet44', 'if0_38323969_quartet');
+if ($mysqli->connect_error) {
+    die("Connection failed: " . $mysqli->connect_error);
+}
+
+// Get the reviews from the table
+$productsQuery = "SELECT id, name, description, price, image FROM products";
+$productsResult = $mysqli->query($productsQuery);
+
+// Debugging: Check if the query was successful
+if (!$productsResult) {
+    die("Query Failed: " . $mysqli->error);
+}
+
+//Puts the Products table information in an easy to iterate way
+$products = [];
+
+if ($productsResult) {
+    while ($row = $productsResult->fetch_assoc()) {
+        $products[] = $row;
+    }
+}
+
+$mysqli->close();
 
 //Remembers the Cart in your session, if you didn't had one set it to empty
 if (!isset($_SESSION['cart'])) {
@@ -135,11 +155,17 @@ include('header.php');
     <!--Styled grid 3x3 That shows in each space a different product available with a picture and it's name-->
     <input type="text" id="search" onkeyup="filterProducts()" placeholder="Search products...">
     <div class="store-grid">
-        <?php foreach ($products as $product) { ?>
-            <div class='product-container'>
-                <img src='<?php echo $product['image']; ?>' alt='<?php echo $product['name']; ?>' onclick="showDetails('<?php echo $product['name']; ?>', '<?php echo $product['price']; ?>', '<?php echo $product['image']; ?>', '<?php echo $product['description']; ?>')">
+        <?php foreach ($products as $product) { 
+            // Makes sure the special characters don't leak into the SQL query
+            $name = htmlspecialchars(addslashes($product['name']));
+            $description = htmlspecialchars(addslashes($product['description']));
+            $image = htmlspecialchars($product['image']);
+            $price = htmlspecialchars($product['price']);
+        ?>
+            <div class='product-container' onclick="showDetails('<?php echo $name; ?>', '<?php echo $price; ?>', '<?php echo $image; ?>', '<?php echo $description; ?>')">
+                <img src='<?php echo $image; ?>' alt='<?php echo $name; ?>'>
                 <div class='product-name'><?php echo $product['name']; ?></div>
-                <div class='product-price'>$<?php echo $product['price']; ?></div>
+                <div class='product-price'>$<?php echo $price; ?></div>
                 <form method="post">
                     <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
                     <button type="submit">Add to Cart</button>
