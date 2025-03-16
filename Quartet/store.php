@@ -5,8 +5,9 @@ Revisions:
     03/02/2025 -- Jose Leyba -- Changed UI to look better and dark mode implemented
     03/12/2025 -- Alexandra Stratton -- Added Edit Product menu button that allow users to edit the product page
     03/13/2025 -- Jose Leyba -- Started the Revamped UI of the page
-    03/14/2025 -- Included the header.php and added Shopping Cart to the menu
-    03/16/2024 -- Jose Leyba -- Connected to database, UI now reflects when product gets added to the cart
+    03/14/2025 --  Alexandra Stratton -- Included the header.php and added Shopping Cart to the menu
+    03/16/2025 -- Jose Leyba -- Connected to database, UI now reflects when product gets added to the cart
+    03/16/2025 -- Alexandra Stratton -- Connect the add to cart button to the shopping cart
 Purpose: Store Page thaat will (later) allow users to see different products up to sale at the barbershop and their price
 
 -->
@@ -166,9 +167,9 @@ include('header.php');
                 <img src='<?php echo $image; ?>' alt='<?php echo $name; ?>'>
                 <div class='product-name'><?php echo $product['name']; ?></div>
                 <div class='product-price'>$<?php echo $price; ?></div>
-                <form method="post" onsubmit="event.stopPropagation();">
+                <form action="add_item.php" method="POST" style="display:inline;" onsubmit="event.stopPropagation();">
                     <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                    <button type="submit" onclick="event.stopPropagation();">Add to Cart</button>
+                    <button type="submit" class="btn add-to-cart-btn" onclick="event.stopPropagation();">Add to Cart</button>
                 </form>
             </div>
         <?php } ?>
