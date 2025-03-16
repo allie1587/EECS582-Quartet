@@ -2,7 +2,7 @@
 // Authors: Alexandra Stratton, Ben Renner, Brinley Hull, Jose Leyba, Kyle Moore
 // Creation Date: 03/02/2025
 // Revisions: 
-// Purpose: A page where clients can enter their information and cancel the appointments (sending info back to database).
+// Purpose: A page where clients can enter their appointment ID and cancel the appointment (sending info back to database).
 
 // Start the session to remember user info
 session_start();
@@ -21,7 +21,7 @@ if (!isset($_SESSION['appointment'])) {
     <!--Ensure proper rendering and touch zooming on mobile devices-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!--Name of Page-->
-    <title>Home Page</title>
+    <title>Cancel Appointment</title>
     <!--Style choices for page, they include font used, margins, alignation, background color, display types, and some others-->
     <style>
         /* Applies styles to the entire body */
@@ -110,7 +110,7 @@ if (!isset($_SESSION['appointment'])) {
         }
 
         /* Form inputs */
-        input[type="text"] {
+        input[type="text"], input[type="number"] {
             width: 90%;
             padding: 10px;
             margin-top: 5px;
@@ -136,22 +136,7 @@ if (!isset($_SESSION['appointment'])) {
         button[type="submit"]:hover {
             background-color: #00A000; /* Brighter green */
         }
-
     </style>
-    <script>
-        function sendData() { //Sends input data to a PHP backend using
-            let inputData = document.getElementById("dbInput").value;
-            fetch("server.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ data: inputData })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("dbOutput").innerText = data.message;
-            });
-        }
-    </script>
 </head>
 <body>
     <!--The green Bar at the top that has the name and button that takes you to the login page-->
@@ -164,7 +149,6 @@ if (!isset($_SESSION['appointment'])) {
             <button onclick="location.href='barbers.php'">Barbers</button>
             <button onclick="location.href='about.php'">About Us</button>
             <button onclick="location.href='feedback.php'">Contact us</button>
-
         </div>
 
         <!--Stylized Button to be circular, when clicked takes you to login.html-->
@@ -175,17 +159,12 @@ if (!isset($_SESSION['appointment'])) {
     </div>
     <!--let's user know the current page they are on-->
     <h1>Cancel Appointment</h1>
-    <!--Menu with all possible pages-->
 
-
-    <div class="appointment_info">
-        <p id="appointment_info"></p>
-        </div>
-    
-   <div class="info_form">
+    <!--Form to cancel appointment by Appointment ID-->
+    <div class="info_form">
         <form action="cancel.php" method="POST">
-            <label for="email">Email:</label><br>
-            <input type="email" id="email" name="email" required><br><br>
+            <label for="appointmentID">Appointment ID:</label><br>
+            <input type="number" id="appointmentID" name="appointmentID" required><br><br>
             <button type="submit">Cancel Appointment</button>
         </form>
    </div>
