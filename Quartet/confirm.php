@@ -8,6 +8,7 @@
     Revisions:
         3/2/2025 - Brinley, commenting
         3/3/2025 - Added unique 7-digit integer AppointmentID
+        3/4/2025 - Added email confirmation functionality using PHPMailer
     Preconditions:
         Acceptable inputs: 
             A form with method "post" that sends variable strings for variables fname, lname, email, and phone
@@ -23,6 +24,7 @@
         SQL prepare failed -> the SQL query was not valid and could not be prepared.
     Side effects:
         Adds a row to the confirmed_appointments table in the database.
+        Sends a confirmation email to the client.
     Invariants: 
         None
     Known faults:
@@ -85,11 +87,66 @@ if (!$stmt) { // If the query is not valid, throw error
 $stmt->bind_param("sssssssssi", $barber, $month, $day, $year, $time, $fname, $lname, $email, $phone, $appointmentID);
 $stmt->execute(); // Execute the SQL query
 
-// Close the connections
+// Close the database connections
 $stmt->close();
 $mysqli->close();
 
+// Include PHPMailer classes
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'PHPMailerMaster/src/Exception.php';
+require 'PHPMailerMaster/src/PHPMailer.php';
+require 'PHPMailerMaster/src/SMTP.php';
+
+// Create a new PHPMailer instance
+$mail = new PHPMailer(true);
+
+try {
+    // Server settings
+    $mail->isSMTP(); // Use SMTP
+    $mail->Host = 'smtp.gmail.com'; // Replace with your SMTP server (e.g., smtp.gmail.com, smtp.sendgrid.net)
+    $mail->SMTPAuth = true; // Enable SMTP authentication
+    $mail->Username = 'quartetbarber@gmail.com'; // SMTP username (your email)
+    $mail->Password = 'nfsp ymth tpmt zqky'; // SMTP password
+    $mail->SMTPSecure = 'tls'; // Enable TLS encryption (or 'ssl' if required)
+    $mail->Port = 587; // TCP port (587 for TLS, 465 for SSL)
+
+    // Sender
+    $mail->setFrom('quartetbarber@gmail.com', 'Quartet Barbershop'); // Replace with your email and name
+
+    // Recipient
+    $mail->addAddress($email, "$fname $lname"); // Add the client's email and name
+
+    // Email content
+    $mail->isHTML(true); // Set email format to HTML
+    $mail->Subject = 'Appointment Confirmation'; // Email subject
+    $mail->Body = "
+        <html>
+        <head>
+            <title>Appointment Confirmation</title>
+        </head>
+        <body>
+            <h2>Hello $fname $lname,</h2>
+            <p>Your appointment has been successfully scheduled!</p>
+            <p><strong>Appointment ID:</strong> $appointmentID</p>
+            <p><strong>Date:</strong> $month/$day/$year</p>
+            <p><strong>Time:</strong> $time</p>
+            <p><strong>Barber:</strong> Barber $barber</p>
+            <p>Thank you for choosing our service. We look forward to seeing you!</p>
+        </body>
+        </html>
+    ";
+
+    // Send the email
+    $mail->SMTPDebug = 2; // Enable verbose debug output
+    $mail->send();
+    echo 'Confirmation email sent successfully!';
+} catch (Exception $e) {
+    echo "Failed to send email. Error: {$mail->ErrorInfo}";
+}
+
 // Redirect to the home page
-header("Location: index.php");
+//header("Location: index.php");
 exit(); // Ensure no further code is executed after the redirect
 ?>
