@@ -12,6 +12,7 @@
         3/2/2025 -- Allie upcoming and past appointments
         03/02/2025 -- Jose Leyba, Changed Style of Calendar + Cancelation button
         3/14/2025 -- Brinley, Add week view
+        3/16/2025 - Brinley, add filtering
     Creation date:
     Other sources: ChatGPT
 -->
@@ -357,41 +358,43 @@ if ($mysqli->connect_error) {
 
 <script>
 
-    let monthView = true;
+    let monthView = true; // variable to determine whether it should be week or month view
 
-        function search() {
-            let barber = document.getElementById("barberSelect").value ? document.getElementById("barberSelect").value : null;
+    function search() {
+        // function for filtering the appointments
 
-            let time = document.getElementById("timeSelect").value ? document.getElementById("timeSelect").value : null;
+        // get user filter information 
+        let barber = document.getElementById("barberSelect").value ? document.getElementById("barberSelect").value : null;
+        let time = document.getElementById("timeSelect").value ? document.getElementById("timeSelect").value : null;
 
-            fetch('set_filter.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ filter: true,
-                                    barber: barber,
-                                    time: time
-                })
-            }).then(response => response.text())
-            .then(data => {
-                renderCalendar();
-            }).catch(error => {
-                console.error('Error:', error);
-            });
-        }
+        // set corresponding session variables
+        fetch('set_filter.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ filter: true,
+                                barber: barber,
+                                time: time
+            })
+        }).then(response => response.text())
+        .then(data => {
+            renderCalendar(); // reset the calendar to show the new list of appointments
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    }
 
-        // ChatGPT help start
-        let currentMonth = new Date().getMonth(); // Current month (0-11)
-        let currentYear = new Date().getFullYear(); // Current year
-        let currentDay = new Date().getDate();
-        let currentWeekday = new Date().getDate();
-        let monthNames = [
-            'January', 'February', 'March', 'April', 'May', 'June', 
-            'July', 'August', 'September', 'October', 'November', 'December'
-        ];
-        let dayNames = ['Monday', "Tuesday", 'Wednesday', 'Thursday', 'Friday', "Saturday", 'Sunday'];
-        let appointmentsData = [];
+    let currentMonth = new Date().getMonth(); // Current month (0-11)
+    let currentYear = new Date().getFullYear(); // Current year
+    let currentDay = new Date().getDate();
+    let currentWeekday = new Date().getDate();
+    let monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June', 
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    let dayNames = ['Monday', "Tuesday", 'Wednesday', 'Thursday', 'Friday', "Saturday", 'Sunday'];
+    let appointmentsData = [];
 
     // Function to render the calendar
     function renderCalendar(day=0, weekday=0) {
@@ -598,7 +601,6 @@ if ($mysqli->connect_error) {
 
         // Initial render
         renderCalendar();
-        //ChatGPT end
-    </script>
+</script>
 </body>
 </html>
