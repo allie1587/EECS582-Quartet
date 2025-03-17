@@ -1,3 +1,15 @@
+<!--
+Authors: Alexandra, Jose, Brinley, Ben, Kyle
+Date: 02/12/2025
+Revisions:
+     03/12/2025 -- Alexandra Stratton -- Created the edit product page
+     03/14/2025 -- Alexandra Stratton -- Implemented header.php
+     03/15/2025  -- Alexandra Stratton  -- Commenting and fixing format
+     03/16/2025 -- Alexandra Stratton -- Got rid of the testing add to cart functionality
+     03/16/2025 -- Alexandra Stratton -- Confirmation prior to deleting
+ Purpose: Allow barbers to see the products seen in the store
+
+ -->
 <?php
 // Connects to the database
 require 'db_connection.php';
@@ -105,12 +117,35 @@ if ($result->num_rows > 0) {
         .delete-btn:hover {
             background: #FF8A3D;
         }
-        .add-to-cart-btn {
-            background: #28a745;
-            color: white;
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            color: black;
         }
-        .add-to-cart-btn:hover {
-            background: #218838;
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            text-align: center;
+            border-radius: 10px;
+            color: black;
+        }
+        .close {
+            color: black;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover {
+            color: black;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -133,7 +168,6 @@ if ($result->num_rows > 0) {
                     <th>Image</th>
                     <th>Edit</th>
                     <th>Delete</th>
-                    <th>Add to Cart</th> <!-- Temporary -->
                 </tr>
             </thead>
             <tbody>
@@ -145,23 +179,33 @@ if ($result->num_rows > 0) {
                         <td>$<?php echo number_format($product['price'], 2); ?></td>
                         <td><img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>"></td>
                         <td>
-                            <a href="edit_product.php?product_id=<?php echo $product['id']; ?>">
-                                <button class="btn edit-btn">Edit</button>
-                            </a>
+                            <a href="edit_product.php?product_id=<?php echo $product['id']; ?>"><button class="btn edit-btn">Edit</button></a>
                         </td>
                         <td>
-                            <a href="remove_product.php?product_id=<?php echo $product['id']; ?>"><button class="btn delete-btn">Delete</button></a>
-                        </td>
-                        <td>
-                            <form action="add_item.php" method="POST" style="display:inline;">
-                                <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                                <button type="submit" class="btn add-to-cart-btn">Add to Cart</button>
-                            </form>
+                            <button class="btn delete-btn" onclick="confirmDelete('<?php echo $product['id']; ?>')">Delete</button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
     </div>
+    <!-- Delete Confirmation -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Are you sure you want to remove this product?</h2>
+            <button class="btn delete-btn" id="confirmDeleteBtn">Yes</button>
+            <button class="btn" onclick="closeModal()">No</button>
+        </div>
+    <!-- Script for confirming deletion -->
+    <script>
+        function confirmDelete(productId) {
+            document.getElementById('confirmDeleteBtn').setAttribute('onclick', `window.location.href='remove_product.php?product_id=${productId}'`);
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+        function closeModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
