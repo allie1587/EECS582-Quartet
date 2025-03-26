@@ -139,16 +139,32 @@ if (!isset($_SESSION['appointment'])) {
 
     </style>
     <script>
-        function sendData() { //Sends input data to a PHP backend using
-            let inputData = document.getElementById("dbInput").value;
-            fetch("server.php", {
+        function fetchAppointment() {
+            let appointmentID = document.getElementById("appointmentID").value;
+            
+            fetch("fetch_appointment.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ data: inputData })
+                body: JSON.stringify({ appointmentID: appointmentID })
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById("dbOutput").innerText = data.message;
+                let appointmentDiv = document.getElementById("appointment_info");
+
+                if (data.success) {
+                    appointmentDiv.innerHTML = `
+                        <p><strong>Service:</strong> ${data.service}</p>
+                        <p><strong>Date:</strong> ${data.date}</p>
+                        <p><strong>Time:</strong> ${data.time}</p>
+                        <p><strong>Barber:</strong> ${data.barber}</p>
+                        <form action="cancel.php" method="POST">
+                            <input type="hidden" name="appointmentID" value="${appointmentID}">
+                            <button type="submit">Cancel Appointment</button>
+                        </form>
+                    `;
+                } else {
+                    appointmentDiv.innerHTML = "<p style='color: red;'>No appointment found!</p>";
+                }
             });
         }
     </script>
@@ -178,16 +194,14 @@ if (!isset($_SESSION['appointment'])) {
     <!--Menu with all possible pages-->
 
 
+    <div class="info_form">
+        <label for="appointmentID">Enter Appointment ID:</label>
+        <input type="text" id="appointmentID" required>
+        <button onclick="fetchAppointment()">Search</button>
+    </div>
+
     <div class="appointment_info">
         <p id="appointment_info"></p>
-        </div>
-    
-   <div class="info_form">
-        <form action="cancel.php" method="POST">
-            <label for="email">Email:</label><br>
-            <input type="email" id="email" name="email" required><br><br>
-            <button type="submit">Cancel Appointment</button>
-        </form>
-   </div>
+    </div>
 </body>
 </html>
