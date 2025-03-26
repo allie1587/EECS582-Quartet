@@ -2,360 +2,313 @@
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 03/12/2025
 Revisions:
-    03/12/2025 -- Alexandra Stratton -- Made code for this page
-    03/13/2025 -- Jose Leyba -- Trying to test why it's not working correclty, added the name variable to the tags for adding products
-Purpose: This allows for users to edit the products seen on the product page
-Issues:
-    - NOT adding to the database
-    -- There is an image error
-    -- But even when getting rid of the image it still won't update the databse
+    03/12/2025 -- Alexandra Stratton -- Created the edit product page
+    03/14/2025 -- Alexandra Stratton -- Implemented header.php
+    03/15/2025  -- Alexandra Stratton  -- Commenting and fixing format
+    03/15/2025 -- Alexandra Stratton -- Added error messaging 
+Other Sources: ChatGTP
+Purpose: Allow barbers to edit the products seen in the store
+
 -->
 <?php
-// Start the session to remember user info
-session_start();
-$conn = new mysqli('sql312.infinityfree.com', 'if0_38323969', 'Quartet44', 'if0_38323969_quartet');
+//Connects to the database
+require 'db_connection.php'; 
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-} else {
-    echo "Connected to database successfully.<br>";
-}
-// Add a new product
-function addProduct($name, $description, $price, $imagePath) {
-    global $conn;
-    $stmt = $conn->prepare("INSERT INTO Products (name, description, price, image) VALUES (?, ?, ?, ?)");
-    if ($stmt === false) {
-        die('MySQL prepare error: ' . $conn->error);
-    }
-    $stmt->bind_param("ssds", $name, $description, $price, $imagePath);
-    if (!$stmt->execute()) {
-        die('Execute error: ' . $stmt->error);
-    } else {
-        echo "Product added successfully!<br>";
-    }
-    $stmt->close();
-}
-
-// Edit a product
-function editProduct($id, $name, $description, $price, $imagePath) {
-    global $conn;
-    $stmt = $conn->prepare("UPDATE Products SET name = ?, description = ?, price = ?, image = ? WHERE product_id = ?");
-    if ($stmt === false) {
-        die('MySQL prepare error: ' . $conn->error);
-    }
-    $stmt->bind_param("ssdsi", $name, $description, $price, $imagePath, $id);
-    
-    if (!$stmt->execute()) {
-        die('Execute error: ' . $stmt->error);
-    }
-    $stmt->close();
-}
-// Remove a product
-function removeProduct($id) {
-    global $conn;
-    $stmt = $conn->prepare("DELETE FROM Products WHERE product_id = ?");
-    $stmt->bind_param("i", $id);
+if (isset($_GET['product_id'])) {
+    //Gets the product id
+    $product_id = $_GET['product_id'];
+    //Retrieves all the information from the give product_id
+    $sql = "SELECT * FROM products WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $product_id);
     $stmt->execute();
-    $stmt->close();
-}
-// Fetch all products
-function getProducts() {
-    global $conn;
-    $result = $conn->query("SELECT * FROM Products");
-    return $result;
-}
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        var_dump($_POST);
-        var_dump($_FILES);
-        if (isset($_POST['add'])) {
-            echo "Add button clicked";
-            $name = $_POST['product_name'];
-            $description = $_POST['product_description'];
-            $price_dollar = $_POST['product_price_dollars'];
-            $price_cent = $_POST['product_price_cents'];
-            $price = $price_dollar . '.' . $price_cent;
-            addProduct($name, $description, $price, null);
-            header("Location: edit_store.php");
-            exit();
-        }
-    
-    
-    //Editing the product
-    elseif (isset($_POST['edit'])) {
-        $id = $_POST['product_id'];
-        $name = $_POST['product_name'];
-        $description = $_POST['product_description'];
-        $price = $_POST['product_price'];
-        $image = $_FILES['product_image']['name'];
-        $imageTmp = $_FILES['product_image']['tmp_name'];
-        move_uploaded_file($imageTmp, "images/" . $image); 
+    $result = $stmt->get_result();
+    $product = $result->fetch_assoc();
 
-        editProduct($id, $name, $description, $price, "images/" . $image);
-        header("Location: edit_store.php"); 
-        exit();
-    } 
-    //Removing the product
-    elseif (isset($_POST['remove'])) {
-        // Handle removing product
-        $id = $_POST['product_id'];
-        removeProduct($id);
-        header("Location: edit_store.php"); 
-        exit();
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        // Retrieve product details from the submitted form
+        $product_name = $_POST['product_name'];
+        $product_description = $_POST['product_description'];
+        $product_price = $_POST['product_price'];
+        // Used ChatGPT for debugging
+        // Check if a file was uploaded and if there are no errors
+        if (isset($_FILES['product_image']) && $_FILES['product_image']['error'] == 0) {
+            $image_dir = 'images/'; 
+            if (!is_dir($image_dir)) {
+                mkdir($image_dir, 0755, true);
+            }
+            // Get the original file name and set the file path for storage
+            $file_name = basename($_FILES['product_image']['name']);
+            $file_path = $image_dir . $file_name;
+
+            // Define allowed file types and maximum file size
+            $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+            $max_size = 10 * 1024 * 1024; 
+
+            // Validate the file type
+            if (!in_array($_FILES['product_image']['type'], $allowed_types)) {
+                echo "Error: Only JPEG, PNG, and GIF images are allowed.";
+                exit();
+            }
+            //  Validate the file size
+            if ($_FILES['product_image']['size'] > $max_size) {
+                echo "Error: File size must be less than 10MB.";
+                exit();
+            }
+            // Move the image to the designated directory
+            if (move_uploaded_file($_FILES['product_image']['tmp_name'], $file_path)) {
+                $product_image = $file_path;
+            } else {
+                echo "Error: Failed to move uploaded file.";
+                exit();
+            }
+        } else {
+            //Otherwise the image stays the same
+            $product_image = $product['image'];
+        }
+        // Prepares the sql for updating the database
+        $sql = "UPDATE products SET name = ?, description = ?, price = ?, image = ? WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssdss", $product_name, $product_description, $product_price, $product_image, $product_id);
+        // Execute the statement and check if the update was successful
+        if ($stmt->execute()) {
+            header('Location: product.php');
+            exit();
+        } else {
+            echo "Error: " . $stmt->error;
+        }
     }
+} else {
+    echo "Product not found.";
+    exit();
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
+
+<?php
+//Adds the header to the page reducing redunacny
+include('header.php');
+?>
 <head>
-    <!--Define character encoding-->
-    <meta charset="UTF-8">
-    <!--Ensure proper rendering and touch zooming on mobile devices-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--Name of Page-->
-    <title>Edit Store</title>
-    <!--Style choices for page, they include font used, margins, alignation, background color, display types, and some others-->
-    <style>
-        /* ChatGTP helped with the style for professional look */
-
-        /* Applies styles to the entire body */
-        body {
+<!-- Title for Page --> 
+<title>Edit Product</title>
+<!-- Internal CSS for styling the page -->
+<style>
+    body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             margin: 0;
-            padding-top: 70px;
-            text-align: center;
-            font-family: 'Georgia', serif; 
-            background-color:rgba(36, 35, 35);
-            color:white; 
-        }
-        /* Top Bar at Top with Pages and Login */
-        .top-bar {
-            background-color: #d32f2f; 
             padding: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-            height: 70px; 
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
         }
-        /* Size of Letters on it's header */
-        .top-bar h1 {
-            margin: 0;
-            padding-left: 20px;
-        }
-        table {
-            width: 80%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            background: white;
-            color: black;
-            border-radius: 10px;
-            overflow: hidden;
-        }
+    /* Style for the form box */
+    form {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        color: black;
+    }
+    /* Style for the labels */
+    label {
+        display: block;
+        margin-top: 10px;
+        font-weight: bold;
+    }
+    /* Style for input boxes */
+    input[type="text"],
+    input[type="number"],
+    textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
 
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: center;
-        }
+    textarea {
+        height: 150px; 
+        resize: vertical; 
+    }
+    /* Style for inputing a file */
+    .file-input-container {
+        position: relative;
+        margin-top: 10px;
+    }
+    .file-input-container input[type="file"] {
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
 
-        .add-btn {
-            width: 200px;
-            padding: 15px;
-            background: #d32f2f;
-            color: white;
-            font-size: 18px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
+    .file-input-label {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: rgba(36, 35, 35);
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
 
-        .add-btn:hover {
-            background: #b71c1c;
-        }
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 350px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-            text-align: left;
-        }
-        .modal h2 {
-            margin-top: 0;
-            color: black;
-            text-align: center;
-        }
-        .close-btn {
-            cursor: pointer;
-            font-size: 24px;
-            position: absolute;
-            right: 15px;
-            top: 10px;
-            color: black;
-            font-weight: bold;
-        }
-        .close-btn:hover {
-            color: black;
-        }
-        .modal label {
-            display: block;
-            margin-top: 10px;
-            font-weight: bold;
-            color: black;
-        }
-        .modal input {
-            width: 75%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        /* Price Input Layout */
-        .price-input {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 5px;
-        }
-        .price-input span {
-            font-size: 20px;
-            font-weight: bold;
-        }
-        .price-input input {
-            width: 50px;
-            text-align: center;
-        }
-        /* Button Styling */
-        .modal button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 15px;
-            background: #d32f2f;
-            color: white;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
-        .modal button:hover {
-            background: #b71c1c;
-        }
+    .file-input-label:hover {
+        background-color: rgba(36, 35, 35);
+    }
+    /* Update the prodct button style */
+    .update-btn {
+        color: white;
+        background: #c4454d;
+        padding: 5px 100px;
+        font-size: 18px;
+        font-family: 'Georgia', serif;
+        border: none;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .update-btn:hover {
+        background: rgb(143, 48, 55);
+    }
+    /* Back button style */
+    .back-btn {
+        color: white;
+        background: #c4454d;
+        padding: 15px 50px;
+        font-size: 16px;
+        font-family: 'Georgia', serif;
+        border: none;
+        cursor: pointer;
+        transition: 0.3s;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+
+    }
+    .back-btn:hover {
+        background: rgb(143, 48, 55);
+    }
     </style>
 </head>
 <body>
-    <h1>Product Management</h1>
-    <div class="top-bar">
-        <h1>Quartet's Barbershop</h1>
-        <div class="menu">
-            <button onclick="location.href='store.php'">Store</button>
-        </div>
-    </div>
-    <div id="currentProduct">
-        <table>
-            <tr>
-                <th>Product ID</th>
-                <th>Name</th>
-                <th>Image</th>
-                <th>Edit</th>
-                <th>Delete</th>
-            </tr>
-            <?php
-                // ChatGPT helped
-                $products = getProducts();
-                while ($product = $products->fetch_assoc()) {
-                    echo "<tr>";
-                    echo "<td>" . $product['product_id'] . "</td>"; 
-                    echo "<td>" . $product['name'] . "</td>";
-                    echo "<td><img src='" . $product['image'] . "' width='50' height='50'></td>";
-                    echo "<td><button onclick='openEditModal(" . $product['product_id'] . ")'>Edit</button></td>";
-                    echo "<td><form method='POST'><input type='hidden' name='product_id' value='" . $product['product_id'] . "'><button type='submit' name='remove'>Delete</button></form></td>";
-                    echo "</tr>";
-                }
-            ?>
-        </table>
-    </div>
-    <div id="addProduct">
-        <button class="add-btn" onclick="openAddModal()">Add Product</button>
-    </div>
-
-    <div id="add-modal" class="modal">
-        <h2>Add Product</h2>
-        <form method="POST" enctype="multipart/form-data">
-            <span class="close-btn" onclick="closeAddModal()">&times;</span>
-            <label>Name: <br><input type="text" id="product_name" name="product_name" required></label><br>
-            <label>Description:<br><input type="text" id="product_description" name="product_description" required></label><br>
-            <label>Price:<br>
-                <div class="price-input">
-                    <span>$</span>
-                    <input type="text" id="product_price_dollars" name="product_price_dollars" oninput="validateDollars()" placeholder="0">
-                    <span>.</span>
-                    <input type="text" id="product_price_cents" name="product_price_cents" maxlength="2" oninput="validateCents()" placeholder="00">
-                </div></label><br>
-            <label>Image:<br><input type="file" id="product_image" name="product_image" ></label><br>
-            <button type="submit" name="add">Add Product</button>
+    <!--let's user know the current page they are on-->
+    <h1>Edit Product</h1>
+    <!-- Allows barber's to add a new item to the store -->
+    <div class="edit-container">
+        <form action="edit_product.php?product_id=<?php echo $product['id']; ?>" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+                <label for="product_name">Product Name:</label>
+                <input type="text" name="product_name"   id="product_name" value="<?php echo $product['name']; ?>" required onchange="validateName()">
+                <span id="name-error" style="color: red; display: none;"></span>
+                <br>
+                <label for="product_description">Product Description:</label>
+                <textarea name="product_description" required><?php echo $product['description']; ?></textarea>
+                <br>
+                <label for="product_price">Product Price:</label>
+                <input type="number" name="product_price" id="product_price" step="0.01" value="<?php echo $product['price']; ?>" required onchange="validatePrice()">
+                <span id="price-error" style="color: red; display: none;"></span>
+                <br>
+                <label for="product_image">Product Image:</label>
+                <div class="file-input-container">
+                    <input type="file" name="product_image" id="file-input" accept="image/*" onchange="validateImage()">
+                    <label for="file-input" class="file-input-label">Choose File</label>
+                    <span id="file-name" class="file-name"></span>
+                    <span id="image-error" style="color: red; display: none;"></span>
+                </div>
+                <br> 
+                <button type="submit" class="update-btn">Update Product</button>
         </form>
     </div>
-
-    <!-- Edit Pop-Up -->
-    <div id="edit-modal" class="modal">
-        <h2>Edit Product</h2>
-        <form method="POST" enctype="multipart/form-data">
-        <span class="close-btn" onclick="closeAddModal()">&times;</span>
-            <label>Name: <br><input type="text" id="product_name" required></label><br>
-            <label>Description:<br><input type="text" id="product_description" required></label><br>
-            <label>Price:<br>
-                <div class="price-input">
-                    <span>$</span>
-                    <input type="text" id="product_price_dollars" oninput="validateDollars()" placeholder="0">
-                    <span>.</span>
-                    <input type="text" id="product_price_cents" maxlength="2" oninput="validateCents()" placeholder="00">
-                </div></label><br>
-            <label>Image:<br><input type="file" id="product_image" required></label><br>
-            <button type="submit">Update</button>
-        </form>
+    <!-- Redirects to product.php page (Barber's side) -->
+    <div class="back-btn">
+        <a href="product.php" class="back-btn"><button class="back-btn">Back to Product List</button></a>
     </div>
-
     <script>
-        function validateDollars() {
-            let dollarsInput = document.getElementById("product_price_dollars");
-            dollarsInput.value = dollarsInput.value.replace(/\D/g, ''); 
+         // Function to display the selected file name
+        function displayFileName() {
+            const fileInput = document.getElementById('file-input');
+            const fileNameDisplay = document.getElementById('file-name');
+
+            if (fileInput.files.length > 0) {
+                fileNameDisplay.textContent = fileInput.files[0].name;
+            } else {
+                fileNameDisplay.textContent = '';
+            }
         }
 
-        function validateCents() {
-            let centsInput = document.getElementById("product_price_cents");
-            centsInput.value = centsInput.value.replace(/\D/g, '').slice(0, 2);
+        // Validate product name
+        function validateName() {
+            const nameInput = document.getElementById('product_name');
+            const nameError = document.getElementById('name-error');
+            if (nameInput.value.length > 70) {
+                nameError.textContent = "Maximum 70 characters allowed";
+                nameError.style.display = 'inline';
+                return false;
+            } else {
+                nameError.style.display = 'none';
+                return true;
+            }
         }
-        function openAddModal() {
-            document.getElementById('add-modal').style.display = 'block';
+
+        // Validate product price
+        function validatePrice() {
+            const priceInput = document.getElementById('product_price');
+            const priceError = document.getElementById('price-error');
+            if (priceInput.value <= 0 || isNaN(priceInput.value)) {
+                priceError.textContent = "Price must be a positive number";
+                priceError.style.display = 'inline';
+                return false;
+            } else {
+                priceError.style.display = 'none';
+                return true;
+            }
         }
-        function closeAddModal() {
-            document.getElementById('add-modal').style.display = 'none';
+        // Validate product image
+        function validateImage() {
+            const imageInput = document.getElementById('file-input');
+            const imageError = document.getElementById('image-error');
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            const maxSize = 10 * 1024 * 1024; // 10MB
+
+            if (imageInput.files.length > 0) {
+                const file = imageInput.files[0];
+                if (!allowedTypes.includes(file.type)) {
+                    imageError.textContent = "Only JPEG, PNG, and GIF images are allowed.";
+                    imageError.style.display = 'inline';
+                    return false;
+                } else if (file.size > maxSize) {
+                    imageError.textContent = "File size must be less than 10MB.";
+                    imageError.style.display = 'inline';
+                    return false;
+                } else {
+                    imageError.style.display = 'none';
+                    displayFileName();
+                    return true;
+                }
+            } else {
+                imageError.style.display = 'none';
+                displayFileName();
+                return true;
+            }
         }
-        function openEditModal(id, name, img){
-            fetch(`getProduct.php?id=${id}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('edit_product_id').value = data.product_id;
-                    document.getElementById('edit_product_name').value = data.name;
-                    document.getElementById('edit_product_description').value = data.description;
-                    document.getElementById('edit_product_price').value = data.price;
-                    document.getElementById('edit-modal').style.display = 'block';
-            });
+
+        // Validate the entire form
+        function validateForm(event) {
+            const isNameValid = validateName();
+            const isPriceValid = validatePrice();
+            const isImageValid = validateImage();
+
+            if (!isNameValid || !isPriceValid || !isImageValid) {
+                event.preventDefault(); // Prevent form submission
+                return false;
+            }
+            return true; // Allow form submission
         }
-        function closeEditModal(){
-            document.getElementById('edit-modal').style.display = 'none';
-        }
+
+        // Attach the validateForm function to the form's submit event
+        document.querySelector('form').addEventListener('submit', validateForm);
     </script>
 </body>
 </html>

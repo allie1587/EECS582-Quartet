@@ -11,6 +11,7 @@
         3/2/2025 -- Ben, added 'search' feature
         3/2/2025 -- Allie upcoming and past appointments
         03/02/2025 -- Jose Leyba, Changed Style of Calendar + Cancelation button
+        3/14/2025 -- Brinley, Add week view
     Creation date:
     Other sources: ChatGPT
 -->
@@ -294,31 +295,23 @@ if ($mysqli->connect_error) {
     
     <!-- Search Feature -->
     <div class="search-container">
-        <input type="text" id="dayInput" placeholder="Enter day of the week">
-
-        <select id="barberSelect">
-            <option value="">Select Barber</option>
-            <option value="John Doe">John Doe</option>
-            <option value="Jan Smith">Jan Smith</option>
-            <option value="Billy Bob">Billy Bob</option>
-            <option value="Fred Bread">Fred Bread</option>
-        </select>
+        <input type="text" id="barberSelect" placeholder="Select Barber">
 
         <select id="timeSelect">
             <option value="">Select Time</option>
-            <option value="8:00 AM">8:00 AM</option>
-            <option value="9:00 AM">9:00 AM</option>
-            <option value="10:00 AM">10:00 AM</option>
-            <option value="11:00 AM">11:00 AM</option>
-            <option value="12:00 PM">12:00 PM</option>
-            <option value="1:00 PM">1:00 PM</option>
-            <option value="2:00 PM">2:00 PM</option>
-            <option value="3:00 PM">3:00 PM</option>
-            <option value="4:00 PM">4:00 PM</option>
-            <option value="5:00 PM">5:00 PM</option>
+            <option value="8">8:00 AM</option>
+            <option value="9">9:00 AM</option>
+            <option value="10">10:00 AM</option>
+            <option value="11">11:00 AM</option>
+            <option value="12">12:00 PM</option>
+            <option value="13">1:00 PM</option>
+            <option value="14">2:00 PM</option>
+            <option value="15">3:00 PM</option>
+            <option value="16">4:00 PM</option>
+            <option value="17">5:00 PM</option>
         </select>
 
-        <button onclick="fakeSearch()">Search</button>
+        <button onclick="search()">Search</button>
     </div>
     <!-- End Search Feature -->
 
@@ -360,18 +353,39 @@ if ($mysqli->connect_error) {
         <a href="cancel_appointment.php">Cancel here</a>
         <br><br>
 
-    <script>
-        function fakeSearch() {
-            let day = document.getElementById("dayInput").value;
-            let barber = document.getElementById("barberSelect").value;
-            let time = document.getElementById("timeSelect").value;
+    </div>
 
-            alert(`Searching for appointments on ${day}, with ${barber}, in the ${time}. (This is just a placeholder!)`);
+<script>
+
+    let monthView = true;
+
+        function search() {
+            let barber = document.getElementById("barberSelect").value ? document.getElementById("barberSelect").value : null;
+
+            let time = document.getElementById("timeSelect").value ? document.getElementById("timeSelect").value : null;
+
+            fetch('set_filter.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ filter: true,
+                                    barber: barber,
+                                    time: time
+                })
+            }).then(response => response.text())
+            .then(data => {
+                renderCalendar();
+            }).catch(error => {
+                console.error('Error:', error);
+            });
         }
 
         // ChatGPT help start
         let currentMonth = new Date().getMonth(); // Current month (0-11)
         let currentYear = new Date().getFullYear(); // Current year
+        let currentDay = new Date().getDate();
+        let currentWeekday = new Date().getDate();
         let monthNames = [
             'January', 'February', 'March', 'April', 'May', 'June', 
             'July', 'August', 'September', 'October', 'November', 'December'
@@ -379,18 +393,20 @@ if ($mysqli->connect_error) {
         let dayNames = ['Monday', "Tuesday", 'Wednesday', 'Thursday', 'Friday', "Saturday", 'Sunday'];
         let appointmentsData = [];
 
-        // Function to render the calendar
-        function renderCalendar() {
-            // Get the first day of the month and the total number of days in the month
-            let firstDay = new Date(currentYear, currentMonth, 1).getDay(); // First day of the month
-            let daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate(); // Number of days in the month
+    // Function to render the calendar
+    function renderCalendar(day=0, weekday=0) {
+        // Get the first day of the month and the total number of days in the month
+        let firstDay = new Date(currentYear, currentMonth, 1).getDay(); // First day of the month
+        let daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate(); // Number of days in the month
 
-            // Update month name
-            document.getElementById('monthName').innerHTML = `${monthNames[currentMonth]} ${currentYear}`;
+        // Update month name
+        document.getElementById('monthName').innerHTML = `${monthNames[currentMonth]} ${currentYear}`;
 
-            // Clear the previous calendar month
-            let calendar = document.querySelector('.calendar');
-            calendar.querySelectorAll('.day').forEach(day => day.remove());
+        // Clear the previous calendar month
+        let calendar = document.querySelector('.calendar');
+        calendar.querySelectorAll('.day').forEach(day => day.remove());
+
+        if (monthView) {
 
             // Add empty divs for days before the 1st day of the month
             for (let i = 0; i < firstDay; i++) {
@@ -427,7 +443,8 @@ if ($mysqli->connect_error) {
                     });
                 
                 button.addEventListener('click', () => {
-                    openAppointments(day);
+                    monthView = false;
+                    renderCalendar(day, weekday);
                 });
                 button.classList.add('day-button');
 
@@ -436,7 +453,69 @@ if ($mysqli->connect_error) {
                 dayDiv.appendChild(button);
                 calendar.appendChild(dayDiv);
             }
+
+        } else {
+            if (day-weekday < 0) {
+                // Add empty divs for days before the 1st day of the month
+                // CHANGE THIS TO ACTUALLY SHOW THE LAST DAYS OF THE PREVIOUS MONTH
+                for (let i = 0; i < weekday; i++) {
+                    // let daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+                    let emptyDay = document.createElement('div');
+                    emptyDay.classList.add('day');
+                    calendar.appendChild(emptyDay);
+                }
+            }
+            
+
+            // Add actual days of the WEEK
+            for (let offset = 0; offset < 7; offset++) {
+                let wday = day - weekday + offset -1; // Correct calculation for the week day
+                let dayDiv = document.createElement('div');
+                if (offset == weekday+1) { // if we're on the selected day
+                    dayDiv.style.backgroundColor = "gray"; // change background color to show it's selected
+                }
+                dayDiv.classList.add('day');
+
+                // Create a span for the day number
+                let dayNumber = document.createElement('span');
+                dayNumber.textContent = wday;
+                dayDiv.appendChild(dayNumber);
+
+                // Append the dayDiv to the calendar before fetching data
+                calendar.appendChild(dayDiv);
+
+                // Fetch appointment count from backend
+                fetch(`get_appointments.php?year=${currentYear}&month=${currentMonth}&day=${wday}&weekday=${new Date(currentYear, currentMonth, wday - 1).getDay()}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Reset appointments for this day
+                        let appointments = data.length ? data : ["No appointments"];
+
+                        // Create grid items dynamically
+                        appointments.forEach(appointment => {
+                            let item = document.createElement('button');
+                            if (appointment === "No appointments") {
+                                item.textContent = "No appointments";
+                            } else {
+                                let time = (appointment.Time <= 12 ? appointment.Time : appointment.Time - 12);
+                                let period = (appointment.Time < 12 ? "AM" : "PM");
+                                item.textContent = time + period;
+
+                                // Add click event to show appointment details
+                                item.addEventListener('click', () => {
+                                    openAppointmentInfo(appointment, wday);
+                                });
+                            }
+                            item.classList.add('day-button');
+                            dayDiv.appendChild(item);
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Error fetching appointment count:", error);
+                    });
+            }
         }
+    }
 
         // Function to change the month (either forward or backward)
         function changeMonth(direction) {
@@ -452,58 +531,6 @@ if ($mysqli->connect_error) {
             }
 
             renderCalendar(); // Re-render the calendar for the new month
-        }
-
-        function openAppointments(day) {
-            // Functiont to show all appointment timeslots for a specific day
-            const popup = document.getElementById('appointmentPopup');
-            const appointmentGrid = document.getElementById('appointmentGrid');
-            const appointmentDay = document.getElementById('appointmentDay');
-
-            // Update the popup title
-            appointmentDay.textContent = `Available Appointments for ${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}`;
-
-            // Clear existing appointments
-            appointmentGrid.innerHTML = "";
-
-            // Get appointments for the selected day
-            let appointments = ["No appointments"];
-            let weekday = new Date(currentYear, currentMonth, day-1).getDay();
-            appointmentDay.textContent = `${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}`;
-
-
-            // Call to the database to retrieve the appointments
-            fetch(`get_appointments.php?year=${currentYear}&month=${currentMonth}&day=${day}&weekday=${weekday}`) // Go to get_appointments.php
-            .then(response => response.json())
-            .then(data => {
-                appointmentsData = data;
-                if (appointmentsData.length != 0) {
-                    appointments = appointmentsData;
-                }
-            }).then(response => {
-                // Create grid items dynamically
-                // Populate the popup with appointment timeslots, creating a button for each
-                    appointments.forEach(appointment => {
-                        let item = document.createElement('button');
-                        if (appointments[0] == "No appointments") {
-                            item.textContent = "No appointments";
-                        } else {
-                            item.textContent = (appointment.Time <= 12 ? appointment.Time : appointment.Time-12) + (appointment.Time < 12 ? "AM" : "PM");
-                            item.addEventListener('click', () => {
-                                openAppointmentInfo(appointment, day);
-                            });
-                        }
-                        appointmentGrid.appendChild(item);
-                    });
-
-                    // Show popup
-                    popup.style.display = 'block';
-            
-            }
-        )
-            .catch(error => {
-                console.error("Error fetching appointment count:", error);
-            });
         }
 
         function openAppointmentInfo(appointment, day) {
@@ -573,38 +600,5 @@ if ($mysqli->connect_error) {
         renderCalendar();
         //ChatGPT end
     </script>
-    </div>
-<!-- Link to display past and upcoming appointments -->
-<div class="user-appointments">
-            <a href="#" onclick="openAppointmentsModal()">View Upcoming/Past Appointments</a>
-        </div>
-        <!-- Past and Upcoming Appointment popup -->
-        <div id="appointment-modal" class="popup">
-            <span class="close-btn" onclick="closeAppointmentsModal()">&times;</span>
-            <h2>Your Appointments</h2>
-            <h3>Upcoming Appointment</h3>
-            <p>Date: March 10, 2025</p>
-            <p>Time: 2:00 PM</p>
-            <p>Barber: John Doe</p>
-
-            <h3>Past Appointment</h3>
-            <p>Date: February 15, 2025</p>
-            <p>Time: 11:00 AM</p>
-            <p>Barber: John Doe</p>
-            </div>
-        </div>
-        <br><br><br>
-</div>
-
-<script>
-    // Open the appointment modal
-    function openAppointmentsModal() {
-        document.getElementById('appointment-modal').style.display = 'block';
-    }
-    //Close the appointment modal
-    function closeAppointmentsModal() {
-        document.getElementById('appointment-modal').style.display = 'none';
-    }
-</script>
 </body>
 </html>

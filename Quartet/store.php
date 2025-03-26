@@ -3,20 +3,58 @@ Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 02/12/2025
 Revisions:
     03/02/2025 -- Jose Leyba -- Changed UI to look better and dark mode implemented
-    03/12/2025 -- Alexandra Stratton -- Added Edit Product menu button that allow users to edit the product page\
+    03/12/2025 -- Alexandra Stratton -- Added Edit Product menu button that allow users to edit the product page
     03/13/2025 -- Jose Leyba -- Started the Revamped UI of the page
+    03/14/2025 --  Alexandra Stratton -- Included the header.php and added Shopping Cart to the menu
+    03/16/2025 -- Jose Leyba -- Connected to database, UI now reflects when product gets added to the cart
+    03/16/2025 -- Alexandra Stratton -- Connect the add to cart button to the shopping cart
 Purpose: Store Page thaat will (later) allow users to see different products up to sale at the barbershop and their price
+
 -->
 <?php
 // Start the session to remember user info
 session_start();
 
-//Placeholder for the Products table information
-$products = [
-    ['id' => 1, 'name' => 'Shampoo', 'price' => 10, 'image' => 'images/product1.jpg', 'description' => 'Cleans and nourishes hair.'],
-    ['id' => 2, 'name' => 'Beard Oil', 'price' => 15, 'image' => 'images/product1.jpg', 'description' => 'Softens and conditions beards.'],
-    ['id' => 3, 'name' => 'Hair Gel', 'price' => 12, 'image' => 'images/product1.jpg', 'description' => 'Provides strong hold and shine.'],
-];
+//Connects to database to get the Reviews table information
+$mysqli = new mysqli('sql312.infinityfree.com', 'if0_38323969', 'Quartet44', 'if0_38323969_quartet');
+if ($mysqli->connect_error) {
+    die("Connection failed: " . $mysqli->connect_error);
+}
+
+// Get the reviews from the table
+$productsQuery = "SELECT id, name, description, price, image FROM products";
+$productsResult = $mysqli->query($productsQuery);
+
+// Debugging: Check if the query was successful
+if (!$productsResult) {
+    die("Query Failed: " . $mysqli->error);
+}
+
+//Puts the Products table information in an easy to iterate way
+$products = [];
+
+if ($productsResult) {
+    while ($row = $productsResult->fetch_assoc()) {
+        $products[] = $row;
+    }
+}
+
+// For our session, collect the id's for the products and see the amount we have of each
+$session_id = session_id();
+$cartQuery = "SELECT product_id, quantity FROM cart WHERE session_id = ?";
+$stmt = $mysqli->prepare($cartQuery);
+$stmt->bind_param("s", $session_id);
+$stmt->execute();
+$cartResult = $stmt->get_result();
+
+// Store the info of quantities in an array
+$cartQuantities = [];
+while ($row = $cartResult->fetch_assoc()) {
+    $cartQuantities[$row['product_id']] = $row['quantity'];
+}
+
+$stmt->close();
+$mysqli->close();
 
 //Remembers the Cart in your session, if you didn't had one set it to empty
 if (!isset($_SESSION['cart'])) {
@@ -31,91 +69,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'])) {
     }
 }
 ?>
+<?php
+include('header.php');
+?>
 
-<!DOCTYPE html>
-<html lang="en">
 <head>
-    <!--Define character encoding-->
-    <meta charset="UTF-8">
-    <!--Ensure proper rendering and touch zooming on mobile devices-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--Name of Page-->
+    <!-- Title for Page --> 
     <title>Store</title>
-    <!--Style choices for page, they include font used, margins, alignation, background color, display types, and some others-->
+    <!-- Internal CSS for styling the page -->
     <style>
-        /* Applies styles to the entire body */
-        body {
-            margin: 0;
-            padding-top: 70px;
-            text-align: center;
-            font-family: 'Georgia', serif; 
-            background-color:rgba(36, 35, 35);
-            color:white; 
-        }
-        /* Top Bar at Top with Pages and Login */
-        .top-bar {
-            background-color: #c4454d;; 
-            padding: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-            height: 70px; 
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-        }
-        /* Size of Letters on it's header */
-        .top-bar h1 {
-            margin: 0;
-            padding-left: 20px;
-            font-size: 28px;
-        }
-        /* Space for the login button on the right */
-        .login-container {
-            display: flex;
-            align-items: center;
-            padding-right: 20px;
-        }
-        /* Login Button Format*/
-        .login-button {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: rgb(110,7,7);
-            color: white;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            margin-left: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        /* Style for the Menu taht will have the navigation buttons */
-        .menu {
-            display: flex;
-            flex-grow: 1;
-            justify-content: center;
-            height: 100%;
-        }
-        /* Style of Navigation Buttons */
-        .menu button {
-            background-color:  #c4454d;
-            color: white;
-            border: none;
-            padding: 20px 25px; 
-            font-size: 18px;
-            cursor: pointer;
-            flex-grow: 1;
-            text-align: center;
-            font-family: 'Georgia', serif; 
-        }
-        /* Color gets darker when hovering the buttons */
-        .menu button:hover {
-            background-color: rgb(143, 48, 55); 
-        }
         .store-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -133,6 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'])) {
             padding: 15px;
             box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
         }
         .product-container:hover {
             transform: scale(1.05);
@@ -176,6 +139,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'])) {
             padding: 10px; 
             cursor: pointer; 
         }
+        .cart-quantity {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: #c4454d; 
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
     </style>
     <!-- Functions needed-->
     <script>
@@ -204,39 +182,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'])) {
     </script>
 </head>
 <body>
-    <!--The green Bar at the top that has the name and button that takes you to the login page-->
-    <div class="top-bar">
-        <h1>Quartet's Barbershop</h1>
-        <div class="menu">
-            <button onclick="location.href='index.php'">Home</button>
-            <button onclick="location.href='schedule.php'">Schedule</button>
-            <button onclick="location.href='store.php'">Store</button>
-            <button onclick="location.href='barbers.php'">Barbers</button>
-            <button onclick="location.href='about.php'">About Us</button>
-            <button onclick="location.href='feedback.php'">Contact us</button>
-            <button onclick="location.href='edit_product.php'">Edit Products</button>
-
-        </div>
-
-        <!--Stylized Button to be circular, when clicked takes you to login.html-->
-        <div class="login-container">
-            <span>Login</span>
-            <button class="login-button" onclick="location.href='login.php'">&#10132;</button>
-        </div>
-    </div>
     <!--let's user know the current page they are on-->
     <h1>Store</h1>
     <!--Styled grid 3x3 That shows in each space a different product available with a picture and it's name-->
     <input type="text" id="search" onkeyup="filterProducts()" placeholder="Search products...">
     <div class="store-grid">
-        <?php foreach ($products as $product) { ?>
-            <div class='product-container'>
-                <img src='<?php echo $product['image']; ?>' alt='<?php echo $product['name']; ?>' onclick="showDetails('<?php echo $product['name']; ?>', '<?php echo $product['price']; ?>', '<?php echo $product['image']; ?>', '<?php echo $product['description']; ?>')">
+        <?php foreach ($products as $product) { 
+            // Makes sure the special characters don't leak into the SQL query
+            $name = htmlspecialchars(addslashes($product['name']));
+            $description = htmlspecialchars(addslashes($product['description']));
+            $image = htmlspecialchars($product['image']);
+            $price = htmlspecialchars($product['price']);
+            $product_id = $product['id'];
+            $quantity = isset($cartQuantities[$product_id]) ? $cartQuantities[$product_id] : 0;
+        ?>
+            <div class='product-container' onclick="showDetails('<?php echo $name; ?>', '<?php echo $price; ?>', '<?php echo $image; ?>', '<?php echo $description; ?>')">
+                <img src='<?php echo $image; ?>' alt='<?php echo $name; ?>'>
+                <?php if ($quantity > 0) { ?>
+                    <div class="cart-quantity"><?php echo $quantity; ?></div>
+                <?php } ?>
                 <div class='product-name'><?php echo $product['name']; ?></div>
-                <div class='product-price'>$<?php echo $product['price']; ?></div>
-                <form method="post">
+                <div class='product-price'>$<?php echo $price; ?></div>
+                <form action="add_item.php" method="POST" style="display:inline;" onsubmit="event.stopPropagation();">
                     <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                    <button type="submit">Add to Cart</button>
+                    <button type="submit" class="btn add-to-cart-btn" onclick="event.stopPropagation();">Add to Cart</button>
                 </form>
             </div>
         <?php } ?>

@@ -40,23 +40,35 @@ $conn->close();
             padding: 8px;
             text-align: left;
         }
+        .search-bar {
+            margin-bottom: 20px;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
     </style>
   </head>
   <body>
     <div class="menu">
-    <button onclick="location.href='dashboard.php'">Dashboard</button>
-    <button onclick="location.href='checkouts.php'">Checkouts</button>
-    <button onclick="location.href='calendar.php'">Calendar</button>
-    <button onclick="location.href='clients.php'">Clients</button>
-    <button onclick="location.href='customize.php'">Customize</button>
+      <button onclick="location.href='dashboard.php'">Dashboard</button>
+      <button onclick="location.href='checkouts.php'">Checkouts</button>
+      <button onclick="location.href='calendar.php'">Calendar</button>
+      <button onclick="location.href='clients.php'">Clients</button>
+      <button onclick="location.href='customize.php'">Customize</button>
     </div>
     <button onclick="location.href='index.php'">Back to Customer Site</button>
     <form method="post" action="logout.php">
-    <button type="submit" name="logout">Logout</button>
+      <button type="submit" name="logout">Logout</button>
     </form>
 
-    <h1>Clients (By first Name)</h1>
-    <table>
+    <h1>Clients (By First Name)</h1>
+    <!-- Add the search bar -->
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search by any column...">
+    </div>
+    <table id="clientTable">
         <thead>
             <tr>
                 <th>First Name</th>
@@ -78,4 +90,27 @@ $conn->close();
             <?php endforeach; ?>
         </tbody>
     </table>
+
+    <script>
+      // JavaScript for filtering the table
+      document.getElementById("searchInput").addEventListener("input", function() {
+        const filter = this.value.toLowerCase(); // Get the search term and convert to lowercase
+        const rows = document.querySelectorAll("#clientTable tbody tr"); // Get all table rows
+
+        rows.forEach(row => {
+          const cells = row.querySelectorAll("td"); // Get all cells in the row
+          let match = false;
+
+          cells.forEach(cell => {
+            if (cell.textContent.toLowerCase().includes(filter)) {
+              match = true; // If any cell matches the search term, mark the row as a match
+            }
+          });
+
+          // Show or hide the row based on whether it matches the search term
+          row.style.display = match ? "" : "none";
+        });
+      });
+    </script>
+  </body>
 </html>
