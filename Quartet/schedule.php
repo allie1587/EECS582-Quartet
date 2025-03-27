@@ -175,6 +175,7 @@ if ($mysqli->connect_error) {
             border-radius: 5px;
             cursor: pointer;
             margin-top: 5px;
+            white-space: pre-line;
         }
 
         /* Popup styling */
@@ -200,6 +201,7 @@ if ($mysqli->connect_error) {
             max-width: 600px;
             text-align: center;
             position: relative;
+            white-space: pre-line;
         }
 
         .close-btn {
@@ -496,11 +498,18 @@ if ($mysqli->connect_error) {
                             let item = document.createElement('button');
                             if (appointment === "No appointments") {
                                 item.textContent = "No appointments";
-                            } else {
+                            } else { //creating the button bubble
                                 let time = (appointment.Time <= 12 ? appointment.Time : appointment.Time - 12);
                                 let period = (appointment.Time < 12 ? "AM" : "PM");
-                                item.textContent = time + period;
-
+                                let b_name = (appointment.BarberID);
+                                let end_time = (appointment.End_Time <= 12 ? appointment.End_Time : appointment.End_Time - 12);
+                                let end_period = (appointment.End_Time < 12 ? "AM" : "PM");
+                                if (end_time < 0){
+                                    item.textContent = `${b_name}\n${time} ${period}`; //adds barber name and time
+                                } else{ 
+                                    item.textContent = b_name + "\n" + time + period + "\n" + end_time + end_period; //adds barber name, time, and excpected end
+                                }
+                                
                                 // Add click event to show appointment details
                                 item.addEventListener('click', () => {
                                     openAppointmentInfo(appointment, wday);
