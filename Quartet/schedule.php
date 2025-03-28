@@ -14,6 +14,7 @@
         3/14/2025 -- Brinley, Add week view
         3/16/2025 -- Brinley, add search/filtering
         3/27/2025 -- Brinley, gray out days before current date
+        3/28/2025 -- Brinley, gray out timeslots before current time
     Creation date:
     Other sources: ChatGPT
 -->
@@ -371,6 +372,7 @@ if ($mysqli->connect_error) {
         let currentYear = new Date().getFullYear(); // Current year
         let currentDay = new Date().getDate();
         let currentWeekday = new Date().getDate();
+        let currentTime = new Date().getHours();
         let monthNames = [
             'January', 'February', 'March', 'April', 'May', 'June', 
             'July', 'August', 'September', 'October', 'November', 'December'
@@ -380,6 +382,7 @@ if ($mysqli->connect_error) {
 
     // Function to render the calendar
     function renderCalendar(day=0, weekday=0) {
+        currentTime = new Date().getHours();
         // Get the first day of the month and the total number of days in the month
         let firstDay = new Date(currentYear, currentMonth, 1).getDay(); // First day of the month
         let daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate(); // Number of days in the month
@@ -488,7 +491,7 @@ if ($mysqli->connect_error) {
                             // Reset appointments for this day
                             let appointments = data.length ? data : ["No appointments"];
 
-                            // Create grid items dynamically
+                            // Create timeslots dynamically
                             appointments.forEach(appointment => {
                                 let item = document.createElement('button');
                                 if (appointment === "No appointments") {
@@ -498,6 +501,11 @@ if ($mysqli->connect_error) {
                                     let period = (appointment.Time < 12 ? "AM" : "PM");
                                     item.textContent = time + period;
 
+                                    //only make appointment clickable if time is after current time
+                                    if (appointment.Time <= currentTime && appointment.Day == currentDay) {
+                                        item.disabled = true;
+                                        item.style.backgroundColor = 'rgb(70, 70, 70)';
+                                    }  
                                     // Add click event to show appointment details
                                     item.addEventListener('click', () => {
                                         openAppointmentInfo(appointment, wday);
@@ -505,6 +513,8 @@ if ($mysqli->connect_error) {
                                 }
                                 item.classList.add('day-button');
                                 dayDiv.appendChild(item);
+                                
+                                
                             });
                         })
                         .catch(error => {
