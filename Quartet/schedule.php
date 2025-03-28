@@ -256,17 +256,6 @@ if ($mysqli->connect_error) {
         .search-container button:hover {
             background-color: #0056b3;
         }
-        .cancel-alert {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            color:rgb(220, 94, 90);
-            background-color:rgb(111, 39, 45);
-            padding: 15px;
-            border-radius: 5px;
-            border: 1px solid #d9534f;
-            display: inline-block;
-        }
 
     </style>
 </head>
@@ -350,12 +339,6 @@ if ($mysqli->connect_error) {
         </div>
     </div>
     <br>
-    <div class="cancel-alert">Need to cancel an appointment? </div>
-        <br>
-        <a href="cancel_appointment.php">Cancel here</a>
-        <br><br>
-
-    </div>
 
 <script>
 
