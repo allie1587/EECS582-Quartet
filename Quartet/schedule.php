@@ -326,8 +326,11 @@ if ($mysqli->connect_error) {
         </div>
 
         <div class="calendar-nav">
-            <button onclick="changeMonth(-1)">Previous</button>
-            <button onclick="changeMonth(1)">Next</button>
+            <button id="prevButton" onclick="changeMonth(-1)">Previous Month</button>
+            <button id="nextButton" onclick="changeMonth(1)">Next Month</button>
+            <!-- Week navigation buttons -->
+            <button id="prevWeekButton" onclick="changeWeek(-1)" style="display: none;">Previous Week</button>
+            <button id="nextWeekButton" onclick="changeWeek(1)" style="display: none;">Next Week</button>
         </div>
 
                 <!-- Popup Modal -->
@@ -383,6 +386,12 @@ if ($mysqli->connect_error) {
     // Function to render the calendar
     function renderCalendar(day=0, weekday=0) {
         currentTime = new Date().getHours();
+
+        let prevButton = document.getElementById('prevButton'); //identifies button for switching months
+        let nextButton = document.getElementById('nextButton'); //identifies button for switching months
+        let prevWeekButton = document.getElementById('prevWeekButton'); //identifies button for switching weeks
+        let nextWeekButton = document.getElementById('nextWeekButton'); //identifies button for switching weeks
+
         // Get the first day of the month and the total number of days in the month
         let firstDay = new Date(currentYear, currentMonth, 1).getDay(); // First day of the month
         let daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate(); // Number of days in the month
@@ -395,7 +404,11 @@ if ($mysqli->connect_error) {
         calendar.querySelectorAll('.day').forEach(day => day.remove());
 
         if (monthView) {
-
+            //show month switch buttons, remove week switch buttons
+            prevButton.style.display = 'inline-block';
+            nextButton.style.display = 'inline-block';
+            prevWeekButton.style.display = 'none';
+            nextWeekButton.style.display = 'none';
             // Add empty divs for days before the 1st day of the month
             for (let i = 0; i < firstDay; i++) {
                 let emptyDay = document.createElement('div');
@@ -453,6 +466,12 @@ if ($mysqli->connect_error) {
             }
 
         } else {
+            //show week switch buttons, remove month switch buttons
+            prevButton.style.display = 'none';
+            nextButton.style.display = 'none';
+            prevWeekButton.style.display = 'inline-block';
+            nextWeekButton.style.display = 'inline-block';
+
             if (day-weekday < 0) {
                 // Add empty divs for days before the 1st day of the month
                 // CHANGE THIS TO ACTUALLY SHOW THE LAST DAYS OF THE PREVIOUS MONTH
@@ -470,7 +489,7 @@ if ($mysqli->connect_error) {
                 let wday = day - weekday + offset -1; // Correct calculation for the week day
                 let dayDiv = document.createElement('div');
                 if (offset == weekday+1) { // if we're on the selected day
-                    dayDiv.style.backgroundColor = "red"; // change background color to show it's selected
+                    dayDiv.style.backgroundColor = "#c4454d"; // change background color to show it's selected
                 }
                 dayDiv.classList.add('day');
 
@@ -544,6 +563,25 @@ if ($mysqli->connect_error) {
             }
 
             renderCalendar(); // Re-render the calendar for the new month
+        }
+        function changeWeek(direction) { //need to fix
+            // Adjust the current week by 7 days (direction is either 1 or -1)
+            currentWeekStart.setDate(currentWeekStart.getDate() + (direction * 7));
+
+            // Recalculate the first day of the week (we assume Sunday as the first day, adjust if needed)
+            let weekday = currentWeekStart.getDay(); // 0 for Sunday, 1 for Monday, etc.
+            let day = currentWeekStart.getDate();
+
+            // Re-render the calendar with the updated start day of the week
+            renderCalendar(day, weekday);
+        }
+
+        //Function the changes the week (forward or backward)
+        function changeWeek(direction) {
+            let daysToAdd = direction * 7; // Move forward or backward by 7 days
+            currentWeekStart.setDate(currentWeekStart.getDate() + daysToAdd);
+            
+            renderCalendar(); // Re-render the calendar to reflect the new week
         }
 
         function openAppointmentInfo(appointment, day) {
