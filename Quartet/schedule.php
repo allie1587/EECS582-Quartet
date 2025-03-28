@@ -410,8 +410,8 @@ if ($mysqli->connect_error) {
                 let dayNumber = document.createElement('span');
                 dayNumber.textContent = day;
 
-                // Gray out days
-                if (day < currentDay) {
+                // Gray out days before current date
+                if ((day < currentDay && currentMonth <= new Date().getMonth()) || currentMonth < new Date().getMonth()) {
                     dayDiv.style.background = 'rgb(70, 70, 70)';
                     dayNumber.style.color = 'darkgray';
                 } else {
@@ -475,7 +475,7 @@ if ($mysqli->connect_error) {
                 let dayNumber = document.createElement('span');
                 dayNumber.textContent = wday;
 
-                if (wday < currentDay) { //gray out days before current day
+                if ((wday < currentDay && currentMonth == new Date().getMonth()) || currentMonth < new Date().getMonth()) { //gray out days before current day
                     dayDiv.style.background = 'rgb(70, 70, 70)';
                     dayNumber.style.color = 'darkgray';
                 } else {
