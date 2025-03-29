@@ -2,6 +2,7 @@
 /*  
     get_appointments.php
     A program to connect to the database and return the count of the appointments for a certain date.
+    Authors: Brinley Hull
     Creation date: 2/27/2025
     Revisions:
         3/16/2025 - Brinley, add filtering
@@ -37,7 +38,14 @@ $query = "SELECT * FROM Appointment_Availability a
                 AND c.Time = a.Time 
                 AND c.Month = ?
                 AND c.Day = ?
-                AND c.Year = ?)"; // AND NOT EXISTS statement removes confirmed appointments from list
+                AND c.Year = ?)
+          AND NOT EXISTS (SELECT 1 FROM Appointment_Availability b
+                WHERE a.barberID = b.barberID
+                AND a.Time = b.Time
+                AND b.Month = ?
+                AND b.Day = ?
+                AND b.Year = ?
+                AND b.Available = 'N')"; // AND NOT EXISTS statement removes confirmed or nonavailble appointments from list
 
 // check for barber and time filtering
 if ($barberID !== null) {
@@ -57,13 +65,13 @@ if (!$stmt) {
 
 // Bind parameters
 if ($barberID !== null && $time !== null) {
-    $stmt->bind_param("iiiiiiiss", $weekday, $month, $day, $year, $month, $day, $year, $barberID, $time);
+    $stmt->bind_param("iiiiiiiiiiss", $weekday, $month, $day, $year, $month, $day, $year, $month, $day, $year, $barberID, $time);
 } else if ($barberID !== null) {
-    $stmt->bind_param("iiiiiiis", $weekday, $month, $day, $year, $month, $day, $year, $barberID);
+    $stmt->bind_param("iiiiiiiiiis", $weekday, $month, $day, $year, $month, $day, $year, $month, $day, $year, $barberID);
 } else if ($time !== null) {
-    $stmt->bind_param("iiiiiiis", $weekday, $month, $day, $year, $month, $day, $year, $time);
+    $stmt->bind_param("iiiiiiiiiis", $weekday, $month, $day, $year, $month, $day, $year, $month, $day, $year, $time);
 } else {
-    $stmt->bind_param("iiiiiii", $weekday, $month, $day, $year, $month, $day, $year);
+    $stmt->bind_param("iiiiiiiiii", $weekday, $month, $day, $year, $month, $day, $year, $month, $day, $year);
 }
 $stmt->execute();
 $result = $stmt->get_result();
