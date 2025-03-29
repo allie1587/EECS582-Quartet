@@ -1,5 +1,8 @@
 <?php
 /*
+set_appointment.php
+File to set session data of the appointment that the user clicks.
+Authors: Brinley Hull
 Creation date: 3/1/2025
 */
 session_start();

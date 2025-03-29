@@ -19,6 +19,7 @@ if (isset($_GET['year']) && isset($_GET['week'])) {
 $year = $dt->format('o');
 $week = $dt->format('W');
 $_SESSION["year"] = $year;
+$_SESSION["week"] = $week;
 $_SESSION["month"] = $dt->format("m");
 $_SESSION["startDate"] = $dt->format("d");
 
@@ -65,7 +66,8 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
     </div>
 
     <form method="POST" id="calendarForm">
-        <input type="text" placeholder="Username" name="barber">
+        <input type="text" placeholder="Username" name="barber" id="barber">
+        <button type="button" name="retrieve" onclick="retrieveAvailability()">Retrieve</button>
         <table class="calendar-table">
             <tr>
                 <?php
@@ -87,17 +89,45 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
                 $timeLabel = ($hour < 12) ? $hour . ' AM' : (($hour === 12) ? '12 PM' : ($hour - 12) . ' PM'); 
                 echo '<tr><td class="time-label">' . $timeLabel . '</td>'; // show the time
                 foreach (range(0, 6) as $day) { //create 7 checkboxes in line with the name of the day and hour for ease of database manipulation
-                    echo '<td><input type="checkbox" name="' . $day . $hour . '"></td>';
+                    echo '<td><input type="checkbox" name="' . $day . '-' . $hour . '" id="' . $day . '-' . $hour . '"></td>';
                 }
                 echo '</tr>';
             }
             ?>
         </table>
         <button type="submit" name="update" onclick="setFormAction('set_hours_db.php')">Update</button>
-        <button type="submit" name="updateall" onclick="setFormAction('set_hours_db_all.php')">Update Reoccurring</button>
+        <button type="submit" name="updateall" onclick="setFormAction('set_hours_db_all.php')">Update Reccurring</button>
     </form>
 </body>
 <script>
+        function retrieveAvailability() {
+            // get the barber's current availability
+
+            // get barber
+            let barber = document.getElementById("barber").value;
+
+            // get the 
+            fetch('retrieve_appointments.php?barber=' + encodeURIComponent(barber) + "&week=" + encodeURIComponent(<?php echo json_encode($week); ?>))
+            .then(response => response.json())
+            .then(data => {
+                console.log("Appointments data:", data);
+                document.querySelectorAll("input[type='checkbox']").forEach(checkbox => {
+                    checkbox.checked = false; // Uncheck all first
+                });
+
+                data.forEach(appointment => {
+                    let checkbox = document.getElementById(`${appointment.Weekday}-${appointment.Time}`);
+                    if (appointment.Weekday == -1) {
+                        let date = new Date(appointment.Year, appointment.Month - 1, appointment.Day); 
+                        checkbox = document.getElementById(`${date.getDay()-1}-${appointment.Time}`);
+                    }
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+            })
+            .catch(error => console.error("Error fetching appointments:", error));
+        }
         function jumpToDate() {
             const dateInput = document.getElementById("dateInput").value; // get the value the user input
             const split = dateInput.split("/");// split the elements by the slash
