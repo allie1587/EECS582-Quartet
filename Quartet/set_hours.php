@@ -6,6 +6,7 @@
         2/27/2025 -- Alexandra Stratton, add weekly calendar
         3/10/2025 -- Brinley, start revamp to be the barber set hours page. Change top "week of" format
         3/11/2025 -- Brinley, add searchable week
+        3/29/2025 - Brinley, retrieve current availability
     Creation date:
 -->
 <?php
@@ -106,7 +107,7 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
             // get barber
             let barber = document.getElementById("barber").value;
 
-            // get the 
+            // get the current available appointments for the barber and week
             fetch('retrieve_appointments.php?barber=' + encodeURIComponent(barber) + "&week=" + encodeURIComponent(<?php echo json_encode($week); ?>))
             .then(response => response.json())
             .then(data => {
@@ -115,12 +116,18 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
                     checkbox.checked = false; // Uncheck all first
                 });
 
+                // check the checkboxes for corresponding found appointments
                 data.forEach(appointment => {
+                    //find checkbox who has the same name as the appointment weekday
                     let checkbox = document.getElementById(`${appointment.Weekday}-${appointment.Time}`);
+
+                    // if weekday not set, find the weekday by using the month day and year
                     if (appointment.Weekday == -1) {
                         let date = new Date(appointment.Year, appointment.Month - 1, appointment.Day); 
                         checkbox = document.getElementById(`${date.getDay()-1}-${appointment.Time}`);
                     }
+
+                    // if checkbox with said name exists, check it
                     if (checkbox) {
                         checkbox.checked = true;
                     }

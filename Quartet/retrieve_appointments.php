@@ -5,8 +5,7 @@
     Authors: Brinley Hull
     Creation date: 3/29/2025
     Revisions:
-        3/16/2025 - Brinley, add filtering
-        3/28/2025 - Brinley, remove confirmed appointments
+        3/29/2025 - Brinley, creation
 */
 session_start(); //start the session
 
@@ -47,8 +46,9 @@ $query = "SELECT * FROM Appointment_Availability a
                 AND a.Time = b.Time
                 AND b.Week = ?
                 AND a.Weekday != WEEKDAY(STR_TO_DATE(CONCAT(b.Year, '-', b.Month, '-', b.Day), '%Y-%m-%d'))
-                AND b.Available = 'N')))"; 
+                AND b.Available = 'N')))"; // AND NOT EXISTS checks for non-available over recurring
 
+// execute queyr
 $stmt = $mysqli->prepare($query);
 if (!$stmt) {
     die(json_encode(["error" => "SQL prepare failed: " . $mysqli->error]));

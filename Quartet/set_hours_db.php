@@ -4,7 +4,7 @@
     Sends specific week barber hour information to the database.
     Author: Alexandra Stratton, Ben Renner, Brinley Hull, Jose Leyba, Kyle Moore
     Revisions:
-        Brinley, add week to database.
+        3/29/2025 - Brinley, add week to database.
     Other sources of code: ChatGPT
     Creation date: 3/14/2025
     Preconditions:
