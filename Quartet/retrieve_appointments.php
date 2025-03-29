@@ -55,7 +55,7 @@ if (!$stmt) {
 }
 
 // Bind parameters
-$stmt->bind_param("sii", $barber, $week, $week, );
+$stmt->bind_param("sii", $barber, $week, $week);
 $stmt->execute();
 $result = $stmt->get_result();
 if (!$result) {
