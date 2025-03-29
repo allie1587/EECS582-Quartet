@@ -14,7 +14,7 @@
         3/14/2025 -- Brinley, Add week view
         3/16/2025 -- Brinley, add search/filtering
         3/27/2025 -- Brinley, gray out days before current date
-        3/28/2025 -- Brinley, gray out timeslots before current time
+        3/28/2025 -- Brinley, gray out timeslots before current time; remove confirmed appointments
     Creation date:
     Other sources: ChatGPT
 -->
@@ -615,7 +615,7 @@ if ($mysqli->connect_error) {
             let bookButton = document.createElement('button');
             bookButton.textContent = "Book Appointment";
             bookButton.addEventListener('click', () => {
-                bookAppointment(appointment, day, monthNames[currentMonth], currentYear, time);
+                bookAppointment(appointment, day, currentMonth, currentYear, appointment.Time);
             });
 
             appointmentGrid.appendChild(bookButton);

@@ -1,16 +1,20 @@
 <?php
-/*// A program to connect to the database and return the count of the appointments for a certain date.
-// Creation date: 2/27/2025
-// Revisions:
-    3/16/2025 - Brinley, add filtering
+/*  
+    get_appointments.php
+    A program to connect to the database and return the count of the appointments for a certain date.
+    Creation date: 2/27/2025
+    Revisions:
+        3/16/2025 - Brinley, add filtering
+        3/28/2025 - Brinley, remove confirmed appointments
 */
-session_start();
+session_start(); //start the session
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 header('Content-Type: application/json'); // Ensure JSON response
 
+//connect to the database
 $mysqli = new mysqli('sql312.infinityfree.com', 'if0_38323969', 'Quartet44', 'if0_38323969_quartet');
 if ($mysqli->connect_error) {
     die(json_encode(["error" => "Database connection failed: " . $mysqli->connect_error]));
@@ -25,10 +29,17 @@ $barberID = isset($_SESSION['barberFilter']) ? ($_SESSION['barberFilter'] == "" 
 $time = isset($_SESSION['timeFilter']) ? ($_SESSION['timeFilter'] == "" ? null : $_SESSION['timeFilter']) : null;
 
 // Prepare SQL query
-$query = "SELECT * FROM Appointment_Availability 
+$query = "SELECT * FROM Appointment_Availability a 
           WHERE Available='Y' 
-          AND (Weekday=? OR (Month=? AND Day=? AND Year=?))";
+          AND (Weekday=? OR (Month=? AND Day=? AND Year=?))
+          AND NOT EXISTS (SELECT 1 FROM Confirmed_Appointments c
+                WHERE c.BarberID = a.BarberID 
+                AND c.Time = a.Time 
+                AND c.Month = ?
+                AND c.Day = ?
+                AND c.Year = ?)"; // AND NOT EXISTS statement removes confirmed appointments from list
 
+// check for barber and time filtering
 if ($barberID !== null) {
     $query .= " AND BarberID=?";
 }
@@ -36,6 +47,7 @@ if ($time !== null) {
     $query .= " AND Time=?";
 }
 
+// order by time
 $query .= " ORDER BY Time";
 
 $stmt = $mysqli->prepare($query);
@@ -45,13 +57,13 @@ if (!$stmt) {
 
 // Bind parameters
 if ($barberID !== null && $time !== null) {
-    $stmt->bind_param("iiiiss", $weekday, $month, $day, $year, $barberID, $time);
+    $stmt->bind_param("iiiiiiiss", $weekday, $month, $day, $year, $month, $day, $year, $barberID, $time);
 } else if ($barberID !== null) {
-    $stmt->bind_param("iiiis", $weekday, $month, $day, $year, $barberID);
+    $stmt->bind_param("iiiiiiis", $weekday, $month, $day, $year, $month, $day, $year, $barberID);
 } else if ($time !== null) {
-    $stmt->bind_param("iiiis", $weekday, $month, $day, $year, $time);
+    $stmt->bind_param("iiiiiiis", $weekday, $month, $day, $year, $month, $day, $year, $time);
 } else {
-    $stmt->bind_param("iiii", $weekday, $month, $day, $year);
+    $stmt->bind_param("iiiiiii", $weekday, $month, $day, $year, $month, $day, $year);
 }
 $stmt->execute();
 $result = $stmt->get_result();
