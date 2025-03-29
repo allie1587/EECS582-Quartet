@@ -149,7 +149,6 @@ Revisions:
         </div>
         <!--Stylized Button to be circular, when clicked takes you to login.html-->
         <div class="login-container">
-            <span>Login</span>
             <button class="login-button" onclick="location.href='login.php'"><i class="fa fa-sign-in"></i></button>
         </div>
     </div>

@@ -105,11 +105,10 @@ if ($barber_result->num_rows > 0) {
 
         body {
             font-family: 'Poppins', Arial, sans-serif;
-            background-color: white;
             margin: 0;
             padding: 0;
             padding-top: 80px;
-            color: white;
+            color: black;;
             line-height: 1.6;
         }
 
@@ -127,7 +126,7 @@ if ($barber_result->num_rows > 0) {
         /* Barber Card */
         .barber-container {
             width: 320px;
-            background: rgba(50, 50, 50, 0.9);
+            background: white;
             padding: 20px;
             border-radius: 10px;
             text-align: center;
@@ -135,7 +134,7 @@ if ($barber_result->num_rows > 0) {
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: white;
+            color: color;
         }
         /* Barber Name */
         .barber-name {
@@ -146,7 +145,7 @@ if ($barber_result->num_rows > 0) {
             width: 100%;
             padding: 15px;
             border-radius: 10px;
-            color: white;
+            color: black;
 
         }
 
@@ -168,7 +167,7 @@ if ($barber_result->num_rows > 0) {
         }
 
         .services strong {
-            color: white;
+            color: black;
             display: block;
             margin-bottom: 5px;
         }
@@ -185,7 +184,7 @@ if ($barber_result->num_rows > 0) {
         .hours h3 {
             margin: 0 0 10px 0;
             font-size: 18px;
-            color: white;
+            color: black;
             text-align: center;
         }
 
@@ -196,13 +195,13 @@ if ($barber_result->num_rows > 0) {
         }
 
         .hours strong {
-            color: #f8f8f8;
+            color: black;
             font-weight: 500;
         }
         /* Style for their portfolio images */
         .gallery-container {
             text-align: center;
-            color: white;
+            color: black;
             max-width: 300px;
             margin-top: 10px auto;
             gap: 10px;
@@ -226,13 +225,13 @@ if ($barber_result->num_rows > 0) {
             background: none;
             border: none;
             font-size: 30px;
-            color: white;
+            color: rgba(36, 35, 35);
             cursor: pointer;
             padding: -10px;
         }
 
         .arrow:hover {
-            color: red;
+            color: rgba(36, 35, 35);
         }
 
         .arrow-left {
@@ -253,7 +252,7 @@ if ($barber_result->num_rows > 0) {
         }
 
         .contact>p:first-child {
-            color: white;
+            color: black;
             font-weight: 600;
             margin: 0 0 10px 0;
             font-size: 18px;
@@ -268,17 +267,17 @@ if ($barber_result->num_rows > 0) {
         }
 
         .contact-info a {
-            color: #e0e0e0;
+            color: black;
             text-decoration: none;
             transition: color 0.3s ease;
         }
 
         .contact-info a:hover {
-            color: white;
+            color: black;
         }
 
         .contact-info i {
-            color: white;
+            color: black;
         }
 
         /* Social Media */
@@ -443,4 +442,3 @@ if ($barber_result->num_rows > 0) {
         <br><br>
     </div>
 </body>
-</html>
