@@ -6,6 +6,7 @@
         02/27/2025 -- Alexandra Stratton, add about barber page
         02/28/2025 -- Alexandra Stratton, fixed barber information
         03/02/2025 -- Jose Leyba, Modifieid UI Looks/ Added Barber Images
+        03/29/2025 -- Alexandra Strattion -- Unhardcode
     Sources:
         - https://www.freshkillsbarbershop.com/barber-bios
             -- Grabbed professional headshots for the hardcoded barbers
@@ -16,285 +17,316 @@
 <!-- Hardcode information about the "barbers" for video purposes -->
 
 <?php
-$barbers = [
-    [
-        "name" => "John Doe",
-        "role" => "Owner, Barber",
-        "photo" => "images/barber1.png",
-        "services" => ["Haircut", "Beard Trim"],
-        "hours" => [
-            "Monday" => "9:00AM - 8:00PM",
-            "Tuesday" => "9:00AM - 8:00PM",
-            "Wednesday" => "9:00AM - 8:00PM",
-            "Thursday" => "9:00AM - 8:00PM",
-            "Friday" => "9:00AM - 8:00PM",
-            "Saturday" => "9:00AM - 8:00PM",
-            "Sunday" => "9:00AM - 8:00PM"
-        ],
-        "gallery" => ["images/haircut1.jpg", "images/haircut2.jpg", "images/haircut3.jpg"],
-        "contact" => [
-            "phone" => "6181234567",
-            "email" => "jDoe@jmail.com"
-        ]
-    ],
-    [
-        "name" => "Jan Smith",
-        "role" => "Owner, Barber",
-        "photo" => "images/barber3.png",
-        "services" => ["Shave" , "Haircut"],
-        "hours" => [
-            "Monday" => "9:00AM - 8:00PM",
-            "Tuesday" => "9:00AM - 8:00PM",
-            "Wednesday" => "9:00AM - 8:00PM",
-            "Thursday" => "9:00AM - 8:00PM",
-            "Friday" => "9:00AM - 8:00PM",
-            "Saturday" => "9:00AM - 8:00PM",
-            "Sunday" => "9:00AM - 8:00PM"
-        ],
-        "gallery" => ["images/haircut1.jpg", "images/haircut2.jpg", "images/haircut3.jpg"],
-        "contact" => [
-            "phone" => "9876543210",
-            "email" => "jSmith@coldmail.com"
-        ]
-    ],
-    [
-            "name" => "Fred Bread",
-            "role" => "Master Barber",
-            "photo" => "images/barber2.png",
-            "services" => ["Fade", "Beard Trim"],
-            "hours" => [
-                "Monday" => "9:00AM - 8:00PM",
-                "Tuesday" => "9:00AM - 8:00PM",
-                "Wednesday" => "9:00AM - 8:00PM",
-                "Thursday" => "9:00AM - 8:00PM",
-                "Friday" => "9:00AM - 8:00PM",
-                "Saturday" => "9:00AM - 8:00PM",
-                "Sunday" => "9:00AM - 8:00PM"
-            ],
-            "gallery" => ["images/haircut1.jpg", "images/haircut2.jpg", "images/haircut3.jpg"],
-            "contact" => [
-                "phone" => "1231230123",
-                "email" => "fBread@yippie.com"
-            ]
-        
-        ],
-        [
-                "name" => "Billy Bob",
-                "role" => "Master Barber",
-                "photo" => "images/barber4.png",
-                "services" => ["Buzz Cut", "Hot Towel Shave"],
-                "hours" => [
-                    "Monday" => "9:00AM - 8:00PM",
-                    "Tuesday" => "9:00AM - 8:00PM",
-                    "Wednesday" => "9:00AM - 8:00PM",
-                    "Thursday" => "9:00AM - 8:00PM",
-                    "Friday" => "9:00AM - 8:00PM",
-                    "Saturday" => "9:00AM - 8:00PM",
-                    "Sunday" => "9:00AM - 8:00PM"
-                ],
-                "gallery" => ["images/haircut1.jpg", "images/haircut2.jpg", "images/haircut3.jpg"],
-                "contact" => [
-                    "phone" => "4566544567",
-                    "email" => "bBob@inlook.com"
-            ]
-        ]
-];
+// Connects to the database
+require 'db_connection.php';
+// Initalize a barbers list
+$barbers = [];
+$sql = "SELECT * FROM Barber_Information";
+$barber_result = $conn->query($sql);
+// When there are barbers retrieve more information
+if ($barber_result->num_rows > 0) {
+    // Loop through all the possible barbers
+    while ($barber = $barber_result->fetch_assoc()) {
+        // Get the barbers Username which is equivalent to the barber_id in other tables
+        $username = $barber['Username'];
+        // Retrieve that barbers services for Barber_Services
+        $services = [];
+        $stmt = $conn->prepare("SELECT name FROM Barber_Services WHERE barber_id = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $services_result = $stmt->get_result();
+        while ($service = $services_result->fetch_assoc()) {
+            $services[] = $service['name'];
+        }
+        $barber['services'] = $services;
+
+
+        // Retrieves the barbers usual weekly availability from Usual_Hours
+        $availability = [];
+        $stmt = $conn->prepare("SELECT day_of_week, start_time, end_time FROM Barber_Availability WHERE barber_id = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $hours_result = $stmt->get_result();
+        while ($hour = $hours_result->fetch_assoc()) {
+            $day = $hour['day_of_week'];
+            $start = date("g:i a", strtotime($hour['start_time']));
+            $end = date("g:i a", strtotime($hour['end_time']));
+            $availability[$day] = "$start - $end";
+        }
+        $barber['availability'] = $availability;
+
+
+        // Retrieves the barbers portfolio from Barber_Gallery
+        $gallery = [];
+        $stmt = $conn->prepare("SELECT image FROM Barber_Gallery WHERE barber_id = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $gallery_result = $stmt->get_result();
+        while ($image = $gallery_result->fetch_assoc()) {
+            $gallery[] = $image['image'];
+        }
+        $barber['gallery'] = $gallery;
+
+        $barbers[] = $barber;
+    }
+}
 ?>
+<!-- Includes the header -->
+<?php include('header.php'); ?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <!-- Define character encoding-->
     <meta charset="UTF-8">
     <!--Ensure proper rendering and touch zooming on mobile devices-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+
     <!--Name of Page-->
-    <title>Barber Page</title>
+    <title>Barbers</title>
     <!--Style choices for page, they include font used, margins, alignation, background color, display types, and some others-->
     <style>
-        /* Style for the entire page */
-        body {
-            margin: 0;
-            padding-top: 70px;
-            text-align: center;
-            font-family: 'Georgia', serif; 
-            background: url('https://th.bing.com/th/id/R.69941b7bd8bbf6c5a425e501d643deb5?rik=nfqWoo9%2flwrCrg&riu=http%3a%2f%2fwww.raphaelsbeautyschool.edu%2fwp-content%2fuploads%2f2019%2f01%2fBarbershop.jpg&ehk=TFRsXzsM6InbmqSx4mvX%2fqF9p0%2fCwEmQV3cXH3vO6uM%3d&risl=&pid=ImgRaw&r=0') no-repeat center center fixed;
-            background-size: cover;
-            text-align: center;
-            color:  rgba(27, 27, 27, 0.9);
-        }
-
-        /* Top Bar at Top with Pages and Login */
-        .top-bar {
-            background-color: #006400; 
-            padding: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-            height: 70px; 
+        /* General Styles */
+        header {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-        }
-        /* Size of Letters on it's header */
-        .top-bar h1 {
-            margin: 0;
-            padding-left: 20px;
-            font-size: 28px;
-        }
-        /* Space for the login button on the right */
-        .login-container {
-            display: flex;
-            align-items: center;
-            padding-right: 20px;
-        }
-        /* Login Button Format*/
-        .login-button {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #007BFF;
+            background-color: #333;
+            /* Adjust to match your site’s header */
             color: white;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            margin-left: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        /* Style for the Menu taht will have the navigation buttons */
-        .menu {
-            display: flex;
-            flex-grow: 1;
-            justify-content: center;
-            height: 100%;
-        }
-        /* Style of Navigation Buttons */
-        .menu button {
-            background-color: #006400; 
-            color: white;
-            border: none;
-            padding: 20px 25px; 
-            font-size: 18px;
-            cursor: pointer;
-            flex-grow: 1;
+            padding: 15px;
             text-align: center;
-            font-family: 'Georgia', serif; 
+            z-index: 1000;
         }
-        /* Color gets darker when hovering the buttons */
-        .menu button:hover {
-            background-color: #004d00; 
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background-color: white;
+            margin: 0;
+            padding: 0;
+            padding-top: 80px;
+            color: white;
+            line-height: 1.6;
         }
-        /* Style for each barber profile */
-        .barber-container{
+
+        /* Main Container */
+        .barbers {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Barber Card */
+        .barber-container {
             width: 320px;
             background: rgba(50, 50, 50, 0.9);
             padding: 20px;
             border-radius: 10px;
             text-align: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
             align-items: center;
             color: white;
+        }
+        /* Barber Name */
+        .barber-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 15px 0;
+            text-align: center;
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
 
         }
-        .barbers { 
-            gap: 20px;
-            background: url('https://th.bing.com/th/id/R.69941b7bd8bbf6c5a425e501d643deb5?rik=nfqWoo9%2flwrCrg&riu=http%3a%2f%2fwww.raphaelsbeautyschool.edu%2fwp-content%2fuploads%2f2019%2f01%2fBarbershop.jpg&ehk=TFRsXzsM6InbmqSx4mvX%2fqF9p0%2fCwEmQV3cXH3vO6uM%3d&risl=&pid=ImgRaw&r=0') no-repeat center center fixed;
-            background-size: cover;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
+
+        /* Barber Photo */
+        .barber-photo {
+            width: 280px;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 15px;
         }
-        
-        .barber-name {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
+
+        /* Services Section */
+        .services {
+            font-size: 16px;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 8px;
         }
-        .barber-role strong {
-            font-weight: bold;
-        }
+
         .services strong {
-            font-weight: bold;
+            color: white;
+            display: block;
+            margin-bottom: 5px;
         }
-        .barber-images {
+
+        /* Availability Section */
+        .hours {
+            margin: 15px 0;
+            text-align: left;
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .hours h3 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            color: white;
+            text-align: center;
+        }
+
+        .hours p {
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .hours strong {
+            color: #f8f8f8;
+            font-weight: 500;
+        }
+        /* Style for their portfolio images */
+        .gallery-container {
+            text-align: center;
+            color: white;
+            max-width: 300px;
+            margin-top: 10px auto;
+            gap: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            max-width: 600px;
         }
-        .barber-images img { 
-            width: 300px;
-            height: auto;
-            display: none;
-        }
-        .barber-photo {
-            width: 250px; 
-            height: 250px; 
-            object-fit: cover; 
-            
-            margin-bottom: 10px;
-        }
-        /* Style for their portfolio images */
-        .gallery-container { 
-            display: flex;
-            justify-content: center;
-            position: relative;
-            max-width: 300px;
-            margin-top: 10px;
-        }
-
         .gallery-container img {
             width: 250px;
             height: 250px;
             object-fit: cover;
+            text-align: center;
             border-radius: 8px;
             display: none;
         }
-
         .gallery-container img.active {
             display: block;
         }
-
         /* Style the arrows */
         .arrow {
-            background: none; 
-            border: none; 
-            font-size: 30px; 
-            color: black; 
-            cursor: pointer;  
-            padding: 5px; 
+            background: none;
+            border: none;
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+            padding: -10px;
         }
+
         .arrow:hover {
-            color: #555; 
+            color: red;
         }
 
         .arrow-left {
-            left: -50px; 
+            left: -50px;
         }
 
         .arrow-right {
-            right: -50px; 
+            right: -50px;
         }
-        
-        .availability { 
-            font-weight: bold;
-            color: green;
+
+
+        /* Contact Section */
+        .contact {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            width: 100%;
+        }
+
+        .contact>p:first-child {
+            color: white;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            font-size: 18px;
         }
 
         .contact-info {
-            display: inline;
-            font-weight: bold;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        
 
+        .contact-info a {
+            color: #e0e0e0;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .contact-info a:hover {
+            color: white;
+        }
+
+        .contact-info i {
+            color: white;
+        }
+
+        /* Social Media */
+        .social-media {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-media a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            text-decoration: none;
+            /* Removes underline */
+        }
+
+        .social-media a:hover {
+            transform: scale(1.1) translateY(-3px);
+            opacity: 0.9;
+        }
+
+        .fa-facebook {
+            background: #3b5998;
+        }
+
+        .fa-instagram {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+        }
+
+        .fa-tiktok {
+            background: #000;
+        }
+
+        .fa-envelope,
+        .fa-phone {
+            color: red;
+            margin-right: 5px;
+        }
     </style>
+
     <!-- JavaScript for handling barber image gallery -->
     <script>
         /* Function to show a specific image in the barber's portfolio */
@@ -331,61 +363,84 @@ $barbers = [
         });
     </script>
 </head>
-<body>
-    <!--The green Bar at the top that has the name and button that takes you to the login page-->
-    <div class="top-bar">
-        <h1>Quartet's Barbershop</h1>
-        <div class="menu">
-            <button onclick="location.href='index.php'">Home</button>
-            <button onclick="location.href='schedule.php'">Schedule</button>
-            <button onclick="location.href='store.php'">Store</button>
-            <button onclick="location.href='barbers.php'">Barbers</button>
-            <button onclick="location.href='about.php'">About us</button>
-            <button onclick="location.href='feedback.php'">Contact us</button>
-        </div>
 
-        <!--Stylized Button to be circular, when clicked takes you to login.html-->
-        <div class="login-container">
-            <span>Login</span>
-            <button class="login-button" onclick="location.href='login.php'">&#10132;</button>
-        </div>
+<body>
+    <div class="barbers">
+        <!-- Loop through PHP array to display each barber's profile dynamically -->
+        <?php foreach ($barbers as $index => $barber): ?>
+            <div class="barber-container">
+                <!-- Displays the picture of the barber -->
+                <?php if (!empty($barber['Photo'])): ?>
+                    <img src="<?php echo htmlspecialchars($barber['Photo']); ?>" alt="<?php echo htmlspecialchars($barber['First_Name'] . ' ' . $barber['Last_Name']); ?>" class="barber-photo">
+                <?php endif; ?>
+                <!-- Displays the name of that barber -->
+                <div class="barber-name"><?php echo htmlspecialchars($barber['First_Name'] . ' ' . $barber['Last_Name']); ?></div>
+                <!-- Displays the services that barber offers -->
+                <?php if (!empty($barber['services'])): ?>
+                    <div class="services"><strong>Services: </strong><?php echo htmlspecialchars(implode(", ", $barber['services'])); ?></div>
+                <?php else: ?>
+                    <div class="services"><strong>Services: </strong>None</div>
+                <?php endif; ?>
+
+                <!-- Displays the usual weekly availability of that barber -->
+                <div class="hours">
+                    <h3>Availability</h3>
+                    <?php
+                    $daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                    foreach ($daysOfWeek as $day): ?>
+                        <p>
+                            <strong><?php echo htmlspecialchars($day); ?>:</strong>
+                            <?php echo isset($barber['availability'][$day]) ? htmlspecialchars($barber['availability'][$day]) : "None"; ?>
+                        </p>
+                    <?php endforeach; ?>
+                </div>
+                <!-- Displays the portfolio of that barber -->
+                <?php if (!empty($barber['gallery'])): ?>
+                    <h3>Portfolio</h3>
+                    <div class="gallery-container barber-<?php echo $index; ?>">
+                        <button class="arrow arrow-left" onclick="prevImage(<?php echo $index; ?>)">&#9664;</button>
+                        <?php foreach ($barber['gallery'] as $img_index => $image): ?>
+                            <img src="<?php echo htmlspecialchars($image); ?>" class="<?php echo $img_index === 0 ? 'active' : ''; ?>">
+                        <?php endforeach; ?>
+                        <button class="arrow arrow-right" onclick="nextImage(<?php echo $index; ?>)">&#9654;</button>
+                    </div>
+                <?php endif; ?>
+                <!-- Displays all the contact information of that barber -->
+                <div class="contact">
+                    <?php if (!empty($barber['Email']) || !empty($barber['Phone_Number']) || !empty($barber['Facebook']) || !empty($barber['Instagram']) || !empty($barber['TikTok'])): ?>
+                        <p><strong>Contact Info</strong></p>
+                    <?php endif; ?>
+
+                    <?php if (!empty($barber['Email'])): ?>
+                        <p class="contact-info">
+                            <i class="fa fa-envelope"></i>
+                            <a href="mailto:<?php echo htmlspecialchars($barber['Email']); ?>"><?php echo htmlspecialchars($barber['Email']); ?></a>
+                        </p>
+                    <?php endif; ?>
+
+                    <?php if (!empty($barber['Phone_Number'])): ?>
+                        <p class="contact-info">
+                            <i class="fa fa-phone"></i>
+                            <a href="tel:<?php echo htmlspecialchars($barber['Phone_Number']); ?>"><?php echo htmlspecialchars($barber['Phone_Number']); ?></a>
+                        </p>
+                    <?php endif; ?>
+                    <div class="social-media">
+                        <?php if (!empty($barber['Facebook'])): ?>
+                            <a href="https://www.facebook.com/<?php echo htmlspecialchars($barber['Facebook']); ?>" target="_blank" class="fa-brands fa-facebook"></a>
+                        <?php endif; ?>
+
+                        <?php if (!empty($barber['Instagram'])): ?>
+                            <a href="https://www.instagram.com/<?php echo htmlspecialchars($barber['Instagram']); ?>" target="_blank" class="fa-brands fa-instagram"></a>
+                        <?php endif; ?>
+
+                        <?php if (!empty($barber['TikTok'])): ?>
+                            <a href="https://www.tiktok.com/@<?php echo htmlspecialchars($barber['TikTok']); ?>" target="_blank" class="fa-brands fa-tiktok"></a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+        <br><br>
     </div>
-<h1>Barbers</h1>
-<div class="barbers">
-    <!-- Loop through PHP array to display each barber's profile dynamically -->
-    <?php foreach ($barbers as $index => $barber): ?>
-        <div class="barber-container">
-            <!-- Displays the barber's name, role, and services -->
-            <img src="<?php echo $barber['photo']; ?>" alt="<?php echo $barber['name']; ?>" class="barber-photo">
-            <div class="barber-name"><?php echo $barber['name']; ?></div>
-            <div class="barber-role"><strong>Role: </strong><?php echo $barber['role']; ?></div>
-            <div class="services"><strong>Services: </strong><?php echo implode(", ", $barber['services']); ?></div>
-            <!-- Displays the barbers usually hours -->
-            <div class="hours">
-                <h3>Availability</h3>
-                <?php foreach ($barber['hours'] as $day => $hours): ?>
-                    <p><strong><?php echo $day; ?></strong>: <?php echo $hours; ?></p>
-                <?php endforeach; ?>
-            </div>
-            <!-- Displays the barbers portfolio images -->
-            <h3>Portfolio</h3>
-            <div class="gallery-container barber-<?php echo $index; ?>">
-                <button class="arrow arrow-left" onclick="prevImage(<?php echo $index; ?>)">&#9664;</button>
-                <?php foreach ($barber['gallery'] as $img_index => $image): ?>
-                    <img src="<?php echo $image; ?>" class="<?php echo $img_index === 0 ? 'active' : ''; ?>">
-                <?php endforeach; ?>
-                <button class="arrow arrow-right" onclick="nextImage(<?php echo $index; ?>)">&#9654;</button>
-            </div>
-            <!-- Displays the contact information of the barbers -->
-            <div class="contact">
-                <h3>Contact</h3>
-                <p class=contact-info>Phone: </p>
-                <a href="tel:<?php echo $barber['contact']['phone']; ?>"> <?php echo $barber['contact']['phone']; ?></a><br>
-                <p class=contact-info>Email: </p>
-                <a href="mailto:<?php echo $barber['contact']['email']; ?>"><?php echo $barber['contact']['email']; ?></a><br>
-            </div>
-        </div>
-    <?php endforeach; ?>
-    <br><br>
-</div>
 </body>
+</html>
