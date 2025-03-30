@@ -3,6 +3,8 @@ Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 03/02/2025
     Revision:
         03/09/2025 -- Jose -- Fixed mistake so text inputed is visible (white)
+        03/30/2025 -- Jose -- Now Sends Communication to Database and Barber Side
+
 Purpose: Allows user to send comments that will reach the barbers email for feedback/questions purposes
 -->
 <?php
@@ -280,10 +282,11 @@ session_start();
         <div class="section">
             <p>Do you have any questions about our service? Please send us a message and we will respond as soon as possible!<p>
         </div>
-        <form action="send_mail.php" method="POST">
+        <form action="recieve_feedback.php" method="POST">
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required>
-            
+            <label for="name">Name:</label>
+            <input type="name" id="name" name="name">
             <label for="comment">Comment:</label>
             <textarea id="comment" name="comment" rows="4" required></textarea>
             
