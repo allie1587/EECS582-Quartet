@@ -8,6 +8,18 @@
 -->
 
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+include ("db_connection.php");
+
+$query = "
+    SELECT first_name, last_name, month, day, time, checkout_time
+    FROM Checkout_History
+    ORDER BY checkout_time DESC;
+";
+$result = $conn->query($query);
+$checkouts = $result->fetch_all(MYSQLI_ASSOC);
+$conn->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,6 +29,19 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Barber Checkouts</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
   </head>
   <body>
     <p>See history of checkouts here</p>
@@ -31,7 +56,31 @@
     <form method="post" action="logout.php">
     <button type="submit" name="logout">Logout</button>
     </form>
-    
-    
+
+    <h1>Checkout History</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Month</th>
+                <th>Day</th>
+                <th>Time</th>
+                <th>Checkout Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($checkouts as $checkout): ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($checkout['first_name']); ?></td>
+                    <td><?php echo htmlspecialchars($checkout['last_name']); ?></td>
+                    <td><?php echo htmlspecialchars($checkout['month']); ?></td>
+                    <td><?php echo htmlspecialchars($checkout['day']); ?></td>
+                    <td><?php echo htmlspecialchars($checkout['time']); ?></td>
+                    <td><?php echo htmlspecialchars($checkout['checkout_time']); ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
   </body>
 </html>

@@ -11,16 +11,39 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 include ("db_connection.php");
+
+// Handle checkout action
+if (isset($_POST['checkout'])) {
+    $first_name = $_POST['first_name'];
+    $last_name = $_POST['last_name'];
+    $month = $_POST['month'];
+    $day = $_POST['day'];
+    $time = $_POST['time'];
+
+    // Insert into Checkout_History
+    $stmt = $conn->prepare("INSERT INTO Checkout_History (first_name, last_name, month, day, time) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssis", $first_name, $last_name, $month, $day, $time);
+    $stmt->execute();
+    $stmt->close();
+
+    // Delete from Confirmed_Appointments
+    $stmt = $conn->prepare("DELETE FROM Confirmed_Appointments WHERE First_name = ? AND Last_name = ? AND Month = ? AND Day = ? AND Time = ?");
+    $stmt->bind_param("sssis", $first_name, $last_name, $month, $day, $time);
+    $stmt->execute();
+    $stmt->close();
+
+    // Refresh the page to reflect changes
+    header("Location: dashboard.php");
+    exit();
+}
+
 $query = "
     SELECT First_name, Last_name, Month, Day, Time
     FROM Confirmed_Appointments
     ORDER BY Day ASC;
 ";
-// Execute the query
 $result = $conn->query($query);
-// Fetch all rows as an associative array
 $clients = $result->fetch_all(MYSQLI_ASSOC);
-// Close the connection
 $conn->close();
 ?>
 <!DOCTYPE html>
@@ -60,7 +83,6 @@ $conn->close();
     <button type="submit" name="logout">Logout</button>
     </form>
 
-
     <h1>Today's schedule</h1>
     <table>
         <thead>
@@ -70,6 +92,7 @@ $conn->close();
                 <th>Month</th>
                 <th>Day</th>
                 <th>Time</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -80,7 +103,16 @@ $conn->close();
                     <td><?php echo htmlspecialchars($client['Month']); ?></td>
                     <td><?php echo htmlspecialchars($client['Day']); ?></td>
                     <td><?php echo htmlspecialchars($client['Time']); ?></td>
-
+                    <td>
+                        <form method="post" action="dashboard.php">
+                            <input type="hidden" name="first_name" value="<?php echo $client['First_name']; ?>">
+                            <input type="hidden" name="last_name" value="<?php echo $client['Last_name']; ?>">
+                            <input type="hidden" name="month" value="<?php echo $client['Month']; ?>">
+                            <input type="hidden" name="day" value="<?php echo $client['Day']; ?>">
+                            <input type="hidden" name="time" value="<?php echo $client['Time']; ?>">
+                            <button type="submit" name="checkout">Checkout</button>
+                        </form>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
