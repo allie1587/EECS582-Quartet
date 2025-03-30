@@ -32,6 +32,7 @@ foreach ($cart_items as $item) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="style/style.css">
     <title>Shopping Cart</title>
     <style>
         /*ChatGPT helped with style*/

@@ -83,248 +83,27 @@ if ($barber_result->num_rows > 0) {
     <!--Ensure proper rendering and touch zooming on mobile devices-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-
-    <!--Name of Page-->
-    <title>Barbers</title>
-    <!--Style choices for page, they include font used, margins, alignation, background color, display types, and some others-->
+    <link rel="stylesheet" href="style/styles.css">
     <style>
-        /* General Styles */
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: #333;
-            /* Adjust to match your site’s header */
-            color: white;
-            padding: 15px;
-            text-align: center;
-            z-index: 1000;
-        }
-
         body {
             font-family: 'Poppins', Arial, sans-serif;
             margin: 0;
             padding: 0;
             padding-top: 80px;
-            color: black;;
+            color: black;
+            background-color: #f4f4f4;
             line-height: 1.6;
         }
 
-        /* Main Container */
-        .barbers {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 30px;
-            padding: 20px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* Barber Card */
-        .barber-container {
-            width: 320px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: color;
-        }
-        /* Barber Name */
-        .barber-name {
-            font-size: 24px;
-            font-weight: 700;
-            margin: 15px 0;
-            text-align: center;
-            width: 100%;
-            padding: 15px;
-            border-radius: 10px;
-            color: black;
-
-        }
-
-        /* Barber Photo */
-        .barber-photo {
-            width: 280px;
-            height: 280px;
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 15px;
-        }
-
-        /* Services Section */
-        .services {
-            font-size: 16px;
-            margin: 15px 0;
-            padding: 10px;
-            border-radius: 8px;
-        }
-
-        .services strong {
-            color: black;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        /* Availability Section */
-        .hours {
-            margin: 15px 0;
-            text-align: left;
-            width: 100%;
-            padding: 15px;
-            border-radius: 10px;
-        }
-
-        .hours h3 {
-            margin: 0 0 10px 0;
-            font-size: 18px;
-            color: black;
-            text-align: center;
-        }
-
-        .hours p {
-            margin: 8px 0;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .hours strong {
-            color: black;
-            font-weight: 500;
-        }
-        /* Style for their portfolio images */
-        .gallery-container {
-            text-align: center;
-            color: black;
-            max-width: 300px;
-            margin-top: 10px auto;
-            gap: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .gallery-container img {
-            width: 250px;
-            height: 250px;
-            object-fit: cover;
-            text-align: center;
-            border-radius: 8px;
-            display: none;
-        }
-        .gallery-container img.active {
-            display: block;
-        }
-        /* Style the arrows */
-        .arrow {
-            background: none;
-            border: none;
-            font-size: 30px;
-            color: rgba(36, 35, 35);
-            cursor: pointer;
-            padding: -10px;
-        }
-
-        .arrow:hover {
-            color: rgba(36, 35, 35);
-        }
-
-        .arrow-left {
-            left: -50px;
-        }
-
-        .arrow-right {
-            right: -50px;
-        }
-
-
-        /* Contact Section */
-        .contact {
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: 10px;
-            width: 100%;
-        }
-
-        .contact>p:first-child {
-            color: black;
-            font-weight: 600;
-            margin: 0 0 10px 0;
-            font-size: 18px;
-        }
-
-        .contact-info {
-            margin: 8px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .contact-info a {
-            color: black;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .contact-info a:hover {
-            color: black;
-        }
-
-        .contact-info i {
-            color: black;
-        }
-
-        /* Social Media */
-        .social-media {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .social-media a {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            text-decoration: none;
-            /* Removes underline */
-        }
-
-        .social-media a:hover {
-            transform: scale(1.1) translateY(-3px);
-            opacity: 0.9;
-        }
-
-        .fa-facebook {
-            background: #3b5998;
-        }
-
-        .fa-instagram {
-            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-        }
-
-        .fa-tiktok {
-            background: #000;
-        }
-
-        .fa-envelope,
-        .fa-phone {
-            color: red;
-            margin-right: 5px;
-        }
     </style>
+
+
+
+    <!--Name of Page-->
+    <title>Barbers</title>
+    <!--Style choices for page, they include font used, margins, alignation, background color, display types, and some others-->
+
+
 
     <!-- JavaScript for handling barber image gallery -->
     <script>

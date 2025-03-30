@@ -9,6 +9,8 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cancel Appointment</title>
+    <link rel="stylesheet" href="style/styles.css">
+
     <style>
         body {
             margin: 0;
@@ -29,12 +31,6 @@ session_start();
         }
         input[type="number"] {
             width: 90%;
-            padding: 10px;
-            margin-top: 5px;
-            background-color: #444;
-            color: white;
-            border: 1px solid #666;
-            border-radius: 5px;
         }
         button {
             background-color: #008000;
@@ -47,9 +43,10 @@ session_start();
             transition: 0.3s;
             margin-top: 10px;
         }
-        button:hover {
+            button:hover {
             background-color: #00A000;
         }
+
         #appointmentDetails {
             margin-top: 15px;
             font-size: 16px;
@@ -61,36 +58,6 @@ session_start();
             width: fit-content;
         }
     </style>
-<<<<<<< HEAD
-    <script>
-        function fetchAppointment() {
-            let appointmentID = document.getElementById("appointmentID").value;
-            
-            fetch("fetch_appointment.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ appointmentID: appointmentID })
-            })
-            .then(response => response.json())
-            .then(data => {
-                let appointmentDiv = document.getElementById("appointment_info");
-
-                if (data.success) {
-                    appointmentDiv.innerHTML = `
-                        <p><strong>Service:</strong> ${data.service}</p>
-                        <p><strong>Date:</strong> ${data.date}</p>
-                        <p><strong>Time:</strong> ${data.time}</p>
-                        <p><strong>Barber:</strong> ${data.barber}</p>
-                        <form action="cancel.php" method="POST">
-                            <input type="hidden" name="appointmentID" value="${appointmentID}">
-                            <button type="submit">Cancel Appointment</button>
-                        </form>
-                    `;
-                } else {
-                    appointmentDiv.innerHTML = "<p style='color: red;'>No appointment found!</p>";
-                }
-            });
-=======
     <script> 
         function fetchAppointment() { //used to fetch appointments when user enters an appointment id
             let appointmentID = document.getElementById("appointmentID").value;
@@ -115,7 +82,6 @@ session_start();
                 }
             };
             xhr.send("appointmentID=" + appointmentID);
->>>>>>> 15bc41f3937c3da23e289e5c5e298a0e73b632ed
         }
     </script>
 </head>
@@ -131,23 +97,11 @@ session_start();
         
         <div id="appointmentDetails"></div> <!-- Appointment info will appear here -->
 
-<<<<<<< HEAD
-    <div class="info_form">
-        <label for="appointmentID">Enter Appointment ID:</label>
-        <input type="text" id="appointmentID" required>
-        <button onclick="fetchAppointment()">Search</button>
-    </div>
-
-    <div class="appointment_info">
-        <p id="appointment_info"></p>
-    </div>
-=======
         <form action="cancel.php" method="POST">
             <input type="hidden" id="hiddenAppointmentID" name="appointmentID">
             <button type="submit" id="cancelButton">Cancel Appointment</button>
         </form>
     </div>
 
->>>>>>> 15bc41f3937c3da23e289e5c5e298a0e73b632ed
 </body>
 </html>
