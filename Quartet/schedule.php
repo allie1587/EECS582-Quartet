@@ -14,7 +14,7 @@
         3/14/2025 -- Brinley, Add week view
         3/16/2025 -- Brinley, add search/filtering
         3/27/2025 -- Brinley, gray out days before current date
-        3/28/2025 -- Brinley, gray out timeslots before current time; remove confirmed appointments
+        3/28/2025 -- Brinley, gray out timeslots before current time
     Creation date:
     Other sources: ChatGPT
 -->
@@ -178,7 +178,6 @@ if ($mysqli->connect_error) {
             border-radius: 5px;
             cursor: pointer;
             margin-top: 5px;
-            white-space: pre-line;
         }
 
         /* Popup styling */
@@ -204,7 +203,6 @@ if ($mysqli->connect_error) {
             max-width: 600px;
             text-align: center;
             position: relative;
-            white-space: pre-line;
         }
 
         .close-btn {
@@ -397,6 +395,7 @@ if ($mysqli->connect_error) {
         // Get the first day of the month and the total number of days in the month
         let firstDay = new Date(currentYear, currentMonth, 1).getDay(); // First day of the month
         let daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate(); // Number of days in the month
+        let daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate(); // Number of days in the previous month
 
         // Update month name
         document.getElementById('monthName').innerHTML = `${monthNames[currentMonth]} ${currentYear}`;
@@ -474,22 +473,27 @@ if ($mysqli->connect_error) {
             prevWeekButton.style.display = 'inline-block';
             nextWeekButton.style.display = 'inline-block';
 
-            if (day-weekday < 0) {
-                // Add empty divs for days before the 1st day of the month
-                // CHANGE THIS TO ACTUALLY SHOW THE LAST DAYS OF THE PREVIOUS MONTH
-                for (let i = 0; i < weekday; i++) {
-                    // let daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
-                    let emptyDay = document.createElement('div');
-                    emptyDay.classList.add('day');
-                    calendar.appendChild(emptyDay);
-                }
-            }
-            
-
             // Add actual days of the WEEK
             for (let offset = 0; offset < 7; offset++) {
+                let tempMonth = currentMonth;
+                let tempYear = currentYear
                 let wday = day - weekday + offset -1; // Correct calculation for the week day
                 let dayDiv = document.createElement('div');
+                if (wday < 1){
+                    wday += daysInPrevMonth;
+                    tempMonth--;
+                    if (tempMonth < 0) {
+                        tempMonth = 11;
+                        tempYear--;
+                    }
+                } else if (wday > daysInMonth) {
+                    wday -= daysInMonth;
+                    tempMonth++;
+                    if (tempMonth > 11) {
+                        tempMonth = 0;
+                        tempYear++;
+                    }
+                }
                 if (offset == weekday+1) { // if we're on the selected day
                     dayDiv.style.backgroundColor = "#c4454d"; // change background color to show it's selected
                 }
@@ -499,14 +503,14 @@ if ($mysqli->connect_error) {
                 let dayNumber = document.createElement('span');
                 dayNumber.textContent = wday;
 
-                if ((wday < currentDay && currentMonth == new Date().getMonth()) || currentMonth < new Date().getMonth()) { //gray out days before current day
+                if ((wday < currentDay && tempMonth == new Date().getMonth()) || tempMonth < new Date().getMonth()) { //gray out days before current day
                     dayDiv.style.background = 'rgb(70, 70, 70)';
                     dayNumber.style.color = 'darkgray';
                 } else {
                     //otherwise show appointments
 
                     // Fetch appointment count from backend
-                    fetch(`get_appointments.php?year=${currentYear}&month=${currentMonth}&day=${wday}&weekday=${new Date(currentYear, currentMonth, wday - 1).getDay()}`)
+                    fetch(`get_appointments.php?year=${tempYear}&month=${tempMonth}&day=${wday}&weekday=${new Date(tempYear, tempMonth, wday - 1).getDay()}`)
                         .then(response => response.json())
                         .then(data => {
                             // Reset appointments for this day
@@ -517,18 +521,11 @@ if ($mysqli->connect_error) {
                                 let item = document.createElement('button');
                                 if (appointment === "No appointments") {
                                     item.textContent = "No appointments";
-                                } else { //creating the button bubble
+                                } else {
                                     let time = (appointment.Time <= 12 ? appointment.Time : appointment.Time - 12);
                                     let period = (appointment.Time < 12 ? "AM" : "PM");
-                                    let b_name = (appointment.BarberID);
-                                let end_time = (appointment.End_Time <= 12 ? appointment.End_Time : appointment.End_Time - 12);
-                                let end_period = (appointment.End_Time < 12 ? "AM" : "PM");
-                                if (end_time < 0){
-                                    item.textContent = `${b_name}\n${time} ${period}`; //adds barber name and time
-                                } else{ 
-                                    item.textContent = b_name + "\n" + time + period + "\n" + end_time + end_period; //adds barber name, time, and excpected end
-                                }
-                                
+                                    item.textContent = time + period;
+
                                     //only make appointment clickable if time is after current time
                                     if (appointment.Time <= currentTime && appointment.Day == currentDay) {
                                         item.disabled = true;
@@ -615,7 +612,7 @@ if ($mysqli->connect_error) {
             let bookButton = document.createElement('button');
             bookButton.textContent = "Book Appointment";
             bookButton.addEventListener('click', () => {
-                bookAppointment(appointment, day, currentMonth, currentYear, appointment.Time);
+                bookAppointment(appointment, day, monthNames[currentMonth], currentYear, time);
             });
 
             appointmentGrid.appendChild(bookButton);
