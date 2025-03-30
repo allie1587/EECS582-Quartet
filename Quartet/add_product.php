@@ -89,45 +89,9 @@ include('header.php');
 <!-- Title for Page --> 
 <title>Add Product</title>
 <!-- Internal CSS for styling the page -->
+<link rel="stylesheet" href="style/styles.css">
 <style>
-    body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-    /* Style for the form box */
-    form {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 20px;
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        background-color: #f9f9f9;
-        color: black;
-    }
-    /* Style for the labels */
-    label {
-        display: block;
-        margin-top: 10px;
-        font-weight: bold;
-    }
-    /* Style for input boxes */
-    input[type="text"],
-    input[type="number"],
-    textarea {
-        width: 100%;
-        padding: 10px;
-        margin-top: 5px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 16px;
-    }
 
-    textarea {
-        height: 150px; 
-        resize: vertical; 
-    }
     /* Style for inputing a file */
     .file-input-container {
         position: relative;

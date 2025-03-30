@@ -172,7 +172,7 @@ include('header.php');
             font-size: 25px;
             color: black;
             transition: color 0.3s;
-}
+        }
 
 
     </style>

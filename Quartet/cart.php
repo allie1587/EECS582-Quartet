@@ -1,8 +1,16 @@
+<!--
+Authors: Alexandra, Jose, Brinley, Ben, Kyle
+Date: 03/12/2025
+Revisions:
+    03/16/2025 -- Alexandra Stratton -- Created the cart.php
+Purpose: Customers shopping carter
+Other Sources: ChatGPT
+-->
 <?php
 session_start();
 //Connects to the database
 require 'db_connection.php'; 
-
+//Gets everything in session_id's cart
 $session_id = session_id();
 $sql = "SELECT cart.*, products.name, products.price, products.image 
         FROM cart 
@@ -24,8 +32,10 @@ foreach ($cart_items as $item) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="style/style.css">
     <title>Shopping Cart</title>
     <style>
+        /*ChatGPT helped with style*/
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -130,6 +140,7 @@ foreach ($cart_items as $item) {
         <div class="empty-btn-container">
             <a href="empty_cart.php" class="empty-btn">Empty Cart</a>
         </div>
+        <!-- List everything in cart -->
         <table>
             <thead>
                 <tr>
@@ -172,12 +183,14 @@ foreach ($cart_items as $item) {
                 <?php endforeach; ?>
             </tbody>
         </table>
+        <!-- Gives total price -->
         <div class="total-price">
             Total: $<?php echo number_format($total_price, 2); ?>
         </div>
+        <!-- Place order button -->
         <div class="btn-container">
             <a href="store.php" class="continue-btn">Continue Shopping</a>
-            <a href="place_order.php" class="checkout-btn">Check Out</a>
+            <a href="place_orders.php" class="checkout-btn">Check Out</a>
         </div>
     </div>
 </body>

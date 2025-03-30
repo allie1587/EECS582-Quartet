@@ -76,6 +76,9 @@ $conn->close();
     <button onclick="location.href='clients.php'">Clients</button>
     <button onclick="location.href='customize.php'">Customize</button>
     <button onclick="location.href='testing.html'">TESTING</button>
+    <button onclick="location.href='see_feedback.php'">Feedback</button>
+    <button onclick="location.href='barber_profile.php'">Profile</button>
+
     </div>
   
     <button onclick="location.href='index.php'">Back to Customer Site</button>

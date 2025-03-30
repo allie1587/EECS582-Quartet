@@ -91,6 +91,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button onclick="location.href='calendar.php'">Calendar</button>
         <button onclick="location.href='clients.php'">Clients</button>
         <button onclick="location.href='customize.php'">Customize</button>
+        <button onclick="location.href='see_feedback.php'">Feedback</button>
+
     </div>
     <button onclick="location.href='index.php'">Back to Customer Site</button>
     <form method="post" action="logout.php">

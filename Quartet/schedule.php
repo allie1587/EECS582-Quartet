@@ -12,6 +12,9 @@
         3/2/2025 -- Allie upcoming and past appointments
         03/02/2025 -- Jose Leyba, Changed Style of Calendar + Cancelation button
         3/14/2025 -- Brinley, Add week view
+        3/16/2025 -- Brinley, add search/filtering
+        3/27/2025 -- Brinley, gray out days before current date
+        3/28/2025 -- Brinley, gray out timeslots before current time; remove confirmed appointments
     Creation date:
     Other sources: ChatGPT
 -->
@@ -133,7 +136,7 @@ if ($mysqli->connect_error) {
         .day {
             position: relative; /* Ensures child elements are positioned relative to this */
             aspect-ratio: 1/.75;
-            background:rgb(56, 51, 51);
+            background: rgb(50, 50, 50);
             border: 1px solid #ccc;
             padding: 15px;
             border-radius: 5px;
@@ -175,6 +178,7 @@ if ($mysqli->connect_error) {
             border-radius: 5px;
             cursor: pointer;
             margin-top: 5px;
+            white-space: pre-line;
         }
 
         /* Popup styling */
@@ -200,6 +204,7 @@ if ($mysqli->connect_error) {
             max-width: 600px;
             text-align: center;
             position: relative;
+            white-space: pre-line;
         }
 
         .close-btn {
@@ -214,7 +219,7 @@ if ($mysqli->connect_error) {
 
         /* Grid container inside the popup */
         .appointment-grid {
-            background-color: rgba(50, 50, 50, 0.9);;
+            background-color: rgba(50, 50, 50, 0.9);
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Adjust columns dynamically */
             gap: 10px;
@@ -254,17 +259,6 @@ if ($mysqli->connect_error) {
         .search-container button:hover {
             background-color: #0056b3;
         }
-        .cancel-alert {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            color:rgb(220, 94, 90);
-            background-color:rgb(111, 39, 45);
-            padding: 15px;
-            border-radius: 5px;
-            border: 1px solid #d9534f;
-            display: inline-block;
-        }
 
     </style>
 </head>
@@ -295,31 +289,23 @@ if ($mysqli->connect_error) {
     
     <!-- Search Feature -->
     <div class="search-container">
-        <input type="text" id="dayInput" placeholder="Enter day of the week">
-
-        <select id="barberSelect">
-            <option value="">Select Barber</option>
-            <option value="John Doe">John Doe</option>
-            <option value="Jan Smith">Jan Smith</option>
-            <option value="Billy Bob">Billy Bob</option>
-            <option value="Fred Bread">Fred Bread</option>
-        </select>
+        <input type="text" id="barberSelect" placeholder="Select Barber">
 
         <select id="timeSelect">
             <option value="">Select Time</option>
-            <option value="8:00 AM">8:00 AM</option>
-            <option value="9:00 AM">9:00 AM</option>
-            <option value="10:00 AM">10:00 AM</option>
-            <option value="11:00 AM">11:00 AM</option>
-            <option value="12:00 PM">12:00 PM</option>
-            <option value="1:00 PM">1:00 PM</option>
-            <option value="2:00 PM">2:00 PM</option>
-            <option value="3:00 PM">3:00 PM</option>
-            <option value="4:00 PM">4:00 PM</option>
-            <option value="5:00 PM">5:00 PM</option>
+            <option value="8">8:00 AM</option>
+            <option value="9">9:00 AM</option>
+            <option value="10">10:00 AM</option>
+            <option value="11">11:00 AM</option>
+            <option value="12">12:00 PM</option>
+            <option value="13">1:00 PM</option>
+            <option value="14">2:00 PM</option>
+            <option value="15">3:00 PM</option>
+            <option value="16">4:00 PM</option>
+            <option value="17">5:00 PM</option>
         </select>
 
-        <button onclick="fakeSearch()">Search</button>
+        <button onclick="search()">Search</button>
     </div>
     <!-- End Search Feature -->
 
@@ -342,8 +328,11 @@ if ($mysqli->connect_error) {
         </div>
 
         <div class="calendar-nav">
-            <button onclick="changeMonth(-1)">Previous</button>
-            <button onclick="changeMonth(1)">Next</button>
+            <button id="prevButton" onclick="changeMonth(-1)">Previous Month</button>
+            <button id="nextButton" onclick="changeMonth(1)">Next Month</button>
+            <!-- Week navigation buttons -->
+            <button id="prevWeekButton" onclick="changeWeek(-1)" style="display: none;">Previous Week</button>
+            <button id="nextWeekButton" onclick="changeWeek(1)" style="display: none;">Next Week</button>
         </div>
 
                 <!-- Popup Modal -->
@@ -356,23 +345,31 @@ if ($mysqli->connect_error) {
         </div>
     </div>
     <br>
-    <div class="cancel-alert">Need to cancel an appointment? </div>
-        <br>
-        <a href="cancel_appointment.php">Cancel here</a>
-        <br><br>
-
-    </div>
 
 <script>
 
     let monthView = true;
 
-        function fakeSearch() {
-            let day = document.getElementById("dayInput").value;
-            let barber = document.getElementById("barberSelect").value;
-            let time = document.getElementById("timeSelect").value;
+        function search() {
+            let barber = document.getElementById("barberSelect").value ? document.getElementById("barberSelect").value : null;
 
-            alert(`Searching for appointments on ${day}, with ${barber}, in the ${time}. (This is just a placeholder!)`);
+            let time = document.getElementById("timeSelect").value ? document.getElementById("timeSelect").value : null;
+
+            fetch('set_filter.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ filter: true,
+                                    barber: barber,
+                                    time: time
+                })
+            }).then(response => response.text())
+            .then(data => {
+                renderCalendar();
+            }).catch(error => {
+                console.error('Error:', error);
+            });
         }
 
         // ChatGPT help start
@@ -380,6 +377,7 @@ if ($mysqli->connect_error) {
         let currentYear = new Date().getFullYear(); // Current year
         let currentDay = new Date().getDate();
         let currentWeekday = new Date().getDate();
+        let currentTime = new Date().getHours();
         let monthNames = [
             'January', 'February', 'March', 'April', 'May', 'June', 
             'July', 'August', 'September', 'October', 'November', 'December'
@@ -389,6 +387,13 @@ if ($mysqli->connect_error) {
 
     // Function to render the calendar
     function renderCalendar(day=0, weekday=0) {
+        currentTime = new Date().getHours();
+
+        let prevButton = document.getElementById('prevButton'); //identifies button for switching months
+        let nextButton = document.getElementById('nextButton'); //identifies button for switching months
+        let prevWeekButton = document.getElementById('prevWeekButton'); //identifies button for switching weeks
+        let nextWeekButton = document.getElementById('nextWeekButton'); //identifies button for switching weeks
+
         // Get the first day of the month and the total number of days in the month
         let firstDay = new Date(currentYear, currentMonth, 1).getDay(); // First day of the month
         let daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate(); // Number of days in the month
@@ -401,11 +406,16 @@ if ($mysqli->connect_error) {
         calendar.querySelectorAll('.day').forEach(day => day.remove());
 
         if (monthView) {
-
+            //show month switch buttons, remove week switch buttons
+            prevButton.style.display = 'inline-block';
+            nextButton.style.display = 'inline-block';
+            prevWeekButton.style.display = 'none';
+            nextWeekButton.style.display = 'none';
             // Add empty divs for days before the 1st day of the month
             for (let i = 0; i < firstDay; i++) {
                 let emptyDay = document.createElement('div');
                 emptyDay.classList.add('day');
+                emptyDay.style.background = 'rgb(70, 70, 70)';
                 calendar.appendChild(emptyDay);
             }
 
@@ -418,37 +428,52 @@ if ($mysqli->connect_error) {
                 let dayNumber = document.createElement('span');
                 dayNumber.textContent = day;
 
-                // Create a button
-                let button = document.createElement('button');
+                // Gray out days before current date
+                if ((day < currentDay && currentMonth <= new Date().getMonth()) || currentMonth < new Date().getMonth()) {
+                    dayDiv.style.background = 'rgb(70, 70, 70)';
+                    dayNumber.style.color = 'darkgray';
+                } else {
+                    // Show appointment buttons
 
-                // Get the weekday
-                let weekday = new Date(currentYear, currentMonth, day-1).getDay();
+                    // Create a button
+                    let button = document.createElement('button');
 
-                // Fetch appointment count from backend
-                fetch(`get_appointments.php?year=${currentYear}&month=${currentMonth}&day=${day}&weekday=${weekday}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        appointmentsData = data;
-                        button.textContent = `${appointmentsData.length} Appointment(s) Found`;
-                    })
-                    .catch(error => {
-                        console.error("Error fetching appointment count:", error);
-                        button.textContent = "Error";
+                    // Get the weekday
+                    let weekday = new Date(currentYear, currentMonth, day-1).getDay();
+
+                    // Fetch appointment count from backend
+                    fetch(`get_appointments.php?year=${currentYear}&month=${currentMonth}&day=${day}&weekday=${weekday}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            appointmentsData = data;
+                            button.textContent = `${appointmentsData.length} Appointment(s) Found`;
+                        })
+                        .catch(error => {
+                            console.error("Error fetching appointment count:", error);
+                            button.textContent = "Error";
+                        });
+
+                    button.addEventListener('click', () => {
+                        monthView = false;
+                        renderCalendar(day, weekday);
                     });
-                
-                button.addEventListener('click', () => {
-                    monthView = false;
-                    renderCalendar(day, weekday);
-                });
-                button.classList.add('day-button');
+                    button.classList.add('day-button');
 
-                // Append elements
+                    // Append elements
+                    dayDiv.appendChild(button);
+                }
+                
                 dayDiv.appendChild(dayNumber);
-                dayDiv.appendChild(button);
                 calendar.appendChild(dayDiv);
             }
 
         } else {
+            //show week switch buttons, remove month switch buttons
+            prevButton.style.display = 'none';
+            nextButton.style.display = 'none';
+            prevWeekButton.style.display = 'inline-block';
+            nextWeekButton.style.display = 'inline-block';
+
             if (day-weekday < 0) {
                 // Add empty divs for days before the 1st day of the month
                 // CHANGE THIS TO ACTUALLY SHOW THE LAST DAYS OF THE PREVIOUS MONTH
@@ -462,50 +487,74 @@ if ($mysqli->connect_error) {
             
 
             // Add actual days of the WEEK
-for (let offset = 0; offset < 7; offset++) {
-    let wday = day - weekday + offset -1; // Correct calculation for the week day
-    let dayDiv = document.createElement('div');
-    dayDiv.classList.add('day');
-
-    // Create a span for the day number
-    let dayNumber = document.createElement('span');
-    dayNumber.textContent = wday;
-    dayDiv.appendChild(dayNumber);
-
-    // Append the dayDiv to the calendar before fetching data
-    calendar.appendChild(dayDiv);
-
-    // Fetch appointment count from backend
-    fetch(`get_appointments.php?year=${currentYear}&month=${currentMonth}&day=${wday}&weekday=${new Date(currentYear, currentMonth, wday - 1).getDay()}`)
-        .then(response => response.json())
-        .then(data => {
-            // Reset appointments for this day
-            let appointments = data.length ? data : ["No appointments"];
-
-            // Create grid items dynamically
-            appointments.forEach(appointment => {
-                let item = document.createElement('button');
-                if (appointment === "No appointments") {
-                    item.textContent = "No appointments";
-                } else {
-                    let time = (appointment.Time <= 12 ? appointment.Time : appointment.Time - 12);
-                    let period = (appointment.Time < 12 ? "AM" : "PM");
-                    item.textContent = time + period;
-
-                    // Add click event to show appointment details
-                    item.addEventListener('click', () => {
-                        openAppointmentInfo(appointment, wday);
-                    });
+            for (let offset = 0; offset < 7; offset++) {
+                let wday = day - weekday + offset -1; // Correct calculation for the week day
+                let dayDiv = document.createElement('div');
+                if (offset == weekday+1) { // if we're on the selected day
+                    dayDiv.style.backgroundColor = "#c4454d"; // change background color to show it's selected
                 }
-                item.classList.add('day-button');
-                dayDiv.appendChild(item);
-            });
-        })
-        .catch(error => {
-            console.error("Error fetching appointment count:", error);
-        });
-}
+                dayDiv.classList.add('day');
 
+                // Create a span for the day number
+                let dayNumber = document.createElement('span');
+                dayNumber.textContent = wday;
+
+                if ((wday < currentDay && currentMonth == new Date().getMonth()) || currentMonth < new Date().getMonth()) { //gray out days before current day
+                    dayDiv.style.background = 'rgb(70, 70, 70)';
+                    dayNumber.style.color = 'darkgray';
+                } else {
+                    //otherwise show appointments
+
+                    // Fetch appointment count from backend
+                    fetch(`get_appointments.php?year=${currentYear}&month=${currentMonth}&day=${wday}&weekday=${new Date(currentYear, currentMonth, wday - 1).getDay()}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Reset appointments for this day
+                            let appointments = data.length ? data : ["No appointments"];
+
+                            // Create timeslots dynamically
+                            appointments.forEach(appointment => {
+                                let item = document.createElement('button');
+                                if (appointment === "No appointments") {
+                                    item.textContent = "No appointments";
+                                } else { //creating the button bubble
+                                    let time = (appointment.Time <= 12 ? appointment.Time : appointment.Time - 12);
+                                    let period = (appointment.Time < 12 ? "AM" : "PM");
+                                    let b_name = (appointment.BarberID);
+                                let end_time = (appointment.End_Time <= 12 ? appointment.End_Time : appointment.End_Time - 12);
+                                let end_period = (appointment.End_Time < 12 ? "AM" : "PM");
+                                if (end_time < 0){
+                                    item.textContent = `${b_name}\n${time} ${period}`; //adds barber name and time
+                                } else{ 
+                                    item.textContent = b_name + "\n" + time + period + "\n" + end_time + end_period; //adds barber name, time, and excpected end
+                                }
+                                
+                                    //only make appointment clickable if time is after current time
+                                    if (appointment.Time <= currentTime && appointment.Day == currentDay) {
+                                        item.disabled = true;
+                                        item.style.backgroundColor = 'rgb(70, 70, 70)';
+                                    }  
+                                    // Add click event to show appointment details
+                                    item.addEventListener('click', () => {
+                                        openAppointmentInfo(appointment, wday);
+                                    });
+                                }
+                                item.classList.add('day-button');
+                                dayDiv.appendChild(item);
+                                
+                                
+                            });
+                        })
+                        .catch(error => {
+                            console.error("Error fetching appointment count:", error);
+                        });
+                }
+
+                    
+                dayDiv.appendChild(dayNumber);
+                // Append the dayDiv to the calendar before fetching data
+                calendar.appendChild(dayDiv);
+            }
         }
     }
 
@@ -523,6 +572,25 @@ for (let offset = 0; offset < 7; offset++) {
             }
 
             renderCalendar(); // Re-render the calendar for the new month
+        }
+        function changeWeek(direction) { //need to fix
+            // Adjust the current week by 7 days (direction is either 1 or -1)
+            currentWeekStart.setDate(currentWeekStart.getDate() + (direction * 7));
+
+            // Recalculate the first day of the week (we assume Sunday as the first day, adjust if needed)
+            let weekday = currentWeekStart.getDay(); // 0 for Sunday, 1 for Monday, etc.
+            let day = currentWeekStart.getDate();
+
+            // Re-render the calendar with the updated start day of the week
+            renderCalendar(day, weekday);
+        }
+
+        //Function the changes the week (forward or backward)
+        function changeWeek(direction) {
+            let daysToAdd = direction * 7; // Move forward or backward by 7 days
+            currentWeekStart.setDate(currentWeekStart.getDate() + daysToAdd);
+            
+            renderCalendar(); // Re-render the calendar to reflect the new week
         }
 
         function openAppointmentInfo(appointment, day) {
@@ -547,7 +615,7 @@ for (let offset = 0; offset < 7; offset++) {
             let bookButton = document.createElement('button');
             bookButton.textContent = "Book Appointment";
             bookButton.addEventListener('click', () => {
-                bookAppointment(appointment, day, monthNames[currentMonth], currentYear, time);
+                bookAppointment(appointment, day, currentMonth, currentYear, appointment.Time);
             });
 
             appointmentGrid.appendChild(bookButton);
