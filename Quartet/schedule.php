@@ -590,7 +590,7 @@ if ($mysqli->connect_error) {
             currentYear = selectedDate.getFullYear();
 
             // Re-render the calendar with the new selectedDate
-            renderCalendar(selectedDate.getDate(), selectedDate.getDay());
+            renderCalendar(selectedDate.getDate(), selectedDate.getDay()-1);
         }
 
 
@@ -617,7 +617,7 @@ if ($mysqli->connect_error) {
             bookButton.textContent = "Book Appointment";
             bookButton.addEventListener('click', () => {
                 bookAppointment(appointment, day, monthNames[currentMonth], currentYear, time);
-            });
+             });
 
             appointmentGrid.appendChild(bookButton);
 
