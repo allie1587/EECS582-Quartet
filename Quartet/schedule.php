@@ -469,6 +469,8 @@ if ($mysqli->connect_error) {
             }
 
         } else {
+            let firstWeekDay = new Date(currentYear, currentMonth, day - weekday); // First day of the current week
+            let lastWeekDay = new Date(currentYear, currentMonth, day - weekday + 6); // Last day of the current week
             //show week switch buttons, remove month switch buttons
             prevButton.style.display = 'none';
             nextButton.style.display = 'none';
@@ -563,7 +565,13 @@ if ($mysqli->connect_error) {
                 dayDiv.appendChild(dayNumber);
                 // Append the dayDiv to the calendar before fetching data
                 calendar.appendChild(dayDiv);
+                if (offset == 0){
+                    firstWeekDay = `${monthNames[tempMonth]} ${wday} `;
+                } else if (offset == 6 ){
+                    lastWeekDay = `${monthNames[tempMonth]} ${wday}`;
+                }
             }
+            document.getElementById('monthName').innerHTML = `${firstWeekDay} - ${lastWeekDay}`;
         }
     }
 
