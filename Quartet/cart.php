@@ -3,6 +3,7 @@ Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 03/12/2025
 Revisions:
     03/16/2025 -- Alexandra Stratton -- Created the cart.php
+    03/30/2025 -- Alexandra Stratton -- Place order for non-empty carts
 Purpose: Customers shopping carter
 Other Sources: ChatGPT
 -->
@@ -190,7 +191,9 @@ foreach ($cart_items as $item) {
         <!-- Place order button -->
         <div class="btn-container">
             <a href="store.php" class="continue-btn">Continue Shopping</a>
-            <a href="place_orders.php" class="checkout-btn">Check Out</a>
+            <?php if (count($cart_items) > 0): ?>
+                <a href="place_orders.php" class="checkout-btn">Check Out</a>
+            <?php endif; ?>
         </div>
     </div>
 </body>
