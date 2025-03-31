@@ -531,9 +531,9 @@ if ($mysqli->connect_error) {
                                     // Change button color based on barber
                                     if (appointment.BarberID === "JL") {
                                         item.style.backgroundColor = "lightblue";
-                                    } else if (appointment.BarberID === "Barber B") {
+                                    } else if (appointment.BarberID === "kyle5") {
                                         item.style.backgroundColor = "lightgreen";
-                                    } else if (appointment.BarberID === "Barber C") {
+                                    } else if (appointment.BarberID === "kyle4") {
                                         item.style.backgroundColor = "lightcoral";
                                     } else {
                                         item.style.backgroundColor = "gray";
