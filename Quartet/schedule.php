@@ -26,7 +26,7 @@ if ($mysqli->connect_error) {
     die("Connection failed: " . $mysqli->connect_error);
 }
 ?>
-
+<?php include('header.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,82 +36,14 @@ if ($mysqli->connect_error) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Title of the page displayed in the browser tab -->
     <title>Schedule</title>
-
+    <link rel="stylesheet" href="style1.css">
     <!-- Internal CSS for styling the page -->
     <style>
         /* Applies styles to the entire body */
-        body {
-            margin: 0;
-            padding-top: -5px;
-            text-align: center;
-            font-family: 'Georgia', serif; 
-            background-color:rgba(36, 35, 35, 0.97);
-            color: white;
-        }
-        /* Top Bar at Top with Pages and Login */
-        .top-bar {
-            background-color: #006400; /* Darker green */
-            padding: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-            height: 70px; /* Increased height */
-            position: relative; /* Changed from fixed to relative */
-        }
-        /* Size of Letters on it's header */
-        .top-bar h1 {
-            margin: 0;
-            padding-left: 20px;
-            font-size: 28px;
-        }
-        /* Space for the login button on the right */
-        .login-container {
-            display: flex;
-            align-items: center;
-            padding-right: 20px;
-        }
-        /* Login Button Format*/
-        .login-button {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            margin-left: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        /* Style for the Menu taht will have the navigation buttons */
-        .menu {
-            display: flex;
-            flex-grow: 1;
-            justify-content: center;
-            height: 100%;
-        }
-        /* Style of Navigation Buttons */
-        .menu button {
-            background-color: #006400; 
-            color: white;
-            border: none;
-            padding: 20px 25px; 
-            font-size: 18px;
-            cursor: pointer;
-            flex-grow: 1;
-            text-align: center;
-            font-family: 'Georgia', serif; 
-        }
-        /* Color gets darker when hovering the buttons */
-        .menu button:hover {
-            background-color: #004d00; 
-        }
+
         /* Calendar styles */
         .calendar-container {
-            background: rgba(36, 35, 35, 0.97);
+            background: rgba(223, 218, 218, 0.97);
             padding: 20px;
             border-radius: 10px;
             display: inline-block;
@@ -130,13 +62,13 @@ if ($mysqli->connect_error) {
             grid-template-columns: repeat(7, 1fr);
             gap: 5px;
             text-align: center;
-            background:rgb(42, 39, 39);
+            background:rgb(210, 207, 207);
         }
 
         .day {
             position: relative; /* Ensures child elements are positioned relative to this */
             aspect-ratio: 1/.75;
-            background: rgb(50, 50, 50);
+            background: rgb(252, 250, 250);
             border: 1px solid #ccc;
             padding: 15px;
             border-radius: 5px;
@@ -158,7 +90,7 @@ if ($mysqli->connect_error) {
 
 
         .dayHead {
-            background-color:rgb(1, 77, 1);
+            background-color:rgb(143, 48, 55);
             color: white;
             font-weight: bold;
             padding: 10px;
@@ -171,8 +103,8 @@ if ($mysqli->connect_error) {
 
         /* appointment button styling */
         .day-button {
-            background-color:rgba(40, 167, 70, 0.74);
-            color: white;
+            background-color: #c4454d;
+            color: black;
             border: none;
             padding: 5px 10px;
             border-radius: 5px;
@@ -187,16 +119,16 @@ if ($mysqli->connect_error) {
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: #333;
-            color: white;
+            color: black;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 10px rgb(255, 255, 255);
             display: none; /* Start hidden */
         }
 
         .popup-content {
-            background: #333; /* Dark background */
-            color: white;
+            background: white; /* Dark background */
+            color: black;
             padding: 20px;
             border-radius: 10px;
             width: 80%;
@@ -217,7 +149,7 @@ if ($mysqli->connect_error) {
 
         /* Grid container inside the popup */
         .appointment-grid {
-            background-color: rgba(50, 50, 50, 0.9);
+            background-color: rgba(248, 248, 248, 0.9);
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Adjust columns dynamically */
             gap: 10px;
@@ -226,7 +158,7 @@ if ($mysqli->connect_error) {
 
         /* Individual appointment items */
         .appointment-item {
-            background:rgb(39, 37, 37);
+            background:rgb(246, 246, 246);
             padding: 10px;
             border-radius: 5px;
             text-align: center;
@@ -249,13 +181,13 @@ if ($mysqli->connect_error) {
         }
 
         .search-container button {
-            background-color: #007BFF;
+            background-color: #c4454d;;
             color: white;
             cursor: pointer;
         }
 
         .search-container button:hover {
-            background-color: #0056b3;
+            background-color: rgb(143, 48, 55);
         }
 
     </style>

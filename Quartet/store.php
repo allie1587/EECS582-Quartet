@@ -76,6 +76,8 @@ include('header.php');
 <head>
     <!-- Title for Page --> 
     <title>Store</title>
+    <link rel="stylesheet" href="style1.css">
+
     <!-- Internal CSS for styling the page -->
     <style>
         .store-grid {
@@ -90,7 +92,7 @@ include('header.php');
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: #333;
+            background: white;
             border-radius: 10px;
             padding: 15px;
             box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
@@ -153,6 +155,18 @@ include('header.php');
             align-items: center;
             font-size: 14px;
             font-weight: bold;
+        }
+        button {
+            background-color: #c4454d;
+            color: black;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: rgb(143, 48, 55);
         }
     </style>
     <!-- Functions needed-->

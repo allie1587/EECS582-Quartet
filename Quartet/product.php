@@ -31,6 +31,7 @@ if ($result->num_rows > 0) {
 <head>
     <!-- Title for Page -->
     <title>Product List</title>
+    <link rel="stylesheet" href="style1.css">
     <!-- Internal CSS for styling the page -->
     <style>
         body {

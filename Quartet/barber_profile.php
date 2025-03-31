@@ -249,100 +249,17 @@ include("barber_header.php");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style1.css">
     <script src="validate.js"></script>
 
     <title>Barber Customize</title>
     <style>
-        /* General Styling */
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
 
         h1 {
             text-align: center;
             margin-bottom: 20px;
         }
 
-
-        /* Button Styling */
-        button[type="submit"],
-        .btn {
-            background-color: #007bff;
-            border-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            text-align: center;
-        }
-
-        button[type="submit"]:hover,
-        .btn:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
-        }
-
-        .btn-danger {
-            background-color: #dc3545;
-            border-color: #dc3545;
-        }
-
-        .btn-danger:hover {
-            background-color: #c82333;
-            border-color: #bd2130;
-        }
-
-        /* Gallery Section with help from ChatGPT*/
-        .gallery-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .gallery-item {
-            position: relative;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            background: #f9f9f9;
-            text-align: center;
-        }
-
-        .gallery-image-preview {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .gallery-controls {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .gallery-error {
-            font-size: 0.8em;
-            margin: 5px 0;
-            min-height: 1em;
-        }
     </style>
 
 </head>

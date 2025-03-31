@@ -89,70 +89,7 @@ include('header.php');
 <!-- Title for Page --> 
 <title>Add Product</title>
 <!-- Internal CSS for styling the page -->
-<link rel="stylesheet" href="style/styles.css">
-<style>
-
-    /* Style for inputing a file */
-    .file-input-container {
-        position: relative;
-        margin-top: 10px;
-    }
-    .file-input-container input[type="file"] {
-        opacity: 0;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        cursor: pointer;
-    }
-
-    .file-input-label {
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: rgba(36, 35, 35);
-        color: white;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-    }
-
-    .file-input-label:hover {
-        background-color: rgba(36, 35, 35);
-    }
-    /* Add prodct button style */
-    .add-btn {
-        color: white;
-        background: #c4454d;
-        padding: 5px 100px;
-        font-size: 18px;
-        font-family: 'Georgia', serif;
-        border: none;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-    .add-btn:hover {
-        background: rgb(143, 48, 55);
-    }
-    /* Back button style */
-    .back-btn {
-        color: white;
-        background: #c4454d;
-        padding: 15px 50px;
-        font-size: 16px;
-        font-family: 'Georgia', serif;
-        border: none;
-        cursor: pointer;
-        transition: 0.3s;
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-
-    }
-    .back-btn:hover {
-        background: rgb(143, 48, 55);
-    }
-</style>
+    <link rel="stylesheet" href="style1.css">
 </head>
 <body>
     <!--let's user know the current page they are on-->

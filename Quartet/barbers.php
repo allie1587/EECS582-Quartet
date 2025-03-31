@@ -84,8 +84,7 @@ if ($barber_result->num_rows > 0) {
     <!--Ensure proper rendering and touch zooming on mobile devices-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-
+    <link rel="stylesheet" href="style1.css">
     <!--Name of Page-->
     <title>Barbers</title>
     <!--Style choices for page, they include font used, margins, alignation, background color, display types, and some others-->
@@ -93,24 +92,10 @@ if ($barber_result->num_rows > 0) {
         /* General Styles */
         header {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: #333;
-            /* Adjust to match your site’s header */
-            color: white;
-            padding: 15px;
-            text-align: center;
-            z-index: 1000;
         }
 
         body {
-            font-family: 'Poppins', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            padding-top: 80px;
-            color: black;;
-            line-height: 1.6;
+            font-family: 'Poppins', Arial, sans-serif;;
         }
 
         /* Main Container */
@@ -221,28 +206,6 @@ if ($barber_result->num_rows > 0) {
         .gallery-container img.active {
             display: block;
         }
-        /* Style the arrows */
-        .arrow {
-            background: none;
-            border: none;
-            font-size: 30px;
-            color: rgba(36, 35, 35);
-            cursor: pointer;
-            padding: -10px;
-        }
-
-        .arrow:hover {
-            color: rgba(36, 35, 35);
-        }
-
-        .arrow-left {
-            left: -50px;
-        }
-
-        .arrow-right {
-            right: -50px;
-        }
-
 
         /* Contact Section */
         .contact {

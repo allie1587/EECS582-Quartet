@@ -12,7 +12,7 @@ Purpose: Allows user to send comments that will reach the barbers email for feed
 session_start();
 
 ?>
-
+<?php include('header.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,117 +22,12 @@ session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!--Name of Page-->
     <title>Home Page</title>
+    <link rel="stylesheet" href="style1.css">
     <!--Style choices for page, they include font used, margins, alignation, background color, display types, and some others-->
     <style>
-        /* Applies styles to the entire body */
-        body {
-            margin: 0;
-            padding-top: 70px;
-            text-align: center;
-            font-family: 'Georgia', serif; 
-            background: url('https://img.freepik.com/free-photo/client-doing-hair-cut-barber-shop-salon_1303-20824.jpg') no-repeat center center fixed;
-            background-size: cover;
-            backdrop-filter: blur(10px);
-            color: white;
-            text-align: center;
-        }
-
-        /* Top Bar at Top with Pages and Login */
-        .top-bar {
-            background-color: #006400; 
-            padding: 0;
-            display: flex;  
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-            height: 70px; 
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-        }
-        /* Size of Letters on it's header */
-        .top-bar h1 {
-            margin: 0;
-            padding-left: 20px;
-            font-size: 28px;
-            color: white;
-        }
-        /* Space for the login button on the right */
-        .login-container {
-            display: flex;
-            align-items: center;
-            padding-right: 20px;
-        }
-        /* Login Button Format*/
-        .login-button {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            margin-left: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        /* Style for the Menu taht will have the navigation buttons */
-        .menu {
-            display: flex;
-            flex-grow: 1;
-            justify-content: center;
-            height: 100%;
-        }
-        /* Style of Navigation Buttons */
-        .menu button {
-            background-color: #006400; 
-            color: white;
-            border: none;
-            padding: 20px 25px; 
-            font-size: 18px;
-            cursor: pointer;
-            flex-grow: 1;
-            text-align: center;
-            font-family: 'Georgia', serif; 
-        }
-        /* Color gets darker when hovering the buttons */
-        .menu button:hover {
-            background-color: #004d00; 
-        }
-
-        .container {
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-            background: rgba(50, 50, 50, 0.9);
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-        }
-        .section {
-            margin-bottom: 20px;
-        }
-        h2 {
-            color:white;
-        }
-        h1{
-            color: white;
-        }
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background: rgba(18, 11, 11, 0.7);
-            color:white;
-
-        }
         button {
-            background-color: #28a745;
-            color: white;
+            background-color: #c4454d;
+            color: black;
             padding: 10px;
             border: none;
             border-radius: 5px;
@@ -140,14 +35,12 @@ session_start();
             width: 100%;
         }
         button:hover {
-            background-color: #218838;
+            background-color: rgb(143, 48, 55);
         }
         .reviews {
-            background: rgba(36, 35, 35, 0.97);
             padding: 20px;
             margin: 20px;
             border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         }
         .average-rating {
             font-size: 20px;
@@ -173,30 +66,12 @@ session_start();
         .rating {
             color: #c4454d;
         }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-            background: rgba(50, 50, 50, 0.9);
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-            color:white;
-        }
+
         textarea {
-            width: 100%;
-            padding: 10px;
             margin: 10px 0;
-            border: 1px solid #ccc;
             border-radius: 5px;
-            background: rgba(18, 11, 11, 0.7);
-            color:white;
         }
-        input{
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background: rgba(18, 11, 11, 0.7);
-            color:white;
-        }
+
         .form-group {
             display: flex;
             align-items: center;

@@ -46,6 +46,8 @@ include('header.php');
 <head>
     <!--Name of Page-->
     <title>Home Page</title>
+    <link rel="stylesheet" href="style1.css">
+
     <style>
 
         /* Store info section */
@@ -53,7 +55,6 @@ include('header.php');
             display: flex;
             align-items: center;
             justify-content: center;
-            background:rgba(36, 35, 35);
             padding: 20px;
             border-radius: 10px;
             margin: 20px;
@@ -69,32 +70,8 @@ include('header.php');
         }
 
         /* Arrows for scrolling */
-        .arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 24px;
-            cursor: pointer;
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
-        .arrow:hover {
-            background: rgba(0, 0, 0, 0.7);
-        }
-        .arrow-left {
-            left: 10px;
-        }
-        .arrow-right {
-            right: 10px;
-        }
-
         /* Reviews section */
         .reviews {
-            background: rgba(36, 35, 35, 0.97);
             padding: 20px;
             margin: 20px;
             border-radius: 10px;
@@ -124,24 +101,7 @@ include('header.php');
         .rating {
             color: #c4454d;
         }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-            background: rgba(50, 50, 50, 0.9);
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-            color:white;
-        }
-        textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background: rgba(18, 11, 11, 0.7);
-            color:white;
-        }
+
         input{
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -235,25 +195,6 @@ include('header.php');
     </script>
 </head>
 <body>
-    <!--The green Bar at the top that has the name and button that takes you to the login page-->
-    <div class="top-bar">
-        <h1>Quartet's Barbershop</h1>
-        <div class="menu">
-            <button onclick="location.href='index.php'">Home</button>
-            <button onclick="location.href='schedule.php'">Schedule</button>
-            <button onclick="location.href='store.php'">Store</button>
-            <button onclick="location.href='barbers.php'">Barbers</button>
-            <button onclick="location.href='about.php'">About Us</button>
-            <button onclick="location.href='feedback.php'">Contact us</button>
-
-        </div>
-
-        <!--Stylized Button to be circular, when clicked takes you to login.html-->
-        <div class="login-container">
-            <span>Login</span>
-            <button class="login-button" onclick="location.href='login.php'">&#10132;</button>
-        </div>
-    </div>
     <!--let's user know the current page they are on-->
     <h1>Home</h1>
        <!--Section that holds image of barbershop, followed by the Sotre Information-->
@@ -270,28 +211,6 @@ include('header.php');
     <!--Added section to work on the future for the reviews of the page-->
     <div class="reviews">
         <h2>Reviews</h2>
-        <form action="submit_review.php" method="POST">
-            <div class="form-group">
-                <label for="Name">Name:</label>
-                <input type="text" id="Name" name="Name">
-                <div class="rating-container">
-                    <label for="Rating">Rating:</label>
-                    <div class="stars">
-                        <span class="star" data-value="1">&#9733;</span>
-                        <span class="star" data-value="2">&#9733;</span>
-                        <span class="star" data-value="3">&#9733;</span>
-                        <span class="star" data-value="4">&#9733;</span>
-                        <span class="star" data-value="5">&#9733;</span>
-                    </div>
-                    <input type="hidden" id="Rating" name="Rating" required>
-                </div>
-            </div>
-            <br>
-            <label for="Review">Add your Review Here!</label><br>
-            <textarea type="text" id="Review" name="Review" required></textarea><br><br>
-            <button type="submit">Send your Review!</button>
-        </form>
-            <br><br>
             <!--Shows the average rating to the users-->
             <div class="average-rating">
                 Average Rating: <?php echo $averageRating; ?>

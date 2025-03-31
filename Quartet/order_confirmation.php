@@ -50,15 +50,10 @@ include("header.php");
 <head>
     <!-- Title for Page --> 
     <title>Order Confrimation</title>
+    <link rel="stylesheet" href="style1.css">
     <style>
         /* Style for page */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            color: black;
-        }
+
         .order-details {
             width: 80%;
             max-width: 800px;

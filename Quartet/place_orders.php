@@ -101,15 +101,10 @@ include("header.php");
 <head>
     <!-- Title for Page --> 
     <title>Place Order</title>
+    <link rel="stylesheet" href="style1.css">
     <style>
         /* Style for the page */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            color: black;
-        }
+
         .cart-container {
             width: 90%;
             max-width: 1200px;

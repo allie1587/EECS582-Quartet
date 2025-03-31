@@ -2,6 +2,7 @@
 // Start the session
 session_start();
 ?>
+<?php include('header.php'); ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -9,19 +10,14 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cancel Appointment</title>
-    <link rel="stylesheet" href="style/styles.css">
+    <link rel="stylesheet" href="style1.css">
 
     <style>
         body {
-            margin: 0;
-            padding-top: 70px;
-            text-align: center;
             font-family: 'Georgia', serif; 
-            background-color: rgba(50, 50, 50, 0.86); 
-            color: white;
         }
         .info_form {
-            background-color: #333;
+            background-color: white;
             padding: 20px;
             border-radius: 10px;
             width: 80%;
@@ -33,7 +29,7 @@ session_start();
             width: 90%;
         }
         button {
-            background-color: #008000;
+            background-color: #c4454d;
             color: white;
             padding: 10px 20px;
             border: none;
@@ -44,7 +40,7 @@ session_start();
             margin-top: 10px;
         }
             button:hover {
-            background-color: #00A000;
+            background-color: rgb(143, 48, 55);
         }
 
         #appointmentDetails {
@@ -57,6 +53,7 @@ session_start();
             text-align: center;
             width: fit-content;
         }
+
     </style>
     <script> 
         function fetchAppointment() { //used to fetch appointments when user enters an appointment id

@@ -32,16 +32,10 @@ foreach ($cart_items as $item) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style1.css">
     <title>Shopping Cart</title>
     <style>
-        /*ChatGPT helped with style*/
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
+
         .cart-container {
             width: 90%;
             max-width: 1200px;
