@@ -376,6 +376,7 @@ if ($mysqli->connect_error) {
         let currentDay = new Date().getDate();
         let currentWeekday = new Date().getDate();
         let currentTime = new Date().getHours();
+        let selectedDate = new Date(); // Defaults to today
         let monthNames = [
             'January', 'February', 'March', 'April', 'May', 'June', 
             'July', 'August', 'September', 'October', 'November', 'December'
@@ -453,6 +454,7 @@ if ($mysqli->connect_error) {
                         });
 
                     button.addEventListener('click', () => {
+                        selectedDate = new Date(currentYear, currentMonth, day);
                         monthView = false;
                         renderCalendar(day, weekday);
                     });
@@ -571,24 +573,16 @@ if ($mysqli->connect_error) {
             renderCalendar(); // Re-render the calendar for the new month
         }
         function changeWeek(direction) { //need to fix
-            // Adjust the current week by 7 days (direction is either 1 or -1)
-            currentWeekStart.setDate(currentWeekStart.getDate() + (direction * 7));
+            selectedDate.setDate(selectedDate.getDate() + (7 * direction));
 
-            // Recalculate the first day of the week (we assume Sunday as the first day, adjust if needed)
-            let weekday = currentWeekStart.getDay(); // 0 for Sunday, 1 for Monday, etc.
-            let day = currentWeekStart.getDate();
+            // Update currentMonth and currentYear based on the new selectedDate
+            currentMonth = selectedDate.getMonth();
+            currentYear = selectedDate.getFullYear();
 
-            // Re-render the calendar with the updated start day of the week
-            renderCalendar(day, weekday);
+            // Re-render the calendar with the new selectedDate
+            renderCalendar(selectedDate.getDate(), selectedDate.getDay());
         }
 
-        //Function the changes the week (forward or backward)
-        function changeWeek(direction) {
-            let daysToAdd = direction * 7; // Move forward or backward by 7 days
-            currentWeekStart.setDate(currentWeekStart.getDate() + daysToAdd);
-            
-            renderCalendar(); // Re-render the calendar to reflect the new week
-        }
 
         function openAppointmentInfo(appointment, day) {
             // Appointment information popup for a specific timeslot
