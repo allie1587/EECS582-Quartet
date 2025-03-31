@@ -527,7 +527,17 @@ if ($mysqli->connect_error) {
                                     let time = (appointment.Time <= 12 ? appointment.Time : appointment.Time - 12);
                                     let period = (appointment.Time < 12 ? "AM" : "PM");
                                     item.textContent = time + period;
-
+                                    
+                                    // Change button color based on barber
+                                    if (appointment.BarberID === "JL") {
+                                        item.style.backgroundColor = "lightblue";
+                                    } else if (appointment.BarberID === "Barber B") {
+                                        item.style.backgroundColor = "lightgreen";
+                                    } else if (appointment.BarberID === "Barber C") {
+                                        item.style.backgroundColor = "lightcoral";
+                                    } else {
+                                        item.style.backgroundColor = "gray";
+                                    }
                                     //only make appointment clickable if time is after current time
                                     if (appointment.Time <= currentTime && appointment.Day == currentDay) {
                                         item.disabled = true;
