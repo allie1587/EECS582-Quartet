@@ -308,6 +308,7 @@ if ($mysqli->connect_error) {
         let currentDay = new Date().getDate();
         let currentWeekday = new Date().getDate();
         let currentTime = new Date().getHours();
+        let selectedDate = new Date(); // Defaults to today
         let monthNames = [
             'January', 'February', 'March', 'April', 'May', 'June', 
             'July', 'August', 'September', 'October', 'November', 'December'
@@ -385,6 +386,7 @@ if ($mysqli->connect_error) {
                         });
 
                     button.addEventListener('click', () => {
+                        selectedDate = new Date(currentYear, currentMonth, day);
                         monthView = false;
                         renderCalendar(day, weekday);
                     });
@@ -399,6 +401,8 @@ if ($mysqli->connect_error) {
             }
 
         } else {
+            let firstWeekDay = new Date(currentYear, currentMonth, day - weekday); // First day of the current week
+            let lastWeekDay = new Date(currentYear, currentMonth, day - weekday + 6); // Last day of the current week
             //show week switch buttons, remove month switch buttons
             prevButton.style.display = 'none';
             nextButton.style.display = 'none';
@@ -457,7 +461,17 @@ if ($mysqli->connect_error) {
                                     let time = (appointment.Time <= 12 ? appointment.Time : appointment.Time - 12);
                                     let period = (appointment.Time < 12 ? "AM" : "PM");
                                     item.textContent = time + period;
-
+                                    
+                                    // Change button color based on barber
+                                    if (appointment.BarberID === "JL") {
+                                        item.style.backgroundColor = "lightblue";
+                                    } else if (appointment.BarberID === "kyle5") {
+                                        item.style.backgroundColor = "lightgreen";
+                                    } else if (appointment.BarberID === "kyle4") {
+                                        item.style.backgroundColor = "lightcoral";
+                                    } else {
+                                        item.style.backgroundColor = "gray";
+                                    }
                                     //only make appointment clickable if time is after current time
                                     if (appointment.Time <= currentTime && appointment.Day == currentDay) {
                                         item.disabled = true;
@@ -483,7 +497,13 @@ if ($mysqli->connect_error) {
                 dayDiv.appendChild(dayNumber);
                 // Append the dayDiv to the calendar before fetching data
                 calendar.appendChild(dayDiv);
+                if (offset == 0){
+                    firstWeekDay = `${monthNames[tempMonth]} ${wday} `;
+                } else if (offset == 6 ){
+                    lastWeekDay = `${monthNames[tempMonth]} ${wday}`;
+                }
             }
+            document.getElementById('monthName').innerHTML = `${firstWeekDay} - ${lastWeekDay}`;
         }
     }
 
@@ -503,24 +523,16 @@ if ($mysqli->connect_error) {
             renderCalendar(); // Re-render the calendar for the new month
         }
         function changeWeek(direction) { //need to fix
-            // Adjust the current week by 7 days (direction is either 1 or -1)
-            currentWeekStart.setDate(currentWeekStart.getDate() + (direction * 7));
+            selectedDate.setDate(selectedDate.getDate() + (7 * direction));
 
-            // Recalculate the first day of the week (we assume Sunday as the first day, adjust if needed)
-            let weekday = currentWeekStart.getDay(); // 0 for Sunday, 1 for Monday, etc.
-            let day = currentWeekStart.getDate();
+            // Update currentMonth and currentYear based on the new selectedDate
+            currentMonth = selectedDate.getMonth();
+            currentYear = selectedDate.getFullYear();
 
-            // Re-render the calendar with the updated start day of the week
-            renderCalendar(day, weekday);
+            // Re-render the calendar with the new selectedDate
+            renderCalendar(selectedDate.getDate(), selectedDate.getDay()-1);
         }
 
-        //Function the changes the week (forward or backward)
-        function changeWeek(direction) {
-            let daysToAdd = direction * 7; // Move forward or backward by 7 days
-            currentWeekStart.setDate(currentWeekStart.getDate() + daysToAdd);
-            
-            renderCalendar(); // Re-render the calendar to reflect the new week
-        }
 
         function openAppointmentInfo(appointment, day) {
             // Appointment information popup for a specific timeslot
@@ -545,7 +557,7 @@ if ($mysqli->connect_error) {
             bookButton.textContent = "Book Appointment";
             bookButton.addEventListener('click', () => {
                 bookAppointment(appointment, day, monthNames[currentMonth], currentYear, time);
-            });
+             });
 
             appointmentGrid.appendChild(bookButton);
 
