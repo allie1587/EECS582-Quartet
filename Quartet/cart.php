@@ -165,13 +165,13 @@ foreach ($cart_items as $item) {
                         <td>$<?php echo number_format($item['Price'], 2); ?></td>
                         <td>
                             <form action="update_quantity.php" method="POST" style="display:inline;">
-                                <input type="hidden" name="cart_id" value="<?php echo $item['Session_ID']; ?>">
+                                <input type="hidden" name="Session_ID" value="<?php echo $item['Session_ID']; ?>">
                                 <input type="hidden" name="action" value="decrease">
                                 <button type="submit" class="quantity-btn">-</button>
                             </form>
                             <?php echo $item['Quantity']; ?>
                             <form action="update_quantity.php" method="POST" style="display:inline;">
-                                <input type="hidden" name="cart_id" value="<?php echo $item['Session_ID']; ?>">
+                                <input type="hidden" name="Session_ID" value="<?php echo $item['Session_ID']; ?>">
                                 <input type="hidden" name="action" value="increase">
                                 <button type="submit" class="quantity-btn">+</button>
                             </form>
@@ -179,7 +179,7 @@ foreach ($cart_items as $item) {
                         <td>$<?php echo number_format($item['Price'] * $item['Quantity'], 2); ?></td>
                         <td>
                             <form action="remove_item.php" method="POST" style="display:inline;">
-                                <input type="hidden" name="cart_id" value="<?php echo $item['Session_ID']; ?>">
+                                <input type="hidden" name="Session_ID" value="<?php echo $item['Session_ID']; ?>">
                                 <button type="submit" class="remove-btn">Remove</button>
                             </form>
                         </td>

@@ -10,17 +10,17 @@ Purpose: Once an order is placed a confirmation screen will show
 //Connects to the database
 session_start();
 require 'db_connection.php';
-if (!isset($_GET['order_id'])) {
+if (!isset($_GET['Order_ID'])) {
     die("Order ID not provided.");
 }
 
-$order_id = $_GET['order_id'];
+$order_id = $_GET['Order_ID'];
 
 // Fetch order details
-$order_query = "SELECT Orders.*, Client.first_name, Client.last_name, Client.email, Client.phone 
+$order_query = "SELECT Orders.*, Client.First_Name, Client.Last_Name, Client.Email, Client.Phone 
                 FROM Orders 
-                JOIN Client ON Orders.client_id = Client.client_id 
-                WHERE Orders.order_id = ?";
+                JOIN Client ON Orders.Client_ID = Client.Client_ID
+                WHERE Orders.Order_ID = ?";
 $stmt = $conn->prepare($order_query);
 $stmt->bind_param("i", $order_id);
 $stmt->execute();
@@ -28,10 +28,10 @@ $order_result = $stmt->get_result();
 $order = $order_result->fetch_assoc();
 
 // Fetch order items
-$items_query = "SELECT Order_Items.quantity, Order_Items.price, Order_Items.total_price, products.name, products.image 
+$items_query = "SELECT Order_Items.Quantity, Order_Items.Price, Products.Name, Products.Image 
                 FROM Order_Items 
-                JOIN products ON Order_Items.product_id = products.id 
-                WHERE Order_Items.order_id = ?";
+                JOIN Products ON Order_Items.Product_ID = Products.Product_ID
+                WHERE Order_Items.Order_ID = ?";
 $stmt = $conn->prepare($items_query);
 $stmt = $conn->prepare($items_query);
 $stmt->bind_param("i", $order_id);
@@ -50,10 +50,15 @@ include("header.php");
 <head>
     <!-- Title for Page --> 
     <title>Order Confrimation</title>
-    <link rel="stylesheet" href="style1.css">
     <style>
         /* Style for page */
-
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: black;
+        }
         .order-details {
             width: 80%;
             max-width: 800px;
@@ -126,19 +131,19 @@ include("header.php");
     <!-- Gives instructions to client about pick-up -->
     <h1>Thank you for your order!</h1>
     <div class="confirmation-info">
-        <h2><strong>Confirmation Number:</strong> #<?php echo $order['order_id']; ?></h2>
+        <h2><strong>Confirmation Number:</strong> #<?php echo $order['Order_ID']; ?></h2>
         <p>We've received your order and are preparing it for pickup.</p>
     </div>
     <div class="confirmation-info">
             <h2>Pickup Location:</h2>
-            <p><strong>Store Name:</strong> <?php echo $store['name']; ?></p>
-            <p><strong>Address:</strong> <?php echo $store['address']; ?>, <?php echo $store['city']; ?>, <?php echo $store['state']; ?> <?php echo $store['zip_code']; ?></p>
-            <p><strong>Phone:</strong> <?php echo $store['phone']; ?></p>
+            <p><strong>Store Name:</strong> <?php echo $store['Name']; ?></p>
+            <p><strong>Address:</strong> <?php echo $store['Address']; ?>, <?php echo $store['City']; ?>, <?php echo $store['State']; ?> <?php echo $store['Zip_Code']; ?></p>
+            <p><strong>Phone:</strong> <?php echo $store['Phone']; ?></p>
         </div>
     <div class="confirmation-info">
         <h2>Pickup Instructions:</h2>
-        <p>1. An email will be sent to <strong><?php echo $order['email']; ?></strong> when your order is ready.</p>
-        <p>2. Bring your confirmation number (<strong><?php echo $order['order_id']; ?></strong>) and a valid ID when picking up your order.</p>
+        <p>1. An email will be sent to <strong><?php echo $order['Email']; ?></strong> when your order is ready.</p>
+        <p>2. Bring your confirmation number (<strong><?php echo $order['Order_ID']; ?></strong>) and a valid ID when picking up your order.</p>
         <p>3. Please do not come to the store until you receive confirmation that your order is ready.</p>
     </div>
     <!-- Displays the order -->
@@ -150,30 +155,27 @@ include("header.php");
                     <th>Product</th>
                     <th>Quantity</th>
                     <th>Price</th>
-                    <th>Total</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($items as $item): ?>
                     <tr>
                         <td>
-                            <img src="<?php echo $item['image']; ?>" alt="<?php echo $item['name']; ?>">
-                            <?php echo $item['name']; ?>
+                            <img src="<?php echo $item['Image']; ?>" alt="<?php echo $item['Name']; ?>">
+                            <?php echo $item['Name']; ?>
                         </td>
                         <td>
-                            x<?php echo $item['quantity']; ?>    
+                            x<?php echo $item['Quantity']; ?>    
                         </td>
                         <td>
-                            $<?php echo number_format($item['price'], 2); ?>
+                            $<?php echo number_format($item['Price'], 2); ?>
                         </td>
-                        <td>
-                            x<?php echo number_format($item['total_price'], 2);; ?>    
-                        </td>
+                        
                     </tr>
                 <?php endforeach; ?>
                 <tr>
                     <div class="total-price">
-                        Total: $<?php echo number_format($order['total_price'], 2); ?>
+                        Total: $<?php echo number_format($order['Total_Price'], 2); ?>
                     </div>
                 </tr>
 
@@ -184,8 +186,8 @@ include("header.php");
     <div class="confirmation-info">
         <h2>Contact Us</h2>
         <p>If you have any questions, please contact us at:</p>
-        <p><strong>Email:</strong> <?php echo $store['email']; ?></p>
-        <p><strong>Phone:</strong> <?php echo $store['phone']; ?></p>
+        <p><strong>Email:</strong> <?php echo $store['Email']; ?></p>
+        <p><strong>Phone:</strong> <?php echo $store['Phone']; ?></p>
     </div>
     
 </body>
