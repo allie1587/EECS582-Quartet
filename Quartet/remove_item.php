@@ -11,13 +11,13 @@ session_start();
 //Connects to the database
 require 'db_connection.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cart_id'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['Session_ID'])) {
     //Gets the cart_id
-    $cart_id = $_POST['cart_id'];
+    $cart_id = $_POST['Session_ID'];
     // Prepares the SQL to delete the item with the cart_id from the cart
-    $sql = "DELETE FROM cart WHERE id = ?";
+    $sql = "DELETE FROM Cart WHERE Session_ID = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $cart_id);
+    $stmt->bind_param("s", $cart_id);
     // Execute the statement and check if is was successful
     if ($stmt->execute()) {
         header('Location: cart.php');

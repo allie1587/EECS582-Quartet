@@ -11,19 +11,19 @@ session_start();
 //Connects to the database
 require 'db_connection.php'; 
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cart_id'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['Session_ID'])) {
     // Gets the cart_id
-    $cart_id = $_POST['cart_id'];
+    $cart_id = $_POST['Session_ID'];
     $action = $_POST['action']; 
     // Prepares the SQL to get the quanity from the cart database
-    $sql = "SELECT quantity FROM cart WHERE id = ?";
+    $sql = "SELECT Quantity FROM Cart WHERE Session_ID = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $cart_id);
+    $stmt->bind_param("s", $cart_id);
     $stmt->execute();
     $result = $stmt->get_result();
     $cart_item = $result->fetch_assoc();
 
-    $new_quantity = $cart_item['quantity'];
+    $new_quantity = $cart_item['Quantity'];
     // See if the quanity needs to be increased or decreased
     // Acts accordingly 
     if ($action == "increase") {
@@ -33,14 +33,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cart_id'])) {
     }
     // If there quanity is less than one it removes it from the cart
     if ($new_quantity <= 0) {
-        $sql = "DELETE FROM cart WHERE id = ?";
+        $sql = "DELETE FROM Cart WHERE Session_ID = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $cart_id);
+        $stmt->bind_param("s", $cart_id);
     } else {
         //Otherwise it updates the database
-        $sql = "UPDATE cart SET quantity = ? WHERE id = ?";
+        $sql = "UPDATE Cart SET Quantity = ? WHERE Session_ID = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ii", $new_quantity, $cart_id);
+        $stmt->bind_param("is", $new_quantity, $cart_id);
     }
     // Execute the statement and check if is was successful
     if ($stmt->execute()) {

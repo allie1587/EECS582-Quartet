@@ -11,13 +11,13 @@ session_start();
 //Connects to the database
 require 'db_connection.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['product_id'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['Product_ID'])) {
     // Retrieves the 
-    $product_id = $_POST['product_id'];
+    $product_id = $_POST['Product_ID'];
     $quantity = 1; 
     $session_id = session_id();
     // SQL to see if the product is already in the cart
-    $sql = "SELECT * FROM cart WHERE product_id = ? AND session_id = ?";
+    $sql = "SELECT * FROM Cart WHERE Product_ID = ? AND Session_ID = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ss", $product_id, $session_id);
     $stmt->execute();
@@ -25,12 +25,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['product_id'])) {
 
     if ($result->num_rows > 0) {
         // When the product is already in the chart it add ones to the quantity
-        $sql = "UPDATE cart SET quantity = quantity + 1 WHERE product_id = ? AND session_id = ?";
+        $sql = "UPDATE Cart SET Quantity = quantity + 1 WHERE Product_ID = ? AND Session_ID = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ss", $product_id, $session_id);
     } else {
         // When the product isn't in the cart already it will indsert the product into the database
-        $sql = "INSERT INTO cart (product_id, quantity, session_id) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO Cart (Product_ID, Quantity, session_id) VALUES (?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sis", $product_id, $quantity, $session_id);
     }

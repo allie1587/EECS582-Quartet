@@ -14,7 +14,7 @@ require 'db_connection.php';
 // Retrieves the users session_id
 $session_id = session_id();
 // Prepares the SQL that deletes all rows with that session ID
-$sql = "DELETE FROM cart WHERE session_id = ?";
+$sql = "DELETE FROM Cart WHERE Session_ID = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $session_id);
 
