@@ -14,11 +14,11 @@ Purpose: Allow barbers to edit the products seen in the store
 //Connects to the database
 require 'db_connection.php'; 
 
-if (isset($_GET['product_id'])) {
+if (isset($_GET['Product_ID'])) {
     //Gets the product id
-    $product_id = $_GET['product_id'];
+    $product_id = $_GET['Product_ID'];
     //Retrieves all the information from the give product_id
-    $sql = "SELECT * FROM products WHERE id = ?";
+    $sql = "SELECT * FROM Products WHERE Product_ID = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $product_id);
     $stmt->execute();
@@ -67,7 +67,7 @@ if (isset($_GET['product_id'])) {
             $product_image = $product['image'];
         }
         // Prepares the sql for updating the database
-        $sql = "UPDATE products SET name = ?, description = ?, price = ?, image = ? WHERE id = ?";
+        $sql = "UPDATE Products SET Name = ?, Description = ?, Price = ?, Image = ? WHERE Product_ID = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssdss", $product_name, $product_description, $product_price, $product_image, $product_id);
         // Execute the statement and check if the update was successful
@@ -198,16 +198,16 @@ include('header.php');
     <h1>Edit Product</h1>
     <!-- Allows barber's to add a new item to the store -->
     <div class="edit-container">
-        <form action="edit_product.php?product_id=<?php echo $product['id']; ?>" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+        <form action="edit_product.php?Product_ID=<?php echo $product['Product_ID']; ?>" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
                 <label for="product_name">Product Name:</label>
-                <input type="text" name="product_name"   id="product_name" value="<?php echo $product['name']; ?>" required onchange="validateName()">
+                <input type="text" name="product_name"   id="product_name" value="<?php echo $product['Name']; ?>" required onchange="validateName()">
                 <span id="name-error" style="color: red; display: none;"></span>
                 <br>
                 <label for="product_description">Product Description:</label>
-                <textarea name="product_description" required><?php echo $product['description']; ?></textarea>
+                <textarea name="product_description" required><?php echo $product['Description']; ?></textarea>
                 <br>
                 <label for="product_price">Product Price:</label>
-                <input type="number" name="product_price" id="product_price" step="0.01" value="<?php echo $product['price']; ?>" required onchange="validatePrice()">
+                <input type="number" name="product_price" id="product_price" step="0.01" value="<?php echo $product['Price']; ?>" required onchange="validatePrice()">
                 <span id="price-error" style="color: red; display: none;"></span>
                 <br>
                 <label for="product_image">Product Image:</label>

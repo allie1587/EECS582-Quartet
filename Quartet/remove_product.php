@@ -11,15 +11,15 @@ Purpose: Allow barbers to remove a product from the store
 //Connects to the database
 require 'db_connection.php';
 
-if (isset($_GET['product_id'])) {
+if (isset($_GET['Product_ID'])) {
     //Gets the product_id
-    $product_id = $_GET['product_id'];
+    $product_id = $_GET['Product_ID'];
     // Delete this product from everyone's shopping cart
-    $sql_delete_cart = "DELETE FROM cart WHERE product_id = ?";
+    $sql_delete_cart = "DELETE FROM Cart WHERE Product_ID = ?";
     $stmt_delete_cart = $conn->prepare($sql_delete_cart);
     $stmt_delete_cart->bind_param("i", $product_id);
     if ($stmt_delete_cart->execute()) {
-        $sql = "DELETE FROM products WHERE id = ?";
+        $sql = "DELETE FROM Products WHERE Product_ID = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $product_id);
         // Execute the statement and check if the Delete was successful

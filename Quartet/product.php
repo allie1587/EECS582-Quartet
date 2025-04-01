@@ -15,7 +15,7 @@ Revisions:
 require 'db_connection.php';
 
 
-$sql = "SELECT * FROM products";
+$sql = "SELECT * FROM Products";
 $result = $conn->query($sql);
 $products = [];
 if ($result->num_rows > 0) {
@@ -24,14 +24,13 @@ if ($result->num_rows > 0) {
     }
 }
 ?>
-<?php include('header.php'); ?>
+<?php include('barber_header.php'); ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <!-- Title for Page -->
     <title>Product List</title>
-    <link rel="stylesheet" href="style1.css">
     <!-- Internal CSS for styling the page -->
     <style>
         body {
@@ -174,16 +173,16 @@ if ($result->num_rows > 0) {
             <tbody>
                 <?php foreach ($products as $product): ?>
                     <tr>
-                        <td><?php echo $product['id']; ?></td>
-                        <td><?php echo $product['name']; ?></td>
-                        <td><?php echo $product['description']; ?></td>
-                        <td>$<?php echo number_format($product['price'], 2); ?></td>
-                        <td><img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>"></td>
+                        <td><?php echo $product['Product_ID']; ?></td>
+                        <td><?php echo $product['Name']; ?></td>
+                        <td><?php echo $product['Description']; ?></td>
+                        <td>$<?php echo number_format($product['Price'], 2); ?></td>
+                        <td><img src="<?php echo $product['Image']; ?>" alt="<?php echo $product['Name']; ?>"></td>
                         <td>
-                            <a href="edit_product.php?product_id=<?php echo $product['id']; ?>"><button class="btn edit-btn">Edit</button></a>
+                            <a href="edit_product.php?Product_ID=<?php echo $product['Product_ID']; ?>"><button class="btn edit-btn">Edit</button></a>
                         </td>
                         <td>
-                            <button class="btn delete-btn" onclick="confirmDelete('<?php echo $product['id']; ?>')">Delete</button>
+                            <button class="btn delete-btn" onclick="confirmDelete('<?php echo $product['Product_ID']; ?>')">Delete</button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -201,7 +200,7 @@ if ($result->num_rows > 0) {
     <!-- Script for confirming deletion -->
     <script>
         function confirmDelete(productId) {
-            document.getElementById('confirmDeleteBtn').setAttribute('onclick', `window.location.href='remove_product.php?product_id=${productId}'`);
+            document.getElementById('confirmDeleteBtn').setAttribute('onclick', `window.location.href='remove_product.php?Product_ID=${productId}'`);
             document.getElementById('deleteModal').style.display = 'block';
         }
         function closeModal() {
