@@ -34,7 +34,7 @@ $query = "SELECT * FROM Appointment_Availability a
           WHERE Available='Y' 
           AND (Weekday=? OR (Month=? AND Day=? AND Year=?))
           AND NOT EXISTS (SELECT 1 FROM Confirmed_Appointments c
-                WHERE c.BarberID = a.BarberID 
+                WHERE c.Barber_ID = a.Barber_ID 
                 AND c.Time = a.Time 
                 AND c.Month = ?
                 AND c.Day = ?
