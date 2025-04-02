@@ -49,7 +49,7 @@ $query = "SELECT * FROM Appointment_Availability a
 
 // check for barber and time filtering
 if ($barberID !== null) {
-    $query .= " AND BarberID=?";
+    $query .= " AND Barber_ID=?";
 }
 if ($time !== null) {
     $query .= " AND Time=?";
