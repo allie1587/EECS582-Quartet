@@ -7,6 +7,7 @@
         02/28/2025 -- Alexandra Stratton, fixed barber information
         03/02/2025 -- Jose Leyba, Modifieid UI Looks/ Added Barber Images
         03/29/2025 -- Alexandra Strattion -- Unhardcode
+        4/1/2025 - Brinley Hull, refactor barber availability
     Sources:
         - https://www.freshkillsbarbershop.com/barber-bios
             -- Grabbed professional headshots for the hardcoded barbers
@@ -20,6 +21,11 @@
 <?php
 // Connects to the database
 require 'db_connection.php';
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // Initalize a barbers list
 $barbers = [];
 $sql = "SELECT * FROM Barber_Information";
@@ -32,7 +38,7 @@ if ($barber_result->num_rows > 0) {
         $username = $barber['Barber_ID'];
         // Retrieve that barbers services for Barber_Services
         $services = [];
-        $stmt = $conn->prepare("SELECT name FROM Barber_Services WHERE Barber_ID = ?");
+        $stmt = $conn->prepare("SELECT * FROM Barber_Information WHERE Barber_ID = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $services_result = $stmt->get_result();
@@ -41,13 +47,47 @@ if ($barber_result->num_rows > 0) {
         }
         $barber['services'] = $services;
 
+        // Retrieve Availability from availability database
+        $availability = [];
+        $start = [];
+        $end = [];
+        $stmt = $conn->prepare("SELECT Weekday, Time FROM Appointment_Availability WHERE Barber_ID = ? AND Weekday != -1 AND Available = 'Y' ORDER BY Time");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $hours_result = $stmt->get_result();
+        // go through each row and set start and end times for each day
+        while ($hour = $hours_result->fetch_assoc()) {
+            $day = $hour['Weekday'];
+            if (!isset($start[$day])) {
+                $start[$day] = (int)$hour['Time'];
+            }
+            
+            $end[$day] = (int)$hour['Time'];
+            $availability[$day] = "";
+        }
+        
+        // set the formatted versions of the start and end times for each weekday and set the availability for the day
+        for ($i = 0; $i < 7; $i++) {
+            if (!isset($start[$i])) {
+                continue;
+            }
+            $start_formatted = "$start[$i] AM";
+            $end_formatted = "$end[$i] AM";
 
-      
-
+            // add PM and subtract 12 if past noon
+            if ($start[$i] >= 12) {
+                $start_formatted = ($start[$i] == 12 ? $start[$i] : $start[$i]-12) . " PM";
+            }
+            if ($end[$i] >= 12) {
+                $end_formatted = ($end[$i] == 12 ? $end[$i] : $end[$i]-12) . " PM";
+            }
+            $availability[$day] = "$start_formatted - $end_formatted";
+        }
+        $barber['availability'] = $availability;
 
         // Retrieves the barbers portfolio from Barber_Gallery
         $gallery = [];
-        $stmt = $conn->prepare("SELECT image FROM Barber_Gallery WHERE Barber_ID = ?");
+        $stmt = $conn->prepare("SELECT Image FROM Barber_Gallery WHERE Barber_ID = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $gallery_result = $stmt->get_result();
@@ -375,12 +415,12 @@ if ($barber_result->num_rows > 0) {
                     <h3>Availability</h3>
                     <?php
                     $daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-                    foreach ($daysOfWeek as $day): ?>
+                    for ($day = 0; $day < 7; $day++): ?>
                         <p>
-                            <strong><?php echo htmlspecialchars($day); ?>:</strong>
+                            <strong><?php echo htmlspecialchars($daysOfWeek[$day]); ?>:</strong>
                             <?php echo isset($barber['availability'][$day]) ? htmlspecialchars($barber['availability'][$day]) : "None"; ?>
                         </p>
-                    <?php endforeach; ?>
+                    <?php endfor; ?>
                 </div>
                 <!-- Displays the portfolio of that barber -->
                 <?php if (!empty($barber['gallery'])): ?>
