@@ -29,42 +29,30 @@ if ($barber_result->num_rows > 0) {
     // Loop through all the possible barbers
     while ($barber = $barber_result->fetch_assoc()) {
         // Get the barbers Username which is equivalent to the barber_id in other tables
-        $username = $barber['Username'];
+        $username = $barber['Barber_ID'];
         // Retrieve that barbers services for Barber_Services
         $services = [];
-        $stmt = $conn->prepare("SELECT name FROM Barber_Services WHERE barber_id = ?");
+        $stmt = $conn->prepare("SELECT name FROM Barber_Services WHERE Barber_ID = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $services_result = $stmt->get_result();
         while ($service = $services_result->fetch_assoc()) {
-            $services[] = $service['name'];
+            $services[] = $service['Name'];
         }
         $barber['services'] = $services;
 
 
-        // Retrieves the barbers usual weekly availability from Usual_Hours
-        $availability = [];
-        $stmt = $conn->prepare("SELECT day_of_week, start_time, end_time FROM Barber_Availability WHERE barber_id = ?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $hours_result = $stmt->get_result();
-        while ($hour = $hours_result->fetch_assoc()) {
-            $day = $hour['day_of_week'];
-            $start = date("g:i a", strtotime($hour['start_time']));
-            $end = date("g:i a", strtotime($hour['end_time']));
-            $availability[$day] = "$start - $end";
-        }
-        $barber['availability'] = $availability;
+      
 
 
         // Retrieves the barbers portfolio from Barber_Gallery
         $gallery = [];
-        $stmt = $conn->prepare("SELECT image FROM Barber_Gallery WHERE barber_id = ?");
+        $stmt = $conn->prepare("SELECT image FROM Barber_Gallery WHERE Barber_ID = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $gallery_result = $stmt->get_result();
         while ($image = $gallery_result->fetch_assoc()) {
-            $gallery[] = $image['image'];
+            $gallery[] = $image['Image'];
         }
         $barber['gallery'] = $gallery;
 
@@ -84,7 +72,8 @@ if ($barber_result->num_rows > 0) {
     <!--Ensure proper rendering and touch zooming on mobile devices-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="style1.css">
+
+
     <!--Name of Page-->
     <title>Barbers</title>
     <!--Style choices for page, they include font used, margins, alignation, background color, display types, and some others-->
@@ -92,10 +81,24 @@ if ($barber_result->num_rows > 0) {
         /* General Styles */
         header {
             position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            /* Adjust to match your site’s header */
+            color: white;
+            padding: 15px;
+            text-align: center;
+            z-index: 1000;
         }
 
         body {
-            font-family: 'Poppins', Arial, sans-serif;;
+            font-family: 'Poppins', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            padding-top: 80px;
+            color: black;;
+            line-height: 1.6;
         }
 
         /* Main Container */
@@ -206,6 +209,28 @@ if ($barber_result->num_rows > 0) {
         .gallery-container img.active {
             display: block;
         }
+        /* Style the arrows */
+        .arrow {
+            background: none;
+            border: none;
+            font-size: 30px;
+            color: rgba(36, 35, 35);
+            cursor: pointer;
+            padding: -10px;
+        }
+
+        .arrow:hover {
+            color: rgba(36, 35, 35);
+        }
+
+        .arrow-left {
+            left: -50px;
+        }
+
+        .arrow-right {
+            right: -50px;
+        }
+
 
         /* Contact Section */
         .contact {
