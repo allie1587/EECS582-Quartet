@@ -40,7 +40,7 @@ $query = "SELECT * FROM Appointment_Availability a
                 AND c.Day = ?
                 AND c.Year = ?)
           AND NOT EXISTS (SELECT 1 FROM Appointment_Availability b
-                WHERE a.barberID = b.barberID
+                WHERE a.Barber_ID = b.Barber_ID
                 AND a.Time = b.Time
                 AND b.Month = ?
                 AND b.Day = ?
