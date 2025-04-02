@@ -9,6 +9,7 @@
         3/2/2025 - Brinley, commenting
         3/3/2025 - Added unique 7-digit integer AppointmentID
         3/4/2025 - Added email confirmation functionality using PHPMailer
+        4/2/2025 - Brinley, refactor database table insert
     Preconditions:
         Acceptable inputs: 
             A form with method "post" that sends variable strings for variables fname, lname, email, and phone
@@ -47,7 +48,7 @@ function generateUniqueAppointmentID($mysqli) {
         $appointmentID = mt_rand(1000000, 9999999); // mt_rand is faster and more random than rand()
         
         // Check if the ID already exists in the database
-        $query = "SELECT AppointmentID FROM Confirmed_Appointments WHERE AppointmentID = ?";
+        $query = "SELECT Appointment_ID FROM Confirmed_Appointments WHERE Appointment_ID = ?";
         $stmt = $mysqli->prepare($query);
         $stmt->bind_param("i", $appointmentID);
         $stmt->execute();
@@ -60,10 +61,7 @@ function generateUniqueAppointmentID($mysqli) {
 }
 
 // Set corresponding variables from the form post from the confirm appointment page and from the previously-set session variables from schedule.php
-$fname = $_POST['fname'];
-$lname = $_POST['lname'];
-$email = $_POST['email'];
-$phone = $_POST['phone'];
+$client = $_SESSION["client"];
 $day = $_SESSION["day"];
 $month = $_SESSION["month"];
 $year = $_SESSION["year"];
@@ -74,8 +72,8 @@ $barber = $_SESSION['appointment']["BarberID"];
 $appointmentID = generateUniqueAppointmentID($mysqli);
 
 // Prepare a query to insert a row into the confirmed appointments table in the database with the corresponding info
-$query = "INSERT INTO Confirmed_Appointments (BarberID, Month, Day, Year, Time, First_name, Last_name, Email, Phone, AppointmentID)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+$query = "INSERT INTO Confirmed_Appointments (Barber_ID, Client_ID, Month, Day, Year, Time, Appointment_ID)
+          VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 // Prepare the query 
 $stmt = $mysqli->prepare($query);
@@ -84,7 +82,7 @@ if (!$stmt) { // If the query is not valid, throw error
 }
 
 // Bind parameters to put them into the SQL query
-$stmt->bind_param("sssssssssi", $barber, $month, $day, $year, $time, $fname, $lname, $email, $phone, $appointmentID);
+$stmt->bind_param("sissssi", $barber, $client, $month, $day, $year, $time, $appointmentID);
 $stmt->execute(); // Execute the SQL query
 
 // Close the database connections
