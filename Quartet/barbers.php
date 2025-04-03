@@ -39,12 +39,12 @@ if ($barber_result->num_rows > 0) {
         $username = $barber['Barber_ID'];
         // Retrieve that barbers services for Barber_Services
         $services = [];
-        $stmt = $conn->prepare("SELECT * FROM Barber_Information WHERE Barber_ID = ?");
+        $stmt = $conn->prepare("SELECT * FROM Barber_Services WHERE Barber_ID = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $services_result = $stmt->get_result();
         while ($service = $services_result->fetch_assoc()) {
-            $services[] = $service['Name'];
+            $services[] = $service['Service_ID'];
         }
         $barber['services'] = $services;
 
@@ -400,7 +400,7 @@ if ($barber_result->num_rows > 0) {
             <div class="barber-container">
                 <!-- Displays the picture of the barber -->
                 <?php if (!empty($barber['Photo'])): ?>
-                    <img src="<?php echo htmlspecialchars($barber['Photo']); ?>" alt="<?php echo htmlspecialchars($barber['First_Name'] . ' ' . $barber['Last_Name']); ?>" class="barber-photo">
+                    <img src="<?php echo $barber['Photo']; ?>" alt="<?php echo htmlspecialchars($barber['First_Name'] . ' ' . $barber['Last_Name']); ?>" class="barber-photo">
                 <?php endif; ?>
                 <!-- Displays the name of that barber -->
                 <div class="barber-name"><?php echo htmlspecialchars($barber['First_Name'] . ' ' . $barber['Last_Name']); ?></div>

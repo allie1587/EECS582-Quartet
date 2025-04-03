@@ -5,8 +5,8 @@ Revisions:
     03/17/2025 -- Alexandra Stratton -- created barber_profile.php
     03/28/2025 -- Alexandra Stratton -- created the form for updating barber information
 Purpose: Allows a barber to update their profile
-Missing:
-    -- Barber_Gallery
+Sources: 
+    -- ChatGPT
 -->
 <?php
 session_start();
@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
             // Move uploaded file to desired directory
             if (move_uploaded_file($tmp_name, $file_path)) {
                 // Insert record into the database
-                $stmt = $conn->prepare("INSERT INTO Barber_Gallery (Barber_ID, Image) VALUES (?, ?)");
+                $stmt = $conn->prepare("INSERT INTO Barber_Gallery (barber_id, image) VALUES (?, ?)");
                 $stmt->bind_param("ss", $username, $file_path);
                 $stmt->execute();
                 $stmt->close();
@@ -192,6 +192,9 @@ if (isset($_SESSION['username'])) {
         $stmt->close();
     }
 }
+?>
+<?php
+// Includes the side navagation bar on barberside
 include("barber_header.php");
 ?>
 <!DOCTYPE html>
@@ -202,7 +205,7 @@ include("barber_header.php");
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="style.css">
-    <script src="validation.js"></script>
+    <script src="validate.js"></script>
 
     <title>Barber Customize</title>
     <style>
@@ -229,20 +232,6 @@ include("barber_header.php");
             margin-bottom: 20px;
         }
 
-        .error-message {
-            color: #dc3545;
-            font-size: 0.875em;
-            margin-top: 0.25rem;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        .is-invalid {
-            border-color: #dc3545 !important;
-        }
 
         /* Button Styling */
         button[type="submit"],
@@ -273,7 +262,7 @@ include("barber_header.php");
             border-color: #bd2130;
         }
 
-        /* Gallery Section */
+        /* Gallery Section with help from ChatGPT*/
         .gallery-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -314,203 +303,295 @@ include("barber_header.php");
 </head>
 
 <body>
-    <?php if (!empty($error)): ?>
-        <p style="color: red;"><?php echo $error; ?></p>
-    <?php endif; ?>
-    <?php if (!empty($success)): ?>
-        <p style="color: green;"><?php echo $success; ?></p>
-    <?php endif; ?>
     <div class="container">
         <h1>Profile</h1>
-        <form method="POST" enctype="multipart/form-data" data-validate-form onsubmit="return validateBeforeSubmit()">
-            <label for="first_name"><strong>First Name:</strong></label>
-            <input type="text" name="first_name" id="first_name" data-validate value="<?php echo htmlspecialchars($barber['First_Name'] ?? ''); ?>" required>
-            <span id="first_name-error" class="error-message"></span>
-            <br>
+        <form method="POST" enctype="multipart/form-data" id="barber-profile-form" onsubmit="return validateBeforeSubmit();">
+            <!-- Barber's personal information -->
+            <div class="form-section">
+                <h2>Personal Information</h2>
 
-            <label for="last_name"><strong>Last Name:</strong></label>
-            <input type="text" name="last_name" id="last_name" data-validate value="<?php echo htmlspecialchars($barber['Last_Name'] ?? ''); ?>" required>
-            <span id="last_name-error" class="error-message"></span>
-            <br>
+                <div class="form-group">
+                    <label for="first_name"><strong>First Name:</strong></label>
+                    <input type="text" name="first_name" id="first_name"
+                        value="<?php echo htmlspecialchars($barber['First_Name'] ?? ''); ?>" required>
+                    <span id="first_name-error" style="color: red; display: none;"></span>
+                </div>
 
-            <label for="email"><strong>Email:</strong></label>
-            <input type="email" name="email" id="email" data-validate value="<?php echo htmlspecialchars($barber['Email'] ?? ''); ?>">
-            <span id="email-error" class="error-message"></span>
+                <div class="form-group">
+                    <label for="last_name"><strong>Last Name:</strong></label>
+                    <input type="text" name="last_name" id="last_name"
+                        value="<?php echo htmlspecialchars($barber['Last_Name'] ?? ''); ?>" required>
+                    <span id="last_name-error" style="color: red; display: none;"></span>
+                </div>
 
-            <label for="phone"><strong>Phone:</strong></label>
-            <input type="tel" name="phone" id="phone" data-validate value="<?php echo htmlspecialchars($barber['Phone_Number'] ?? ''); ?>">
-            <span id="phone-error" class="error-message"></span>
+                <div class="form-group">
+                    <label for="email"><strong>Email:</strong></label>
+                    <input type="email" name="email" id="email"
+                        value="<?php echo htmlspecialchars($barber['Email'] ?? ''); ?>">
+                    <span id="email-error" style="color: red; display: none;"></span>
+                </div>
 
-            <label for="instagram"><strong>Instagram:</strong></label>
-            <input type="text" name="instagram" id="instagram" data-validate
-                onblur="formValidator.validateSocialMedia('instagram', this.value)"
-                value="<?php echo htmlspecialchars($barber['Instagram'] ?? ''); ?>">
-            <span id="instagram-error" class="error-message"></span>
-            <a id="instagram-link" href="<?= !empty($barber['Instagram']) ? 'https://www.instagram.com/' . htmlspecialchars($barber['Instagram']) : '#' ?>" target="_blank" style="<?= empty($barber['Instagram']) ? 'display:none' : '' ?>">Visit</a>
+                <div class="form-group">
+                    <label for="phone"><strong>Phone:</strong></label>
+                    <input type="tel" name="phone" id="phone"
+                        value="<?php echo htmlspecialchars($barber['Phone_Number'] ?? ''); ?>">
+                    <span id="phone-error" style="color: red; display: none;"></span>
+                </div>
+            </div>
+            <!-- Barber's Social Media -->
+            <div class="form-section">
+                <h2>Social Media</h2>
 
-            <label for="facebook"><strong>Facebook:</strong></label>
-            <input type="text" name="facebook" id="facebook" data-validate
-                onblur="formValidator.validateSocialMedia('facebook', this.value)"
-                value="<?php echo htmlspecialchars($barber['Facebook'] ?? ''); ?>">
-            <span id="facebook-error" class="error-message"></span>
-            <a id="facebook-link" href="<?= !empty($barber['Facebook']) ? htmlspecialchars($barber['Facebook']) : '#' ?>"
-                target="_blank" style="<?= empty($barber['Facebook']) ? 'display:none' : '' ?>">Visit</a>
-            <label for="tiktok"><strong>TikTok:</strong></label>
-            <input type="text" name="tiktok" id="tiktok" data-validate
-                onblur="formValidator.validateSocialMedia('tiktok', this.value)"
-                value="<?php echo htmlspecialchars($barber['TikTok'] ?? ''); ?>">
-            <span id="tiktok-error" class="error-message"></span>
-            <a id="tiktok-link" href="<?= !empty($barber['TikTok']) ? 'https://www.tiktok.com/@' . htmlspecialchars($barber['TikTok']) : '#' ?>" target="_blank" style="<?= empty($barber['TikTok']) ? 'display:none' : '' ?>">Visit</a>
-            <br>
+                <div class="form-group">
+                    <label for="instagram"><strong>Instagram:</strong></label>
+                    <input type="text" name="instagram" id="instagram" placeholder="Enter your Instagram username"
+                        value="<?php echo htmlspecialchars($barber['Instagram'] ?? ''); ?>">
+                    <span id="instagram-error" style="color: red; display: none;"></span>
+                    <a id="instagram-link" href="<?= !empty($barber['Instagram']) ? 'https://www.instagram.com/' . htmlspecialchars($barber['Instagram']) : '#' ?>"
+                        target="_blank" style="<?= empty($barber['Instagram']) ? 'display:none' : '' ?>">Visit Profile</a>
+                </div>
+
+                <div class="form-group">
+                    <label for="facebook"><strong>Facebook:</strong></label>
+                    <input type="text" name="facebook" id="facebook" placeholder="Enter your Facebook username"
+                        value="<?php echo htmlspecialchars($barber['Facebook'] ?? ''); ?>">
+                    <span id="facebook-error" style="color: red; display: none;"></span>
+                    <a id="facebook-link" href="<?= !empty($barber['Facebook']) ? htmlspecialchars($barber['Facebook']) : '#' ?>"
+                        target="_blank" style="<?= empty($barber['Facebook']) ? 'display:none' : '' ?>">Visit Profile</a>
+                </div>
+
+                <div class="form-group">
+                    <label for="tiktok"><strong>TikTok:</strong></label>
+                    <input type="text" name="tiktok" id="tiktok" placeholder="Enter your TikTok username"
+                        value="<?php echo htmlspecialchars($barber['TikTok'] ?? ''); ?>">
+                    <span id="tiktok-error" style="color: red; display: none;"></span>
+                    <a id="tiktok-link" href="<?= !empty($barber['TikTok']) ? 'https://www.tiktok.com/@' . htmlspecialchars($barber['TikTok']) : '#' ?>"
+                        target="_blank" style="<?= empty($barber['TikTok']) ? 'display:none' : '' ?>">Visit Profile</a>
+                </div>
+            </div>
+
+            <!-- Barber's Professial Photo -->
+            <div class="form-section">
+                <h2>Profile Photo</h2>
+                <div class="form-group">
+                    <label for="photo_image"><strong>Upload New Photo:</strong></label>
+                    <input type="file" name="photo_image" id="photo_image" accept="image/*">
+                    <span id="photo_image-error" style="color: red; display: none;"></span>
+                    <?php if (!empty($barber['Photo'])): ?>
+                        <div class="current-photo">
+                            <p>Current Photo:</p>
+                            <img id="preview-image" src="<?= htmlspecialchars($barber['Photo']) ?>" width="150">
+                        </div>
+                    <?php else: ?>
+                        <img id="preview-image" src="" width="150" style="display:none;">
+                    <?php endif; ?>
+                </div>
+            </div>
 
 
+            <!-- Gallery Section -->
+            <div class="form-section">
+                <h2>Gallery</h2>
+                <div class="gallery-container" id="galleryContainer">
+                    <?php foreach ($gallery as $image): ?>
+                        <div class="gallery-item" data-image-id="<?= $image['ID'] ?>">
+                            <img class="gallery-image-preview" src="<?= htmlspecialchars($image['Image']) ?>" width="150">
+                            <div class="gallery-controls">
+                                <button type="button" class="btn btn-danger remove-gallery-item">Remove</button>
+                            </div>
+                            <input type="hidden" name="keep_gallery[]" value="<?= $image['ID'] ?>">
+                        </div>
+                    <?php endforeach; ?>
+                </div>
 
+                <button type="button" id="addGalleryBtn" class="btn btn-primary">+ Add Image</button>
+                <div id="gallery-errors" class="error-message"></div>
 
-            <label for="photo_image"><strong>Profile Photo:</strong></label>
-            <input type="file" name="photo_image" id="photo_image" data-validate
-                onchange="formValidator.previewImage(this, 'preview-image')">
-            <span id="photo_image-error" class="error-message"></span>
-            <?php if (!empty($barber['Photo'])): ?>
-                <img id="preview-image" src="<?= htmlspecialchars($barber['Photo']) ?>" width="150" style="display:block; margin-top:10px;">
-            <?php else: ?>
-                <img id="preview-image" src="" width="150" style="display:none; margin-top:10px;">
-            <?php endif; ?>
-            <br>
-
-            <h3>Galley</h3>
-            <div class="gallery-container" id="galleryContainer">
-                <?php foreach ($gallery as $image): ?>
-                    <div class="gallery-item" data-image-id="<?= $image['ID'] ?>">
-                        <img class="gallery-image-preview" src="<?= htmlspecialchars($image['Image']) ?>" width="150">
+                <!-- Adding New Gallery Images -->
+                <template id="galleryItemTemplate">
+                    <div class="gallery-item">
+                        <input type="file" name="new_gallery_images[]" class="gallery-image-input" accept="image/*">
+                        <img class="gallery-image-preview" src="" style="display: none; width: 150px;">
+                        <div class="gallery-error error-message"></div>
                         <div class="gallery-controls">
                             <button type="button" class="btn btn-danger remove-gallery-item">Remove</button>
                         </div>
-                        <input type="hidden" name="keep_gallery[]" value="<?= $image['ID'] ?>">
                     </div>
-                <?php endforeach; ?>
+                </template>
             </div>
 
-            <button type="button" id="addGalleryBtn" class="btn btn-primary">+ Add Image</button>
-
-            <!-- Template for new gallery items -->
-            <template id="galleryItemTemplate">
-                <div class="gallery-item">
-                    <input type="file" name="new_gallery_images[]" class="gallery-image-input" accept="image/*">
-                    <img class="gallery-image-preview" src="" style="display: none; width: 150px;">
-                    <div class="gallery-error text-danger"></div>
-                    <div class="gallery-controls">
-                        <button type="button" class="btn btn-danger remove-gallery-item">Remove</button>
-                    </div>
-                </div>
-            </template>
-
-            <br>
             <button type="submit" name="update_profile" class="update-btn">Update Profile</button>
         </form>
     </div>
-
     <script>
-
+        // Initialize validation
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize barber profile validation
+            initBarberProfileValidation();
+
+            // Gallery management functions
             const galleryContainer = document.getElementById('galleryContainer');
             const addGalleryBtn = document.getElementById('addGalleryBtn');
             const galleryTemplate = document.getElementById('galleryItemTemplate');
+            const allowedImageTypes = [
+                'image/jpeg', 'image/png', 'image/gif', 'image/bmp',
+                'image/webp', 'image/svg+xml', 'image/tiff',
+                'image/heif', 'image/heic'
+            ];
 
             // Add new gallery item
             addGalleryBtn.addEventListener('click', function() {
-                addGalleryItem();
+                const newItem = galleryTemplate.content.cloneNode(true);
+                const newInput = newItem.querySelector('.gallery-image-input');
+
+                newInput.addEventListener('change', function() {
+                    validateGalleryImage(this);
+                });
+
+                galleryContainer.appendChild(newItem);
             });
 
-            // Initialize existing gallery items with remove functionality
+            // Remove gallery item
             galleryContainer.addEventListener('click', function(e) {
                 if (e.target.classList.contains('remove-gallery-item')) {
                     const galleryItem = e.target.closest('.gallery-item');
-                    removeGalleryItem(galleryItem);
-                }
-            });
+                    const imageId = galleryItem.dataset.imageId;
 
-            // Handle file input change for preview
-            galleryContainer.addEventListener('change', function(e) {
-                if (e.target.classList.contains('gallery-image-input')) {
-                    previewGalleryImage(e.target);
+                    if (imageId) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'delete_gallery[]';
+                        input.value = imageId;
+                        document.querySelector('form').appendChild(input);
+                    }
+
+                    galleryItem.remove();
                 }
             });
 
             // Initialize existing gallery items
-            initGalleryItems();
-        });
-
-        // Add gallery item from template
-        function addGalleryItem() {
-            const galleryContainer = document.getElementById('galleryContainer');
-            const galleryTemplate = document.getElementById('galleryItemTemplate');
-
-            // Clone gallery item template
-            const newItem = galleryTemplate.content.cloneNode(true);
-            galleryContainer.appendChild(newItem);
-        }
-
-        // Remove gallery item
-        function removeGalleryItem(galleryItem) {
-            const imageId = galleryItem.dataset.imageId;
-
-            if (imageId) {
-                // If the image exists in the database, mark it for deletion
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'delete_gallery[]';
-                input.value = imageId;
-                document.querySelector('form').appendChild(input);
-            }
-
-            // Remove the gallery item from the DOM
-            galleryItem.remove();
-        }
-
-        // Preview image before upload
-        function previewGalleryImage(input) {
-            const item = input.closest('.gallery-item');
-            const preview = item.querySelector('.gallery-image-preview');
-            const errorMsg = item.querySelector('.gallery-error');
-
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-                const maxSize = 10 * 1024 * 1024; // 10MB
-
-                if (!validTypes.includes(file.type)) {
-                    errorMsg.textContent = 'Only JPEG, PNG, and GIF images are allowed.';
-                    input.value = '';
-                    preview.style.display = 'none';
-                    return;
-                }
-
-                if (file.size > maxSize) {
-                    errorMsg.textContent = 'File size must be less than 10MB.';
-                    input.value = '';
-                    preview.style.display = 'none';
-                    return;
-                }
-
-                errorMsg.textContent = '';
-
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function initGalleryItems() {
-            const removeButtons = document.querySelectorAll('.remove-gallery-item');
-            removeButtons.forEach(function(button) {
-                button.addEventListener('click', function() {
-                    const galleryItem = this.closest('.gallery-item');
-                    removeGalleryItem(galleryItem);
+            document.querySelectorAll('.gallery-image-input').forEach(input => {
+                input.addEventListener('change', function() {
+                    validateGalleryImage(this);
                 });
             });
+
+            // Preview profile photo
+            document.getElementById('photo_image')?.addEventListener('change', function() {
+                const preview = document.getElementById('preview-image');
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+
+            // Validate gallery image
+            function validateGalleryImage(input) {
+                const item = input.closest('.gallery-item');
+                const errorElement = item.querySelector('.gallery-error');
+                const preview = item.querySelector('.gallery-image-preview');
+
+                if (input.files && input.files[0]) {
+                    const file = input.files[0];
+
+                    if (!allowedImageTypes.includes(file.type)) {
+                        errorElement.textContent = 'Invalid image type. Allowed: JPEG, PNG, GIF, BMP, WebP, SVG, TIFF, HEIF, HEIC';
+                        input.value = '';
+                        preview.style.display = 'none';
+                        return false;
+                    }
+
+                    if (file.size > 10 * 1024 * 1024) {
+                        errorElement.textContent = 'File size must be less than 10MB';
+                        input.value = '';
+                        preview.style.display = 'none';
+                        return false;
+                    }
+
+                    errorElement.textContent = '';
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        function validatePhone(input, errorElement) {
+            const value = input.value.trim();
+            const isRequired = isFieldRequired(input.id);
+
+            if (!isRequired && !value) {
+                errorElement.style.display = 'none';
+                input.classList.remove('is-invalid', 'is-valid');
+                return true;
+            }
+
+            if (value || isRequired) {
+                let numbers = value.replace(/\D/g, ''); 
+
+                if (!numbers) {
+                    showError(input, errorElement, "Phone number cannot be empty");
+                    return false;
+                }
+
+                if (numbers.length === 11 && numbers.startsWith('1')) {
+                    numbers = numbers.substring(1);
+                }
+
+                if (numbers.length !== 10) {
+                    showError(input, errorElement, "Please enter a valid 10-digit phone number");
+                    return false;
+                }
+
+                input.value = numbers;
+            }
+
+            showSuccess(input, errorElement);
+            return true;
+        }
+
+        function validateBeforeSubmit() {
+            let isValid = true;
+
+            // Check if at least one working day is selected
+            const workingDays = document.querySelectorAll('input[name^="working_days"]:checked');
+            if (workingDays.length === 0) {
+                alert('Please select at least one working day');
+                return false;
+            }
+
+            // Check each working day has valid times
+            workingDays.forEach(day => {
+                const dayName = day.name.match(/\[(.*?)\]/)[1];
+                const startTime = document.querySelector(`input[name="start_time[${dayName}]"]`).value;
+                const endTime = document.querySelector(`input[name="end_time[${dayName}]"]`).value;
+
+                if (!startTime || !endTime) {
+                    alert(`Please enter both start and end times for ${dayName}`);
+                    isValid = false;
+                } else if (startTime >= endTime) {
+                    alert(`End time must be after start time for ${dayName}`);
+                    isValid = false;
+                }
+            });
+
+            // Check if any field has an error message displayed
+            document.querySelectorAll('span[id$="-error"]').forEach(errorSpan => {
+                if (errorSpan.style.display !== 'none' && errorSpan.textContent.trim() !== '') {
+                    isValid = false;
+                }
+            });
+
+            return isValid;
         }
     </script>
 </body>
