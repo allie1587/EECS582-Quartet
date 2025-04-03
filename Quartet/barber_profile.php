@@ -562,27 +562,8 @@ include("barber_header.php");
         function validateBeforeSubmit() {
             let isValid = true;
 
-            // Check if at least one working day is selected
-            const workingDays = document.querySelectorAll('input[name^="working_days"]:checked');
-            if (workingDays.length === 0) {
-                alert('Please select at least one working day');
-                return false;
-            }
+          
 
-            // Check each working day has valid times
-            workingDays.forEach(day => {
-                const dayName = day.name.match(/\[(.*?)\]/)[1];
-                const startTime = document.querySelector(`input[name="start_time[${dayName}]"]`).value;
-                const endTime = document.querySelector(`input[name="end_time[${dayName}]"]`).value;
-
-                if (!startTime || !endTime) {
-                    alert(`Please enter both start and end times for ${dayName}`);
-                    isValid = false;
-                } else if (startTime >= endTime) {
-                    alert(`End time must be after start time for ${dayName}`);
-                    isValid = false;
-                }
-            });
 
             // Check if any field has an error message displayed
             document.querySelectorAll('span[id$="-error"]').forEach(errorSpan => {

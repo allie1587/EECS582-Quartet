@@ -19,9 +19,9 @@ if (isset($_POST['checkout'])) {
     $month = $_POST['month'];
     $day = $_POST['day'];
     $time = $_POST['time'];
-
+    /*
     // Insert into Checkout_History
-    $stmt = $conn->prepare("INSERT INTO Checkout_History (first_name, last_name, month, day, time) VALUES (?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO Checkout_History (Client_ID, Appointment_ID, Checkout_Time) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param("sssis", $first_name, $last_name, $month, $day, $time);
     $stmt->execute();
     $stmt->close();
@@ -31,14 +31,14 @@ if (isset($_POST['checkout'])) {
     $stmt->bind_param("sssis", $first_name, $last_name, $month, $day, $time);
     $stmt->execute();
     $stmt->close();
-
+    */
     // Refresh the page to reflect changes
     header("Location: dashboard.php");
     exit();
 }
 
 $query = "
-    SELECT First_name, Last_name, Month, Day, Time
+    SELECT Client_ID, Month, Day, Time
     FROM Confirmed_Appointments
     ORDER BY Day ASC;
 ";
@@ -100,6 +100,7 @@ $conn->close();
             </tr>
         </thead>
         <tbody>
+            <!--
             <?php foreach ($clients as $client): ?>
                 <tr>
                     <td><?php echo htmlspecialchars($client['First_name']); ?></td>
@@ -119,6 +120,7 @@ $conn->close();
                     </td>
                 </tr>
             <?php endforeach; ?>
+            -->
         </tbody>
     </table>
   </body>

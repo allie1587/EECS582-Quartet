@@ -375,27 +375,6 @@ function validateBarberProfileForm(event) {
         }
     });
     
-    // Validate availability
-    const workingDays = document.querySelectorAll('input[name^="working_days"]:checked');
-    if (workingDays.length === 0) {
-        alert('Please select at least one working day');
-        isValid = false;
-    } else {
-        workingDays.forEach(day => {
-            const dayName = day.name.match(/\[(.*?)\]/)[1];
-            const startTime = document.querySelector(`input[name="start_time[${dayName}]"]`).value;
-            const endTime = document.querySelector(`input[name="end_time[${dayName}]"]`).value;
-            
-            if (!startTime || !endTime) {
-                alert(`Please enter both start and end times for ${dayName}`);
-                isValid = false;
-            } else if (startTime >= endTime) {
-                alert(`End time must be after start time for ${dayName}`);
-                isValid = false;
-            }
-        });
-    }
-    
     if (isValid) {
         // If validation passed, submit the form
         event.target.submit();

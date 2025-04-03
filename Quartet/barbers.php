@@ -401,7 +401,7 @@ if ($barber_result->num_rows > 0) {
                 <!-- Displays the picture of the barber -->
                 <?php if (!empty($barber['Photo'])): ?>
                     <img src="<?php echo $barber['Photo']; ?>" alt="<?php echo htmlspecialchars($barber['First_Name'] . ' ' . $barber['Last_Name']); ?>" class="barber-photo">
-                <?php endif; ?>
+                    <?php endif; ?>
                 <!-- Displays the name of that barber -->
                 <div class="barber-name"><?php echo htmlspecialchars($barber['First_Name'] . ' ' . $barber['Last_Name']); ?></div>
                 <!-- Displays the services that barber offers -->
