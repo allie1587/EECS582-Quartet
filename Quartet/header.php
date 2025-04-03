@@ -1,10 +1,11 @@
 <!--
+header.php
+Purpose: Allow barbers to see the products seen in the store
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
-Date: 03/17/2025
+Creation Date: 03/17/2025
 Revisions:
     03/17/2025 -- Alexandra Stratton -- Redesgning the hearder.php
- Purpose: Allow barbers to see the products seen in the store
-
+    4/2/2025 - Brinley, add commmon style sheet
  -->
 <!DOCTYPE html>
 <html lang="en">
@@ -13,19 +14,11 @@ Revisions:
     <meta charset="UTF-8">
     <!--Ensure proper rendering and touch zooming on mobile devices-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style1.css">
     <!-- Load Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <!--Style choices for page-->
     <style>
-        /* Applies styles to the entire body */
-        body {
-            margin: 0;
-            padding-top: 70px;
-            text-align: center;
-            font-family: 'Georgia', serif;
-            background-color: #f4f4f4;
-        }
-
         /* Top Bar at Top with Pages and Login */
         .top-bar {
             background-color: #c4454d;

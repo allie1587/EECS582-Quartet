@@ -8,6 +8,7 @@
         03/02/2025 -- Jose Leyba, Modifieid UI Looks/ Added Barber Images
         03/29/2025 -- Alexandra Strattion -- Unhardcode
         4/1/2025 - Brinley Hull, refactor barber availability
+        4/2/2025 - Brinley Hull, fix availability display bug
     Sources:
         - https://www.freshkillsbarbershop.com/barber-bios
             -- Grabbed professional headshots for the hardcoded barbers
@@ -57,13 +58,13 @@ if ($barber_result->num_rows > 0) {
         $hours_result = $stmt->get_result();
         // go through each row and set start and end times for each day
         while ($hour = $hours_result->fetch_assoc()) {
-            $day = $hour['Weekday'];
+            $day = (int)$hour['Weekday'];
             if (!isset($start[$day])) {
                 $start[$day] = (int)$hour['Time'];
             }
             
-            $end[$day] = (int)$hour['Time'];
-            $availability[$day] = "";
+            $end[$day] = (int)$hour['Time'] + 1;
+            $availability[$day] = "hi";
         }
         
         // set the formatted versions of the start and end times for each weekday and set the availability for the day
@@ -81,7 +82,7 @@ if ($barber_result->num_rows > 0) {
             if ($end[$i] >= 12) {
                 $end_formatted = ($end[$i] == 12 ? $end[$i] : $end[$i]-12) . " PM";
             }
-            $availability[$day] = "$start_formatted - $end_formatted";
+            $availability[$i] = "$start_formatted - $end_formatted";
         }
         $barber['availability'] = $availability;
 
@@ -414,7 +415,7 @@ if ($barber_result->num_rows > 0) {
                 <div class="hours">
                     <h3>Availability</h3>
                     <?php
-                    $daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                    $daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
                     for ($day = 0; $day < 7; $day++): ?>
                         <p>
                             <strong><?php echo htmlspecialchars($daysOfWeek[$day]); ?>:</strong>

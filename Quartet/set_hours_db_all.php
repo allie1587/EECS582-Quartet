@@ -5,6 +5,7 @@
     Author: Alexandra Stratton, Ben Renner, Brinley Hull, Jose Leyba, Kyle Moore
     Revisions:
         3/29/2025 - Brinley, add week to database
+        4/2/2025 - Brinley, refactoring
     Other sources of code: ChatGPT
     Creation date: 3/14/2025
     Preconditions:
@@ -25,18 +26,15 @@
 session_start();
 
 // connect to the database
-$mysqli = new mysqli('sql312.infinityfree.com', 'if0_38323969', 'Quartet44', 'if0_38323969_quartet');
-if ($mysqli->connect_error) { // catch database connection failure error
-    die("Connection failed: " . $mysqli->connect_error);
-}
+require 'db_connection.php';
 
 $daysOfWeek = range(0, 6); // initialize days of the week list
 $times = range(8, 17); // make range of valid times
 $barber = $_POST["barber"];
 
 // check that barber is valid
-$query = "SELECT COUNT(*) AS count FROM Barber_Information WHERE Username = ?";
-$stmt = $mysqli->prepare($query);
+$query = "SELECT COUNT(*) AS count FROM Barber_Information WHERE Barber_ID = ?";
+$stmt = $conn->prepare($query);
 $stmt->bind_param("s", $barber);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -54,18 +52,18 @@ foreach ($times as $hour) { // create each row of times and checkboxees
         $$varName = isset($_POST[$varName]) ? $_POST[$varName] : "unchecked"; // Dynamically create the variable
         
         // delete any previous rows to avoid duplicates
-        $query = "DELETE FROM Appointment_Availability WHERE BarberID=? AND Weekday = ? AND Time = ?";
+        $query = "DELETE FROM Appointment_Availability WHERE Barber_ID=? AND Weekday = ? AND Time = ?";
 
         // prepare the query 
-        $stmt = $mysqli->prepare($query);
+        $stmt = $conn->prepare($query);
         if (!$stmt) { // if the query is not valid, throw error
-        die(json_encode(["error" => "SQL prepare failed: " . $mysqli->error]));
+        die(json_encode(["error" => "SQL prepare failed: " . $conn->error]));
         }
 
         $available = $$varName != "unchecked" ? "Y" : "N";
 
         // Bind parameters to put them into the SQL query
-        $stmt->bind_param("sss", $barber, $day, $time);
+        $stmt->bind_param("sss", $barber, $day, $hour);
         $stmt->execute(); // execute the SQL query
 
         // prepare a query to insert a row into the confirmed appointments table in the database with the corresponding info
@@ -73,9 +71,9 @@ foreach ($times as $hour) { // create each row of times and checkboxees
         VALUES (?, ?, ?, -1, -1, -1, -1, -1, ?)";
 
         // prepare the query 
-        $stmt = $mysqli->prepare($query);
+        $stmt = $conn->prepare($query);
         if (!$stmt) { // if the query is not valid, throw error
-        die(json_encode(["error" => "SQL prepare failed: " . $mysqli->error]));
+        die(json_encode(["error" => "SQL prepare failed: " . $conn->error]));
         }
 
         // Bind parameters to put them into the SQL query
@@ -88,7 +86,7 @@ foreach ($times as $hour) { // create each row of times and checkboxees
 }
 
 // close the connections
-$mysqli->close();
+$conn->close();
 
 // redirect to the home page
 header("Location: set_hours.php");

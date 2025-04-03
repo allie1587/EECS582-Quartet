@@ -15,14 +15,18 @@
         3/16/2025 -- Brinley, add search/filtering
         3/27/2025 -- Brinley, gray out days before current date
         3/28/2025 -- Brinley, gray out timeslots before current time
-        4/2/2025 - Brinley, refactoring
+        4/2/2025 - Brinley, refactoring; fix Sunday button bug
     Creation date:
     Other sources: ChatGPT
 -->
 <?php
 // Start the session to remember user info
 session_start();
+
+// connect to the database
 require 'db_connection.php';
+
+//get the common header
 include('header.php');
 ?>
 <!DOCTYPE html>
@@ -102,7 +106,7 @@ include('header.php');
         /* appointment button styling */
         .day-button {
             background-color: #c4454d;
-            color: black;
+            color: white;
             border: none;
             padding: 5px 10px;
             border-radius: 5px;
@@ -117,7 +121,7 @@ include('header.php');
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: #333;
-            color: black;
+            color: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgb(255, 255, 255);
@@ -126,7 +130,7 @@ include('header.php');
 
         .popup-content {
             background: white; /* Dark background */
-            color: black;
+            color: white;
             padding: 20px;
             border-radius: 10px;
             width: 80%;
@@ -151,6 +155,7 @@ include('header.php');
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Adjust columns dynamically */
             gap: 10px;
+            color: black;
             margin-top: 10px;
         }
 
@@ -290,7 +295,7 @@ include('header.php');
             'January', 'February', 'March', 'April', 'May', 'June', 
             'July', 'August', 'September', 'October', 'November', 'December'
         ];
-        let dayNames = ['Monday', "Tuesday", 'Wednesday', 'Thursday', 'Friday', "Saturday", 'Sunday'];
+        let dayNames = ['Sunday', 'Monday', "Tuesday", 'Wednesday', 'Thursday', 'Friday', "Saturday"];
         let appointmentsData = [];
 
     // Function to render the calendar
@@ -348,7 +353,7 @@ include('header.php');
                     let button = document.createElement('button');
 
                     // Get the weekday
-                    let weekday = new Date(currentYear, currentMonth, day-1).getDay();
+                    let weekday = new Date(currentYear, currentMonth, day).getDay();
 
                     // Fetch appointment count from backend
                     fetch(`get_appointments.php?year=${currentYear}&month=${currentMonth}&day=${day}&weekday=${weekday}`)
@@ -390,7 +395,7 @@ include('header.php');
             for (let offset = 0; offset < 7; offset++) {
                 let tempMonth = currentMonth;
                 let tempYear = currentYear
-                let wday = day - weekday + offset -1; // Correct calculation for the week day
+                let wday = day - weekday + offset; // Correct calculation for the week day
                 let dayDiv = document.createElement('div');
                 if (wday < 1){
                     wday += daysInPrevMonth;
@@ -407,7 +412,7 @@ include('header.php');
                         tempYear++;
                     }
                 }
-                if (offset == weekday+1) { // if we're on the selected day
+                if (offset == weekday) { // if we're on the selected day
                     dayDiv.style.backgroundColor = "#c4454d"; // change background color to show it's selected
                 }
                 dayDiv.classList.add('day');
@@ -423,7 +428,7 @@ include('header.php');
                     //otherwise show appointments
 
                     // Fetch appointment count from backend
-                    fetch(`get_appointments.php?year=${tempYear}&month=${tempMonth}&day=${wday}&weekday=${new Date(tempYear, tempMonth, wday - 1).getDay()}`)
+                    fetch(`get_appointments.php?year=${tempYear}&month=${tempMonth}&day=${wday}&weekday=${new Date(tempYear, tempMonth, wday).getDay()}`)
                         .then(response => response.json())
                         .then(data => {
                             // Reset appointments for this day
@@ -440,11 +445,11 @@ include('header.php');
                                     item.textContent = time + period;
                                     
                                     // Change button color based on barber
-                                    if (appointment.BarberID === "JL") {
+                                    if (appointment.Barber_ID === "JL") {
                                         item.style.backgroundColor = "lightblue";
-                                    } else if (appointment.BarberID === "kyle5") {
+                                    } else if (appointment.Barber_ID === "kyle5") {
                                         item.style.backgroundColor = "lightgreen";
-                                    } else if (appointment.BarberID === "kyle4") {
+                                    } else if (appointment.Barber_ID === "kyle4") {
                                         item.style.backgroundColor = "lightcoral";
                                     } else {
                                         item.style.backgroundColor = "gray";
@@ -507,7 +512,7 @@ include('header.php');
             currentYear = selectedDate.getFullYear();
 
             // Re-render the calendar with the new selectedDate
-            renderCalendar(selectedDate.getDate(), selectedDate.getDay()-1);
+            renderCalendar(selectedDate.getDate(), selectedDate.getDay());
         }
 
 
@@ -525,7 +530,7 @@ include('header.php');
             // BarberID needs to be changed in database to actually be the ID and reference the barber information table to get the name.
             appointmentDay.textContent = `Selected Appointment`;
             let appointmentInfoPara = document.createElement('p');
-            appointmentInfoPara.innerHTML = `Date: ${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}
+            appointmentInfoPara.innerHTML = `Date: ${dayNames[new Date(currentYear, currentMonth, day).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}
                                     \nTime: ${time}
                                     \nBarber: ${appointment.Barber_ID}`;
             appointmentGrid.appendChild(appointmentInfoPara);

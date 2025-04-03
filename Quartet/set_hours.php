@@ -7,6 +7,7 @@
         3/10/2025 -- Brinley, start revamp to be the barber set hours page. Change top "week of" format
         3/11/2025 -- Brinley, add searchable week
         3/29/2025 - Brinley, retrieve current availability
+        4/2/2025 - Brinley, refactoring, fix Sunday start of week bug
     Creation date:
 -->
 <?php
@@ -17,8 +18,10 @@ if (isset($_GET['year']) && isset($_GET['week'])) {
 } else {
     $dt->setISODate($dt->format('o'), $dt->format('W'));
 }
-$year = $dt->format('o');
 $week = $dt->format('W');
+$dt->modify('-1 day');
+$year = $dt->format('o');
+
 $_SESSION["year"] = $year;
 $_SESSION["week"] = $week;
 $_SESSION["month"] = $dt->format("m");
@@ -72,10 +75,9 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
         <table class="calendar-table">
             <tr>
                 <?php
-                $daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']; // initialize days of the week list
+                $daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; // initialize days of the week list
                 $startDayOfWeek = $dt->format('N'); 
                 $startDate = clone $dt; 
-                $startDate->modify('-' . ($startDayOfWeek - 1) . ' days');
 
                 foreach ($daysOfWeek as $day) { //show the date on the head of each calendar week
                     echo '<th>' . $day . ', ' . $startDate->format('n/j') . '</th>';

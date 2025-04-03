@@ -1,3 +1,12 @@
+/*
+style1.css
+General stylesheet for all files.
+Authors: Jose Leyba, Ben Renner, Kyle Moore, Brinley Hull, Alexandra Stratton
+Creation date:
+Revisions:
+    4/2/2025 - Brinley, commenting and reducing redundancy
+*/
+
 header {
     top: 0;
     left: 0;
@@ -14,7 +23,7 @@ body {
     margin: 0;
     padding: 0;
     padding-top: 80px;
-    color: black;
+    color: white;
     text-align: center;
     background-color: #f4f4f4;
     line-height: 1.6;
@@ -22,6 +31,10 @@ body {
 
 h1 {
     color: #c4454d;
+}
+
+button {
+    color: white;
 }
 
 .container {
@@ -148,7 +161,7 @@ button[type="submit"]:hover,
 }
 button {
     background-color: #c4454d;
-    color: black;
+    color: white;
     padding: 10px;
     border: none;
     border-radius: 5px;
@@ -229,14 +242,6 @@ button:hover {
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
-.container {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-    background: rgba(243, 243, 243, 0.9);
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-}
 .section {
     margin-bottom: 20px;
 }
