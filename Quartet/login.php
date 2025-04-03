@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error_message = "Username and password are required.";
     } else {
         //prepare SQL statement to fetch user from User table
-        $sql = "SELECT Username, Password FROM Barber_Information WHERE Username = ?";
+        $sql = "SELECT Barber_ID, Password FROM Barber_Information WHERE Barber_ID = ?";
         $stmt = $conn->prepare($sql);
 
         if ($stmt) {
