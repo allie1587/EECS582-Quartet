@@ -209,7 +209,7 @@ include("barber_header.php");
 
     <title>Barber Customize</title>
     <style>
-        /* General Styling */
+        /* ChatGPT helped with styling */
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
@@ -356,7 +356,7 @@ include("barber_header.php");
                     <input type="text" name="facebook" id="facebook" placeholder="Enter your Facebook username"
                         value="<?php echo htmlspecialchars($barber['Facebook'] ?? ''); ?>">
                     <span id="facebook-error" style="color: red; display: none;"></span>
-                    <a id="facebook-link" href="<?= !empty($barber['Facebook']) ? htmlspecialchars($barber['Facebook']) : '#' ?>"
+                    <a id="facebook-link" href="<?= !empty($barber['Facebook']) ? 'https://www.facebook.com/' . htmlspecialchars($barber['Facebook']) : '#' ?>"
                         target="_blank" style="<?= empty($barber['Facebook']) ? 'display:none' : '' ?>">Visit Profile</a>
                 </div>
 
@@ -368,64 +368,109 @@ include("barber_header.php");
                     <a id="tiktok-link" href="<?= !empty($barber['TikTok']) ? 'https://www.tiktok.com/@' . htmlspecialchars($barber['TikTok']) : '#' ?>"
                         target="_blank" style="<?= empty($barber['TikTok']) ? 'display:none' : '' ?>">Visit Profile</a>
                 </div>
-            </div>
+    </div>
 
-            <!-- Barber's Professial Photo -->
-            <div class="form-section">
-                <h2>Profile Photo</h2>
-                <div class="form-group">
-                    <label for="photo_image"><strong>Upload New Photo:</strong></label>
-                    <input type="file" name="photo_image" id="photo_image" accept="image/*">
-                    <span id="photo_image-error" style="color: red; display: none;"></span>
-                    <?php if (!empty($barber['Photo'])): ?>
-                        <div class="current-photo">
-                            <p>Current Photo:</p>
-                            <img id="preview-image" src="<?= htmlspecialchars($barber['Photo']) ?>" width="150">
-                        </div>
-                    <?php else: ?>
-                        <img id="preview-image" src="" width="150" style="display:none;">
-                    <?php endif; ?>
+    <!-- Barber's Professial Photo -->
+    <div class="form-section">
+        <h2>Profile Photo</h2>
+        <div class="form-group">
+            <label for="photo_image"><strong>Upload New Photo:</strong></label>
+            <input type="file" name="photo_image" id="photo_image" accept="image/*">
+            <span id="photo_image-error" style="color: red; display: none;"></span>
+            <?php if (!empty($barber['Photo'])): ?>
+                <div class="current-photo">
+                    <p>Current Photo:</p>
+                    <img id="preview-image" src="<?= htmlspecialchars($barber['Photo']) ?>" width="150">
                 </div>
-            </div>
+            <?php else: ?>
+                <img id="preview-image" src="" width="150" style="display:none;">
+            <?php endif; ?>
+        </div>
+    </div>
 
 
-            <!-- Gallery Section -->
-            <div class="form-section">
-                <h2>Gallery</h2>
-                <div class="gallery-container" id="galleryContainer">
-                    <?php foreach ($gallery as $image): ?>
-                        <div class="gallery-item" data-image-id="<?= $image['ID'] ?>">
-                            <img class="gallery-image-preview" src="<?= htmlspecialchars($image['Image']) ?>" width="150">
-                            <div class="gallery-controls">
-                                <button type="button" class="btn btn-danger remove-gallery-item">Remove</button>
-                            </div>
-                            <input type="hidden" name="keep_gallery[]" value="<?= $image['ID'] ?>">
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-
-                <button type="button" id="addGalleryBtn" class="btn btn-primary">+ Add Image</button>
-                <div id="gallery-errors" class="error-message"></div>
-
-                <!-- Adding New Gallery Images -->
-                <template id="galleryItemTemplate">
-                    <div class="gallery-item">
-                        <input type="file" name="new_gallery_images[]" class="gallery-image-input" accept="image/*">
-                        <img class="gallery-image-preview" src="" style="display: none; width: 150px;">
-                        <div class="gallery-error error-message"></div>
-                        <div class="gallery-controls">
-                            <button type="button" class="btn btn-danger remove-gallery-item">Remove</button>
-                        </div>
+    <!-- Gallery Section -->
+    <div class="form-section">
+        <h2>Gallery</h2>
+        <div class="gallery-container" id="galleryContainer">
+            <?php foreach ($gallery as $image): ?>
+                <div class="gallery-item" data-image-id="<?= $image['ID'] ?>">
+                    <img class="gallery-image-preview" src="<?= htmlspecialchars($image['Image']) ?>" width="150">
+                    <div class="gallery-controls">
+                        <button type="button" class="btn btn-danger remove-gallery-item">Remove</button>
                     </div>
-                </template>
-            </div>
+                    <input type="hidden" name="keep_gallery[]" value="<?= $image['ID'] ?>">
+                </div>
+            <?php endforeach; ?>
+        </div>
 
-            <button type="submit" name="update_profile" class="update-btn">Update Profile</button>
-        </form>
+        <button type="button" id="addGalleryBtn" class="btn btn-primary">+ Add Image</button>
+        <div id="gallery-errors" class="error-message"></div>
+
+        <!-- Adding New Gallery Images -->
+        <template id="galleryItemTemplate">
+            <div class="gallery-item">
+                <input type="file" name="new_gallery_images[]" class="gallery-image-input" accept="image/*">
+                <img class="gallery-image-preview" src="" style="display: none; width: 150px;">
+                <div class="gallery-error error-message"></div>
+                <div class="gallery-controls">
+                    <button type="button" class="btn btn-danger remove-gallery-item">Remove</button>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <button type="submit" name="update_profile" class="update-btn">Update Profile</button>
+    </form>
     </div>
     <script>
+        // Function to update social media links in real-time
+        function setupSocialMediaLiveUpdates() {
+            // Instagram
+            const instagramInput = document.getElementById('instagram');
+            const instagramLink = document.getElementById('instagram-link');
+
+            instagramInput?.addEventListener('input', function() {
+                const username = this.value.trim();
+                if (username) {
+                    instagramLink.href = `https://www.instagram.com/${username}`;
+                    instagramLink.style.display = 'inline';
+                } else {
+                    instagramLink.style.display = 'none';
+                }
+            });
+
+            // Facebook
+            const facebookInput = document.getElementById('facebook');
+            const facebookLink = document.getElementById('facebook-link');
+
+            facebookInput?.addEventListener('input', function() {
+                const username = this.value.trim();
+                if (username) {
+                    facebookLink.href = `https://www.facebook.com/${username}`;
+                    facebookLink.style.display = 'inline';
+                } else {
+                    facebookLink.style.display = 'none';
+                }
+            });
+
+            // TikTok
+            const tiktokInput = document.getElementById('tiktok');
+            const tiktokLink = document.getElementById('tiktok-link');
+
+            tiktokInput?.addEventListener('input', function() {
+                const username = this.value.trim();
+                if (username) {
+                    tiktokLink.href = `https://www.tiktok.com/@${username}`;
+                    tiktokLink.style.display = 'inline';
+                } else {
+                    tiktokLink.style.display = 'none';
+                }
+            });
+        }
         // Initialize validation
         document.addEventListener('DOMContentLoaded', function() {
+            setupSocialMediaLiveUpdates();
             // Initialize barber profile validation
             initBarberProfileValidation();
 
@@ -536,7 +581,7 @@ include("barber_header.php");
             }
 
             if (value || isRequired) {
-                let numbers = value.replace(/\D/g, ''); 
+                let numbers = value.replace(/\D/g, '');
 
                 if (!numbers) {
                     showError(input, errorElement, "Phone number cannot be empty");
@@ -562,7 +607,7 @@ include("barber_header.php");
         function validateBeforeSubmit() {
             let isValid = true;
 
-          
+
 
 
             // Check if any field has an error message displayed
