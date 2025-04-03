@@ -1,4 +1,6 @@
 <!--
+index.php
+Purpose: Main Page to see the barbershops, Barbers, Cuts, and Availabilities
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 02/12/2025
     Revisions:
@@ -9,7 +11,7 @@ Date: 02/12/2025
         03/14/2025 -- Alexandra Stratton implementedd header.php
         03/14/2025 -- Alexandra Stratton Got rid of unnecessary information
         03/16/2025 -- Jose Leyba -- UI Changes, makes the Name and Rating on the same horizontal level, replaced number of ratings with a star system
-Purpose: Main Page to see the barbershops, Barbers, Cuts, and Availabilities
+        4/2/2025 - Brinley, refactoring
 --> 
 <?php
 // Start the session to remember user info
@@ -21,26 +23,21 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
 }
 
 //Connects to database to get the Reviews table information
-$mysqli = new mysqli('sql312.infinityfree.com', 'if0_38323969', 'Quartet44', 'if0_38323969_quartet');
-if ($mysqli->connect_error) {
-    die("Connection failed: " . $mysqli->connect_error);
-}
+require 'db_connection.php';
 
 // Get the reviews from the table
-$reviewsQuery = "SELECT Name, Rating, Review FROM Reviews ORDER BY ReviewID DESC";
-$reviewsResult = $mysqli->query($reviewsQuery);
+$reviewsQuery = "SELECT Name, Rating, Review FROM Reviews ORDER BY Review_ID DESC";
+$reviewsResult = $conn->query($reviewsQuery);
 
 // Fetch the average rating
 $avgRatingQuery = "SELECT AVG(Rating) AS avg_rating FROM Reviews";
-$avgRatingResult = $mysqli->query($avgRatingQuery);
+$avgRatingResult = $conn->query($avgRatingQuery);
 $avgRatingRow = $avgRatingResult->fetch_assoc();
 $averageRating = $avgRatingRow['avg_rating'] ? number_format($avgRatingRow['avg_rating'], 2) : "N/A";
 
 // Close the database connection
-$mysqli->close();
-?>
+$conn->close();
 
-<?php
 include('header.php');
 ?>
 <head>

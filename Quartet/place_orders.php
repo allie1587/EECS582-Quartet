@@ -1,10 +1,12 @@
 <!--
-Authors: Alexandra, Jose, Brinley, Ben, Kyle
+place_orders.php
+Purpose: Allow customers to place orders from their shopping cart
+Authors: Alexandra Stratton, Jose Leyba, Brinley Hull, Ben Renner, Kyle Moore
 Date: 03/17/2025
 Revisions:
     03/17/2025 -- Alexandra Stratton -- Created the place_order.php
     03/29/2025 -- Alexandra Stratton -- Add Comments
-Purpose: Allow customers to place orders from their shopping cart
+    4/2/2025 - Brinley, refactoring and update client ID
 -->
 
 <?php
@@ -22,6 +24,25 @@ $stmt->bind_param("s", $session_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $cart_items = $result->fetch_all(MYSQLI_ASSOC);
+
+function generateUniqueClientID($conn) {
+    // function to generate the unique client ID
+    do {
+        // Generate a random 5-digit number
+        $clientID = mt_rand(10000, 99999); // mt_rand is faster and more random than rand()
+        
+        // Check if the ID already exists in the database
+        $query = "SELECT Client_ID FROM Client WHERE Client_ID = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("i", $clientID);
+        $stmt->execute();
+        $stmt->store_result();
+        $exists = $stmt->num_rows > 0; // If rows are found, the ID already exists
+        $stmt->close();
+    } while ($exists); // Repeat until a unique ID is generated
+
+    return $clientID;
+}
 
 // Calculate total price
 $total_price = 0;
@@ -56,11 +77,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute();
     } else {
         // Insert new client
-        $insert_client_query = "INSERT INTO Client (First_Name, Last_Name, Email, Phone) VALUES (?, ?, ?, ?)";
+        $insert_client_query = "INSERT INTO Client (Client_ID, First_Name, Last_Name, Email, Phone) VALUES (?, ?, ?, ?, ?)";
+        $client_id = generateUniqueClientID($conn);
         $stmt = $conn->prepare($insert_client_query);
-        $stmt->bind_param("ssss", $first_name, $last_name, $email, $phone);
+        $stmt->bind_param("ssss", $client_id, $first_name, $last_name, $email, $phone);
         $stmt->execute();
-        $client_id = $stmt->insert_id;
     }
 
     // Insert the order
@@ -77,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $price = $item['Price'];
 
 
-        $order_item_query = "INSERT INTO Order_Items (Order_ID, Product_ID, Quantity, Price) VALUES (?, ?, ?, ?, ?)";
+        $order_item_query = "INSERT INTO Order_Items (Order_ID, Product_ID, Quantity, Price) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($order_item_query);
         $stmt->bind_param("isid", $order_id, $product_id, $quantity, $price);
         $stmt->execute();
@@ -92,9 +113,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 
 }
-?>
-
-<?php
 //Adds the header to the page reducing redunacny
 include("header.php");
 ?>

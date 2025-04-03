@@ -1,19 +1,21 @@
 <!--
-Authors: Alexandra, Jose, Brinley, Ben, Kyle
+add_item.php
+Purpose: Allow customers to add's item to cart from their shopping cart
+Authors: Alexandra Stratton, Jose Leyba, Brinley Hull, Ben Renner, Kyle Moore
 Date: 03/12/2025
 Revisions:
     03/12/2025 -- Alexandra Stratton -- Created the app item page
     03/15/2025  -- Alexandra Stratton  -- Commenting
-Purpose: Allow customers to add's item to cart from their shopping cart
+    4/2/2025 - Brinley, refactoring
 -->
 <?php
 session_start();
 //Connects to the database
 require 'db_connection.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['Product_ID'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['product_id'])) {
     // Retrieves the 
-    $product_id = $_POST['Product_ID'];
+    $product_id = $_POST['product_id'];
     $quantity = 1; 
     $session_id = session_id();
     // SQL to see if the product is already in the cart
@@ -25,12 +27,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['Product_ID'])) {
 
     if ($result->num_rows > 0) {
         // When the product is already in the chart it add ones to the quantity
-        $sql = "UPDATE Cart SET Quantity = quantity + 1 WHERE Product_ID = ? AND Session_ID = ?";
+        $sql = "UPDATE Cart SET Quantity = Quantity + 1 WHERE Product_ID = ? AND Session_ID = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ss", $product_id, $session_id);
     } else {
         // When the product isn't in the cart already it will indsert the product into the database
-        $sql = "INSERT INTO Cart (Product_ID, Quantity, session_id) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO Cart (Product_ID, Quantity, Session_ID) VALUES (?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sis", $product_id, $quantity, $session_id);
     }

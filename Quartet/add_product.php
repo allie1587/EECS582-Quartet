@@ -1,13 +1,14 @@
 <!--
-Authors: Alexandra, Jose, Brinley, Ben, Kyle
+add_product.php
+Purpose: Allow barbers to add the products seen in the store
+Authors: Alexandra Stratton, Jose Leyba, Brinley Hull, Ben Renner, Kyle Moore
 Date: 03/12/2025
 Revisions:
     03/12/2025 -- Alexandra Stratton -- Created the add product page
     03/14/2025 -- Alexandra Stratton -- Implemented header.php
     03/15/2025  -- Alexandra Stratton  -- Commenting and fixing format
     03/15/2025 -- Alexandra Stratton -- Added error messaging 
-Other Sources: ChatGTP
-Purpose: Allow barbers to add the products seen in the store
+Other Sources: ChatGPT
 -->
 <?php
 // Connects to the database

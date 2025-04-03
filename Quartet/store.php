@@ -1,5 +1,7 @@
 <!--
-Authors: Alexandra, Jose, Brinley, Ben, Kyle
+store.php
+Purpose: Store Page that allows users to see different products up to sale at the barbershop and their price
+Authors: Alexandra Stratton, Jose Leyba, Brinley Hull, Ben Renner, Kyle Moore
 Date: 02/12/2025
 Revisions:
     03/02/2025 -- Jose Leyba -- Changed UI to look better and dark mode implemented
@@ -8,26 +10,22 @@ Revisions:
     03/14/2025 --  Alexandra Stratton -- Included the header.php and added Shopping Cart to the menu
     03/16/2025 -- Jose Leyba -- Connected to database, UI now reflects when product gets added to the cart
     03/16/2025 -- Alexandra Stratton -- Connect the add to cart button to the shopping cart
-Purpose: Store Page thaat will (later) allow users to see different products up to sale at the barbershop and their price
-
+    4/2/2025 - Brinley, refactoring
 -->
 <?php
 // Start the session to remember user info
 session_start();
 
 //Connects to database to get the Reviews table information
-$mysqli = new mysqli('sql312.infinityfree.com', 'if0_38323969', 'Quartet44', 'if0_38323969_quartet');
-if ($mysqli->connect_error) {
-    die("Connection failed: " . $mysqli->connect_error);
-}
+require 'db_connection.php';
 
 // Get the reviews from the table
-$productsQuery = "SELECT id, name, description, price, image FROM products";
-$productsResult = $mysqli->query($productsQuery);
+$productsQuery = "SELECT * FROM Products";
+$productsResult = $conn->query($productsQuery);
 
 // Debugging: Check if the query was successful
 if (!$productsResult) {
-    die("Query Failed: " . $mysqli->error);
+    die("Query Failed: " . $conn->error);
 }
 
 //Puts the Products table information in an easy to iterate way
@@ -41,8 +39,8 @@ if ($productsResult) {
 
 // For our session, collect the id's for the products and see the amount we have of each
 $session_id = session_id();
-$cartQuery = "SELECT product_id, quantity FROM cart WHERE session_id = ?";
-$stmt = $mysqli->prepare($cartQuery);
+$cartQuery = "SELECT Product_ID, Quantity FROM Cart WHERE Session_ID = ?";
+$stmt = $conn->prepare($cartQuery);
 $stmt->bind_param("s", $session_id);
 $stmt->execute();
 $cartResult = $stmt->get_result();
@@ -50,26 +48,25 @@ $cartResult = $stmt->get_result();
 // Store the info of quantities in an array
 $cartQuantities = [];
 while ($row = $cartResult->fetch_assoc()) {
-    $cartQuantities[$row['product_id']] = $row['quantity'];
+    $cartQuantities[$row['Product_ID']] = $row['Quantity'];
 }
 
 $stmt->close();
-$mysqli->close();
+$conn->close();
 
 //Remembers the Cart in your session, if you didn't had one set it to empty
-if (!isset($_SESSION['cart'])) {
-    $_SESSION['cart'] = [];
+if (!isset($_SESSION['Cart'])) {
+    $_SESSION['Cart'] = [];
 }
 
 //Adds items to your cart when sending the post requests
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'])) {
-    $product_id = $_POST['product_id'];
-    if (!in_array($product_id, $_SESSION['cart'])) {
-        $_SESSION['cart'][] = $product_id;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Product_ID'])) {
+    $product_id = $_POST['Product_ID'];
+    if (!in_array($product_id, $_SESSION['Cart'])) {
+        $_SESSION['Cart'][] = $product_id;
     }
 }
-?>
-<?php
+
 include('header.php');
 ?>
 
@@ -203,11 +200,11 @@ include('header.php');
     <div class="store-grid">
         <?php foreach ($products as $product) { 
             // Makes sure the special characters don't leak into the SQL query
-            $name = htmlspecialchars(addslashes($product['name']));
-            $description = htmlspecialchars(addslashes($product['description']));
-            $image = htmlspecialchars($product['image']);
-            $price = htmlspecialchars($product['price']);
-            $product_id = $product['id'];
+            $name = htmlspecialchars(addslashes($product['Name']));
+            $description = htmlspecialchars(addslashes($product['Description']));
+            $image = htmlspecialchars($product['Image']);
+            $price = htmlspecialchars($product['Price']);
+            $product_id = $product['Product_ID'];
             $quantity = isset($cartQuantities[$product_id]) ? $cartQuantities[$product_id] : 0;
         ?>
             <div class='product-container' onclick="showDetails('<?php echo $name; ?>', '<?php echo $price; ?>', '<?php echo $image; ?>', '<?php echo $description; ?>')">
@@ -215,10 +212,10 @@ include('header.php');
                 <?php if ($quantity > 0) { ?>
                     <div class="cart-quantity"><?php echo $quantity; ?></div>
                 <?php } ?>
-                <div class='product-name'><?php echo $product['name']; ?></div>
+                <div class='product-name'><?php echo $product['Name']; ?></div>
                 <div class='product-price'>$<?php echo $price; ?></div>
                 <form action="add_item.php" method="POST" style="display:inline;" onsubmit="event.stopPropagation();">
-                    <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
+                    <input type="hidden" name="product_id" value="<?php echo $product['Product_ID']; ?>">
                     <button type="submit" class="btn add-to-cart-btn" onclick="event.stopPropagation();">Add to Cart</button>
                 </form>
             </div>
