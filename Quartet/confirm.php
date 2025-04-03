@@ -9,7 +9,7 @@
         3/2/2025 - Brinley, commenting
         3/3/2025 - Added unique 7-digit integer AppointmentID
         3/4/2025 - Added email confirmation functionality using PHPMailer
-        4/2/2025 - Brinley, refactor database table insert
+        4/2/2025 - Brinley, refactoring and implementing client ID
     Preconditions:
         Acceptable inputs: 
             A form with method "post" that sends variable strings for variables fname, lname, email, and phone
@@ -36,20 +36,20 @@
 session_start();
 require 'config.php';
 // Connect to the database
-$mysqli = new mysqli('sql312.infinityfree.com', 'if0_38323969', 'Quartet44', 'if0_38323969_quartet');
-if ($mysqli->connect_error) { // Catch database connection failure error
-    die("Connection failed: " . $mysqli->connect_error);
-}
+require 'db_connection.php';
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // Function to generate a unique 7-digit integer
-function generateUniqueAppointmentID($mysqli) {
+function generateUniqueAppointmentID($conn) {
     do {
         // Generate a random 7-digit number
         $appointmentID = mt_rand(1000000, 9999999); // mt_rand is faster and more random than rand()
         
         // Check if the ID already exists in the database
         $query = "SELECT Appointment_ID FROM Confirmed_Appointments WHERE Appointment_ID = ?";
-        $stmt = $mysqli->prepare($query);
+        $stmt = $conn->prepare($query);
         $stmt->bind_param("i", $appointmentID);
         $stmt->execute();
         $stmt->store_result();
@@ -60,25 +60,90 @@ function generateUniqueAppointmentID($mysqli) {
     return $appointmentID;
 }
 
+function generateUniqueClientID($conn) {
+    // function to generate the unique client ID
+    do {
+        // Generate a random 5-digit number
+        $clientID = mt_rand(10000, 99999); // mt_rand is faster and more random than rand()
+        
+        // Check if the ID already exists in the database
+        $query = "SELECT Client_ID FROM Client WHERE Client_ID = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("i", $clientID);
+        $stmt->execute();
+        $stmt->store_result();
+        $exists = $stmt->num_rows > 0; // If rows are found, the ID already exists
+        $stmt->close();
+    } while ($exists); // Repeat until a unique ID is generated
+
+    return $clientID;
+}
+
 // Set corresponding variables from the form post from the confirm appointment page and from the previously-set session variables from schedule.php
-$client = $_SESSION["client"];
+$fname = $_POST['fname'];
+$lname = $_POST['lname'];
+$email = $_POST['email'];
+$phone = $_POST['phone'];
 $day = $_SESSION["day"];
 $month = $_SESSION["month"];
 $year = $_SESSION["year"];
 $time = $_SESSION["time"];
-$barber = $_SESSION['appointment']["BarberID"];
+$barber = $_SESSION['appointment']["Barber_ID"];
+
+// get or create client id
+$client = -1;
+
+// check to see whether client exists
+$query = "SELECT * FROM Client WHERE Email = ?";
+$stmt = $conn->prepare($query);
+if (!$stmt) { // If the query is not valid, throw error
+    die(json_encode(["error" => "SQL prepare failed: " . $conn->error]));
+}
+
+// Bind parameters to put them into the SQL query
+$stmt->bind_param("s", $email);
+$stmt->execute(); // Execute the SQL query
+$result = $stmt->get_result(); // get row results
+if (!$result) {
+    die(json_encode(["error" => "SQL execution failed: " . $stmt->error]));
+}
+
+// Fetch all rows
+$count = 0;
+while ($row = $result->fetch_assoc()) {
+    $count++;
+    $client = $row['Client_ID'];
+}
+if ($count == 0) {
+    // check to see whether client exists
+    $query = "INSERT INTO Client (Client_ID, First_Name, Last_Name, Email, Phone) 
+              VALUES (?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($query);
+    if (!$stmt) { // If the query is not valid, throw error
+        die(json_encode(["error" => "SQL prepare failed: " . $conn->error]));
+    }
+    $client = generateUniqueClientID($conn);
+
+    // Bind parameters to put them into the SQL query
+    $stmt->bind_param("isssi", $client, $fname, $lname, $email, $phone);
+    $stmt->execute(); // Execute the SQL query
+    $result = $stmt->get_result(); // get row results
+    if (!$result) {
+        die(json_encode(["error" => "SQL execution failed: " . $stmt->error]));
+    }
+}
 
 // Generate a unique 7-digit appointment ID
-$appointmentID = generateUniqueAppointmentID($mysqli);
+$appointmentID = generateUniqueAppointmentID($conn);
 
 // Prepare a query to insert a row into the confirmed appointments table in the database with the corresponding info
 $query = "INSERT INTO Confirmed_Appointments (Barber_ID, Client_ID, Month, Day, Year, Time, Appointment_ID)
           VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 // Prepare the query 
-$stmt = $mysqli->prepare($query);
+$stmt = $conn->prepare($query);
 if (!$stmt) { // If the query is not valid, throw error
-    die(json_encode(["error" => "SQL prepare failed: " . $mysqli->error]));
+    die(json_encode(["error" => "SQL prepare failed: " . $conn->error]));
 }
 
 // Bind parameters to put them into the SQL query
@@ -87,7 +152,7 @@ $stmt->execute(); // Execute the SQL query
 
 // Close the database connections
 $stmt->close();
-$mysqli->close();
+$conn->close();
 
 // Include PHPMailer classes
 use PHPMailer\PHPMailer\PHPMailer;

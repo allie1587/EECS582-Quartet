@@ -7,6 +7,7 @@
     Creation date: 3/1/2025
     Revisions:
         3/2/2025 - Brinley, commenting and deleting unnecessary code
+        4/2/2025 - Brinley, refactoring
     Preconditions:
         Acceptable inputs: 
             Previously set session information for month, day, year, time, and appointment
@@ -103,7 +104,7 @@ session_start();
             <input type="text" id="appointment_time" name="appointment_time" value="<?php echo $_SESSION['time']?>" readonly><br><br>
             
             <label for="appointment_barber">Barber:</label><br>
-            <input type="text" id="appointment_barber" name="appointment_barber" value="<?php echo $_SESSION['appointment']["BarberID"]?>" readonly><br><br>
+            <input type="text" id="appointment_barber" name="appointment_barber" value="<?php echo $_SESSION['appointment']["Barber_ID"]?>" readonly><br><br>
             
             <button type="submit">Confirm Appointment</button>
         </form>

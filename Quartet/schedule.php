@@ -15,18 +15,16 @@
         3/16/2025 -- Brinley, add search/filtering
         3/27/2025 -- Brinley, gray out days before current date
         3/28/2025 -- Brinley, gray out timeslots before current time
+        4/2/2025 - Brinley, refactoring
     Creation date:
     Other sources: ChatGPT
 -->
 <?php
 // Start the session to remember user info
 session_start();
-$conn = new mysqli('sql312.infinityfree.com', 'if0_38323969', 'Quartet44', 'if0_38323969_quartet');
-if ($mysqli->connect_error) {
-    die("Connection failed: " . $mysqli->connect_error);
-}
+require 'db_connection.php';
+include('header.php');
 ?>
-<?php include('header.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -193,27 +191,6 @@ if ($mysqli->connect_error) {
     </style>
 </head>
 <body>
-    <!-- The top navigation bar containing the barbershop name and login button -->
-    <div class="top-bar">
-        <!--Name of Page followed by Navigation Bar of The pages-->
-        <h1>Quartet's Barbershop</h1>
-        <div class="menu">
-            <button onclick="location.href='index.php'">Home</button>
-            <button onclick="location.href='schedule.php'">Schedule</button>
-            <button onclick="location.href='store.php'">Store</button>
-            <button onclick="location.href='barbers.php'">Barbers</button>
-            <button onclick="location.href='about.php'">About Us</button>
-            <button onclick="location.href='feedback.php'">Contact us</button>
-
-        </div>
-
-        <!--Stylized Button to be circular, when clicked takes you to login.html-->
-        <div class="login-container">
-            <span>Login</span>
-            <button class="login-button" onclick="location.href='login.php'">&#10132;</button>
-        </div>
-    </div>
-
     <!-- Page title -->
     <h1>Schedule</h1>
     
@@ -550,7 +527,7 @@ if ($mysqli->connect_error) {
             let appointmentInfoPara = document.createElement('p');
             appointmentInfoPara.innerHTML = `Date: ${dayNames[new Date(currentYear, currentMonth, day-1).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}
                                     \nTime: ${time}
-                                    \nBarber: ${appointment.BarberID}`;
+                                    \nBarber: ${appointment.Barber_ID}`;
             appointmentGrid.appendChild(appointmentInfoPara);
 
             let bookButton = document.createElement('button');

@@ -7,6 +7,7 @@
     Revisions:
         3/16/2025 - Brinley, add filtering
         3/28/2025 - Brinley, remove confirmed appointments
+        4/2/2025 - Brinley, refactoring
 */
 session_start(); //start the session
 
@@ -34,13 +35,13 @@ $query = "SELECT * FROM Appointment_Availability a
           WHERE Available='Y' 
           AND (Weekday=? OR (Month=? AND Day=? AND Year=?))
           AND NOT EXISTS (SELECT 1 FROM Confirmed_Appointments c
-                WHERE c.BarberID = a.BarberID 
+                WHERE c.Barber_ID = a.Barber_ID 
                 AND c.Time = a.Time 
                 AND c.Month = ?
                 AND c.Day = ?
                 AND c.Year = ?)
           AND NOT EXISTS (SELECT 1 FROM Appointment_Availability b
-                WHERE a.barberID = b.barberID
+                WHERE a.Barber_ID = b.Barber_ID
                 AND a.Time = b.Time
                 AND b.Month = ?
                 AND b.Day = ?
@@ -49,7 +50,7 @@ $query = "SELECT * FROM Appointment_Availability a
 
 // check for barber and time filtering
 if ($barberID !== null) {
-    $query .= " AND BarberID=?";
+    $query .= " AND Barber_ID=?";
 }
 if ($time !== null) {
     $query .= " AND Time=?";
