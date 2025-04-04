@@ -29,8 +29,12 @@
 
 // Start the session to remember user info
 session_start();
+$monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June', 
+    'July', 'August', 'September', 'October', 'November', 'December'
+];
+include('header.php');
 ?>
-<?php include('header.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -98,7 +102,7 @@ session_start();
             
             <!-- Appointment information (readonly) that uses the session variables-->
             <label for="appointment_date">Date:</label><br>
-            <input type="text" id="appointment_date" name="appointment_date" value="<?php echo $_SESSION['month']?> <?php echo $_SESSION['day']?>, <?php echo $_SESSION['year']?>" readonly><br><br>
+            <input type="text" id="appointment_date" name="appointment_date" value="<?php echo $monthNames[$_SESSION['month']]?> <?php echo $_SESSION['day']?>, <?php echo $_SESSION['year']?>" readonly><br><br>
             
             <label for="appointment_time">Time:</label><br>
             <input type="text" id="appointment_time" name="appointment_time" value="<?php echo $_SESSION['time']?>" readonly><br><br>

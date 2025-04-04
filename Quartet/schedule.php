@@ -538,7 +538,7 @@ include('header.php');
             let bookButton = document.createElement('button');
             bookButton.textContent = "Book Appointment";
             bookButton.addEventListener('click', () => {
-                bookAppointment(appointment, day, monthNames[currentMonth], currentYear, time);
+                bookAppointment(appointment, day, currentMonth, currentYear, time);
              });
 
             appointmentGrid.appendChild(bookButton);

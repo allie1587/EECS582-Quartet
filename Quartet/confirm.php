@@ -87,7 +87,7 @@ $phone = $_POST['phone'];
 $day = $_SESSION["day"];
 $month = $_SESSION["month"];
 $year = $_SESSION["year"];
-$time = $_SESSION["time"];
+$time = date("G", strtotime($_SESSION['time'])); 
 $barber = $_SESSION['appointment']["Barber_ID"];
 
 // get or create client id
