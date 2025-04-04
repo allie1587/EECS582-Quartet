@@ -11,19 +11,16 @@ Purpose: A page where clients can enter their appointment ID and cancel the appo
 session_start();
 
 // Connect to the database
-$mysqli = new mysqli('sql312.infinityfree.com', 'if0_38323969', 'Quartet44', 'if0_38323969_quartet');
-if ($mysqli->connect_error) {
-    die("Connection failed: " . $mysqli->connect_error);
-}
+require 'db_connection.php';
 
 // Get the appointment ID from the form
 $appointmentID = $_POST['appointmentID'];
 
 // Check if the appointment exists
 $query = "SELECT * FROM Confirmed_Appointments WHERE Appointment_ID = ?";
-$stmt = $mysqli->prepare($query);
+$stmt = $conn->prepare($query);
 if (!$stmt) {
-    die(json_encode(["error" => "SQL prepare failed: " . $mysqli->error]));
+    die(json_encode(["error" => "SQL prepare failed: " . $conn->error]));
 }
 
 // Bind the appointment ID parameter
@@ -37,9 +34,9 @@ if ($result->num_rows === 0) {
 
 // Delete the appointment with the given ID
 $deleteQuery = "DELETE FROM Confirmed_Appointments WHERE Appointment_ID = ?";
-$deleteStmt = $mysqli->prepare($deleteQuery);
+$deleteStmt = $conn->prepare($deleteQuery);
 if (!$deleteStmt) {
-    die(json_encode(["error" => "SQL prepare failed: " . $mysqli->error]));
+    die(json_encode(["error" => "SQL prepare failed: " . $conn->error]));
 }
 
 // Bind the appointment ID parameter and execute the delete query
@@ -53,7 +50,7 @@ if ($deleteStmt->execute()) {
 // Close the database connections
 $stmt->close();
 $deleteStmt->close();
-$mysqli->close();
+$conn->close();
 header("Location: cancel_appointment.php");
 exit();
 ?>

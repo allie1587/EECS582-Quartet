@@ -106,7 +106,7 @@ include('header.php');
         /* appointment button styling */
         .day-button {
             background-color: #c4454d;
-            color: white;
+            color: black;
             border: none;
             padding: 5px 10px;
             border-radius: 5px;
@@ -121,7 +121,7 @@ include('header.php');
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: #333;
-            color: white;
+            color: black;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgb(255, 255, 255);
@@ -130,7 +130,7 @@ include('header.php');
 
         .popup-content {
             background: white; /* Dark background */
-            color: white;
+            color: black;
             padding: 20px;
             border-radius: 10px;
             width: 80%;
@@ -145,7 +145,7 @@ include('header.php');
             right: 15px;
             font-size: 20px;
             cursor: pointer;
-            color: white;
+            color: black;
         }
 
 

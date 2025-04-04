@@ -1,8 +1,8 @@
 <?php
 // Start the session
 session_start();
+include('header.php'); 
 ?>
-<?php include('header.php'); ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -74,11 +74,13 @@ session_start();
                         document.getElementById("cancelButton").style.display = "block"; // Show cancel button if appointment found
                         document.getElementById("hiddenAppointmentID").value = appointmentID; // Pass ID to cancel form
                     } else {
+                        document.getElementById("cancelButton").style.display = "block"; 
                         document.getElementById("cancelButton").style.display = "none"; // Hide cancel button if no appointment found
                     }
                 }
             };
             xhr.send("appointmentID=" + appointmentID);
+
         }
     </script>
 </head>
