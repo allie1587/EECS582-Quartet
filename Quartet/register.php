@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         //Attempt to secure password
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         //Prepare SQL statement to insert data into the User table
-        $sql = "INSERT INTO Barber_Information (First_Name, Last_name, Username, Password) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO Barber_Information (First_Name, Last_name, Barber_ID, Password) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         if ($stmt) {
             //Bind parameters to the prepared statement
