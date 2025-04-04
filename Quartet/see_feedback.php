@@ -13,7 +13,7 @@ if ($mysqli->connect_error) {
 }
 
 // Get the questions from the table
-$FeedQuery = "SELECT Email, Name, Comment FROM questions";
+$FeedQuery = "SELECT Email, Name, Comment FROM Questions";
 $FeedResult = $mysqli->query($FeedQuery);
 ?>
 

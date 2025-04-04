@@ -44,7 +44,7 @@ $comment = $_POST['comment'];
 
 
 // Prepare a query to insert a row into the confirmed appointments table in the database with the corresponding info
-$query = "INSERT INTO questions (Email, Name, Comment)
+$query = "INSERT INTO Questions (Email, Name, Comment)
           VALUES (?, ?, ?)";
 
 // Prepare the query 

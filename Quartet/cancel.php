@@ -20,7 +20,7 @@ if ($mysqli->connect_error) {
 $appointmentID = $_POST['appointmentID'];
 
 // Check if the appointment exists
-$query = "SELECT * FROM Confirmed_Appointments WHERE AppointmentID = ?";
+$query = "SELECT * FROM Confirmed_Appointments WHERE Appointment_ID = ?";
 $stmt = $mysqli->prepare($query);
 if (!$stmt) {
     die(json_encode(["error" => "SQL prepare failed: " . $mysqli->error]));
@@ -36,7 +36,7 @@ if ($result->num_rows === 0) {
 }
 
 // Delete the appointment with the given ID
-$deleteQuery = "DELETE FROM Confirmed_Appointments WHERE AppointmentID = ?";
+$deleteQuery = "DELETE FROM Confirmed_Appointments WHERE Appointment_ID = ?";
 $deleteStmt = $mysqli->prepare($deleteQuery);
 if (!$deleteStmt) {
     die(json_encode(["error" => "SQL prepare failed: " . $mysqli->error]));
