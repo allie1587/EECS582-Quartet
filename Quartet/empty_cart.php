@@ -4,12 +4,13 @@ Date: 03/12/2025
 Revisions:
     03/12/2025 -- Alexandra Stratton -- Created the empty cart page
     03/15/2025  -- Alexandra Stratton  -- Commenting
+    04/06/2025 -- Alexandra Stratton -- Refactoring
 Purpose: Allow customers to remove all items from their shopping cart
 -->
 <?php
 session_start();
 //Connects to the database
-require 'db_connection.php'; 
+require 'db_connection.php';
 
 // Retrieves the users session_id
 $session_id = session_id();

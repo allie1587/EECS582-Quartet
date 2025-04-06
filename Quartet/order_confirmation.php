@@ -4,22 +4,23 @@ Date: 03/17/2025
 Revisions:
     03/17/2025 -- Alexandra Stratton -- Created the order_confirmation.php
     03/18/2025 -- Alexandra Stratton -- Implemented order confirmation
+    04/06/2025 -- Alexandra Stratton -- Refactoring
 Purpose: Once an order is placed a confirmation screen will show
 -->
 <?php
 //Connects to the database
 session_start();
 require 'db_connection.php';
-if (!isset($_GET['Order_ID'])) {
+if (!isset($_GET['order_id'])) {
     die("Order ID not provided.");
 }
 
-$order_id = $_GET['Order_ID'];
+$order_id = $_GET['order_id'];
 
 // Fetch order details
 $order_query = "SELECT Orders.*, Client.First_Name, Client.Last_Name, Client.Email, Client.Phone 
                 FROM Orders 
-                JOIN Client ON Orders.Client_ID = Client.Client_ID
+                JOIN Client ON Orders.Client_ID = Client.Client_ID 
                 WHERE Orders.Order_ID = ?";
 $stmt = $conn->prepare($order_query);
 $stmt->bind_param("i", $order_id);
@@ -50,15 +51,10 @@ include("header.php");
 <head>
     <!-- Title for Page --> 
     <title>Order Confrimation</title>
+    <link rel="stylesheet" href="style1.css">
     <style>
         /* Style for page */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            color: black;
-        }
+
         .order-details {
             width: 80%;
             max-width: 800px;
@@ -170,7 +166,6 @@ include("header.php");
                         <td>
                             $<?php echo number_format($item['Price'], 2); ?>
                         </td>
-                        
                     </tr>
                 <?php endforeach; ?>
                 <tr>
@@ -191,4 +186,3 @@ include("header.php");
     </div>
     
 </body>
-    

@@ -1,12 +1,11 @@
 <!--
-place_orders.php
-Purpose: Allow customers to place orders from their shopping cart
-Authors: Alexandra Stratton, Jose Leyba, Brinley Hull, Ben Renner, Kyle Moore
+Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 03/17/2025
 Revisions:
     03/17/2025 -- Alexandra Stratton -- Created the place_order.php
     03/29/2025 -- Alexandra Stratton -- Add Comments
-    4/2/2025 - Brinley, refactoring and update client ID
+    04/06/2025 -- Alexandra Stratton -- Refactoring
+Purpose: Allow customers to place orders from their shopping cart
 -->
 
 <?php
@@ -16,33 +15,14 @@ $error = "";
 $success = "";
 $session_id = session_id();
 $sql = "SELECT Cart.*, Products.Name, Products.Price, Products.Image 
-FROM Cart 
-JOIN Products ON Cart.Product_ID = Products.Product_ID
-WHERE Cart.Session_ID = ?";
+        FROM Cart 
+        JOIN Products ON Cart.Product_ID = Products.Product_ID
+        WHERE Cart.Session_ID = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $session_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $cart_items = $result->fetch_all(MYSQLI_ASSOC);
-
-function generateUniqueClientID($conn) {
-    // function to generate the unique client ID
-    do {
-        // Generate a random 5-digit number
-        $clientID = mt_rand(10000, 99999); // mt_rand is faster and more random than rand()
-        
-        // Check if the ID already exists in the database
-        $query = "SELECT Client_ID FROM Client WHERE Client_ID = ?";
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param("i", $clientID);
-        $stmt->execute();
-        $stmt->store_result();
-        $exists = $stmt->num_rows > 0; // If rows are found, the ID already exists
-        $stmt->close();
-    } while ($exists); // Repeat until a unique ID is generated
-
-    return $clientID;
-}
 
 // Calculate total price
 $total_price = 0;
@@ -77,17 +57,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute();
     } else {
         // Insert new client
-        $insert_client_query = "INSERT INTO Client (Client_ID, First_Name, Last_Name, Email, Phone) VALUES (?, ?, ?, ?, ?)";
-        $client_id = generateUniqueClientID($conn);
+        $insert_client_query = "INSERT INTO Client (First_Name, Last_Name, Email, Phone) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($insert_client_query);
-        $stmt->bind_param("ssss", $client_id, $first_name, $last_name, $email, $phone);
+        $stmt->bind_param("ssss", $first_name, $last_name, $email, $phone);
         $stmt->execute();
+        $client_id = $stmt->insert_id;
     }
 
     // Insert the order
-    $order_query = "INSERT INTO Orders (Client_ID, Total_Price, Comments) VALUES (?, ?, ?)";
+    $order_query = "INSERT INTO Orders (Client_ID, Comments) VALUES (?, ?)";
     $stmt = $conn->prepare($order_query);
-    $stmt->bind_param("ids", $client_id, $total_price, $comments);
+    $stmt->bind_param("is", $client_id, $comments);
     $stmt->execute();
     $order_id = $stmt->insert_id;
 
@@ -96,11 +76,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $product_id = $item['Product_ID'];
         $quantity = $item['Quantity'];
         $price = $item['Price'];
+        $item_total_price = $price * $quantity;
 
-
-        $order_item_query = "INSERT INTO Order_Items (Order_ID, Product_ID, Quantity, Price) VALUES (?, ?, ?, ?)";
+        $order_item_query = "INSERT INTO Order_Items (Order_ID, Product_ID, Quantity, Price, Total_Price) VALUES (?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($order_item_query);
-        $stmt->bind_param("isid", $order_id, $product_id, $quantity, $price);
+        $stmt->bind_param("isidd", $order_id, $product_id, $quantity, $price, $item_total_price);
         $stmt->execute();
     }
 
@@ -109,25 +89,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $conn->prepare($clear_cart_query);
     $stmt->bind_param("s", $session_id);
     $stmt->execute();
-    header("Location: order_confirmation.php?Order_ID=" . $order_id);
+    header("Location: order_confirmation.php?order_id=" . $order_id);
     exit();
 
 }
+?>
+
+<?php
 //Adds the header to the page reducing redunacny
 include("header.php");
 ?>
 <head>
     <!-- Title for Page --> 
     <title>Place Order</title>
+    <link rel="stylesheet" href="style1.css">
     <style>
         /* Style for the page */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            color: black;
-        }
+
         .cart-container {
             width: 90%;
             max-width: 1200px;
@@ -268,16 +246,16 @@ include("header.php");
                 <?php foreach ($cart_items as $item): ?>
                     <tr>
                         <td>
-                            <img src="<?php echo $item['image']; ?>" alt="<?php echo $item['name']; ?>">
+                            <img src="<?php echo $item['Image']; ?>" alt="<?php echo $item['Name']; ?>">
                         </td>
                         <td>
-                            <?php echo $item['name']; ?>
+                            <?php echo $item['Name']; ?>
                         </td>
                         <td>
-                            $<?php echo number_format($item['price'] * $item['quantity'], 2); ?>
+                            $<?php echo number_format($item['Price'] * $item['Quantity'], 2); ?>
                         </td>
                         <td>
-                            x<?php echo $item['quantity']; ?>    
+                            x<?php echo $item['Quantity']; ?>    
                         </td>
                     </tr>
                 <?php endforeach; ?>

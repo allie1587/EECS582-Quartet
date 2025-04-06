@@ -1,13 +1,12 @@
 <!--
-add_item.php
-Purpose: Allow customers to add's item to cart from their shopping cart
-Authors: Alexandra Stratton, Jose Leyba, Brinley Hull, Ben Renner, Kyle Moore
-Date: 03/12/2025
-Revisions:
+ Authors: Alexandra, Jose, Brinley, Ben, Kyle
+ Date: 03/12/2025
+ Revisions:
     03/12/2025 -- Alexandra Stratton -- Created the app item page
     03/15/2025  -- Alexandra Stratton  -- Commenting
-    4/2/2025 - Brinley, refactoring
--->
+    04/06/2025 -- Alexandra Stratton -- Refactoring
+ Purpose: Allow customers to add's item to cart from their shopping cart
+ -->
 <?php
 session_start();
 //Connects to the database
@@ -16,7 +15,7 @@ require 'db_connection.php';
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['product_id'])) {
     // Retrieves the 
     $product_id = $_POST['product_id'];
-    $quantity = 1; 
+    $quantity = 1;
     $session_id = session_id();
     // SQL to see if the product is already in the cart
     $sql = "SELECT * FROM Cart WHERE Product_ID = ? AND Session_ID = ?";

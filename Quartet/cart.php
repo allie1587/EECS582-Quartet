@@ -3,7 +3,8 @@ Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 03/12/2025
 Revisions:
     03/16/2025 -- Alexandra Stratton -- Created the cart.php
-    03/17/2025 -- Alexandra Stratton -- Made the Check Out button only appear if there is stuff in the cart
+    03/30/2025 -- Alexandra Stratton -- Place order for non-empty carts
+    04/06/2025 -- Alexandra Stratton -- Refactoring
 Purpose: Customers shopping carter
 Other Sources: ChatGPT
 -->
@@ -33,16 +34,10 @@ foreach ($cart_items as $item) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="style1.css">
     <title>Shopping Cart</title>
     <style>
-        /*ChatGPT helped with style*/
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            color: black;
-        }
+
         .cart-container {
             width: 90%;
             max-width: 1200px;
@@ -99,7 +94,6 @@ foreach ($cart_items as $item) {
             font-weight: bold;
             text-align: right;
             margin-bottom: 20px;
-            color: black;
         }
         .btn-container {
             display: flex;
@@ -137,9 +131,7 @@ foreach ($cart_items as $item) {
     </style>
 </head>
 <body>
-    <br>
-    <br>
-    <br>
+    <h1>Shopping Cart</h1>
     <div class="cart-container">
         <div class="empty-btn-container">
             <a href="empty_cart.php" class="empty-btn">Empty Cart</a>
@@ -165,13 +157,13 @@ foreach ($cart_items as $item) {
                         <td>$<?php echo number_format($item['Price'], 2); ?></td>
                         <td>
                             <form action="update_quantity.php" method="POST" style="display:inline;">
-                                <input type="hidden" name="Session_ID" value="<?php echo $item['Session_ID']; ?>">
+                                <input type="hidden" name="cart_id" value="<?php echo $item['Cart_ID']; ?>">
                                 <input type="hidden" name="action" value="decrease">
                                 <button type="submit" class="quantity-btn">-</button>
                             </form>
                             <?php echo $item['Quantity']; ?>
                             <form action="update_quantity.php" method="POST" style="display:inline;">
-                                <input type="hidden" name="Session_ID" value="<?php echo $item['Session_ID']; ?>">
+                                <input type="hidden" name="cart_id" value="<?php echo $item['Cart_ID']; ?>">
                                 <input type="hidden" name="action" value="increase">
                                 <button type="submit" class="quantity-btn">+</button>
                             </form>
@@ -179,7 +171,7 @@ foreach ($cart_items as $item) {
                         <td>$<?php echo number_format($item['Price'] * $item['Quantity'], 2); ?></td>
                         <td>
                             <form action="remove_item.php" method="POST" style="display:inline;">
-                                <input type="hidden" name="Session_ID" value="<?php echo $item['Session_ID']; ?>">
+                                <input type="hidden" name="cart_id" value="<?php echo $item['Cart_ID']; ?>">
                                 <button type="submit" class="remove-btn">Remove</button>
                             </form>
                         </td>
