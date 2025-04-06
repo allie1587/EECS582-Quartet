@@ -9,6 +9,7 @@
         3/29/2025 - Brinley, retrieve current availability
         4/2/2025 - Brinley, refactoring, fix Sunday start of week bug
         4/5/2025 - Brinley, fix weeks with mixed months
+        4/6/2025 - Brinley, automatically set barber id based on who is logged in
     Creation date:
 -->
 <?php
@@ -29,6 +30,8 @@ $_SESSION["month"] = $dt->format("m");
 $_SESSION["startDate"] = $dt->format("d");
 
 $monthYear = $dt->format('m/d/y'); // Get the numerical date
+
+include("barber_header.php");
 ?>
 
 <!DOCTYPE html>
@@ -72,7 +75,7 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
     </div>
 
     <form method="POST" id="calendarForm">
-        <input type="text" placeholder="Username" name="barber" id="barber">
+        <input type="text" value="<?php echo $_SESSION['username']?>" name="barber" id="barber_username">
         <button type="button" name="retrieve" onclick="retrieveAvailability()">Retrieve</button>
         <table class="calendar-table">
             <tr>
@@ -107,9 +110,10 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
 <script>
         function retrieveAvailability() {
             // get the barber's current availability
+            
 
             // get barber
-            let barber = document.getElementById("barber").value;
+            let barber = document.getElementById("barber_username").value;
 
             // get the current available appointments for the barber and week
             fetch('retrieve_appointments.php?barber=' + encodeURIComponent(barber) + "&year=" + encodeURIComponent(<?php echo json_encode($year); ?>) + "&week=" + encodeURIComponent(<?php echo json_encode($week); ?>))
@@ -175,6 +179,7 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
             const weekNumber = 1 + Math.round(((tempDate - firstThursday) / 86400000 - 3 + ((firstThursday.getUTCDay() + 6) % 7)) / 7);
             return weekNumber;
         }
-
+        
+        retrieveAvailability();
     </script>
 </html>

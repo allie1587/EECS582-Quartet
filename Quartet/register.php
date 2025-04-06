@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             //run the statement
             if ($stmt->execute()) {
                 //Set session username
-                $_SESSION["user"] = $username;
+                $_SESSION["username"] = $username;
                 //Redirect to the dashboard page
                 header("Location: dashboard.php");
                 exit();
