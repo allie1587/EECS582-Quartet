@@ -8,6 +8,7 @@
         3/11/2025 -- Brinley, add searchable week
         3/29/2025 - Brinley, retrieve current availability
         4/2/2025 - Brinley, refactoring, fix Sunday start of week bug
+        4/5/2025 - Brinley, fix weeks with mixed months
     Creation date:
 -->
 <?php
@@ -35,6 +36,7 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style1.css">
     <title>Barber Calendar</title>
     <style>
         /* Times grid styling */
@@ -110,7 +112,7 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
             let barber = document.getElementById("barber").value;
 
             // get the current available appointments for the barber and week
-            fetch('retrieve_appointments.php?barber=' + encodeURIComponent(barber) + "&week=" + encodeURIComponent(<?php echo json_encode($week); ?>))
+            fetch('retrieve_appointments.php?barber=' + encodeURIComponent(barber) + "&year=" + encodeURIComponent(<?php echo json_encode($year); ?>) + "&week=" + encodeURIComponent(<?php echo json_encode($week); ?>))
             .then(response => response.json())
             .then(data => {
                 console.log("Appointments data:", data);
@@ -125,8 +127,8 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
 
                     // if weekday not set, find the weekday by using the month day and year
                     if (appointment.Weekday == -1) {
-                        let date = new Date(appointment.Year, appointment.Month - 1, appointment.Day); 
-                        checkbox = document.getElementById(`${date.getDay()-1}-${appointment.Time}`);
+                        let date = new Date(appointment.Year, appointment.Month, appointment.Day); 
+                        checkbox = document.getElementById(`${date.getDay()}-${appointment.Time}`);
                     }
 
                     // if checkbox with said name exists, check it
@@ -155,8 +157,8 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
                 return;
             }
             
-            const date = new Date(year, month-1, day); //create a new date object
-            const weekNumber = Math.round(((date - new Date(date.getFullYear(), 0, 1)) / 86400000 + date.getDay() + 1) / 7); // calculate the week
+            const date = new Date(year, month-1, day+1); //create a new date object
+            const weekNumber = getISOWeekNumber(date); // calculate the week
             window.location.href = `?week=${weekNumber}&year=${year}`; // reset the calender
         }
         function setFormAction(action) {
@@ -164,5 +166,15 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
             form.action = action;
             form.submit(); // Manually submit the form after setting the action
         }
+        // calculate week accurately
+        function getISOWeekNumber(date) {
+            const tempDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const dayNumber = (tempDate.getUTCDay() + 6) % 7; // Monday = 0, Sunday = 6
+            tempDate.setUTCDate(tempDate.getUTCDate() - dayNumber + 3);
+            const firstThursday = new Date(Date.UTC(tempDate.getUTCFullYear(), 0, 4));
+            const weekNumber = 1 + Math.round(((tempDate - firstThursday) / 86400000 - 3 + ((firstThursday.getUTCDay() + 6) % 7)) / 7);
+            return weekNumber;
+        }
+
     </script>
 </html>

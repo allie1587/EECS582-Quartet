@@ -16,6 +16,7 @@
         3/27/2025 -- Brinley, gray out days before current date
         3/28/2025 -- Brinley, gray out timeslots before current time
         4/2/2025 - Brinley, refactoring; fix Sunday button bug
+        4/5/2025 - Brinley, fix incorrect month display on week view
     Creation date:
     Other sources: ChatGPT
 -->
@@ -390,11 +391,12 @@ include('header.php');
             nextButton.style.display = 'none';
             prevWeekButton.style.display = 'inline-block';
             nextWeekButton.style.display = 'inline-block';
+            
 
             // Add actual days of the WEEK
             for (let offset = 0; offset < 7; offset++) {
                 let tempMonth = currentMonth;
-                let tempYear = currentYear
+                let tempYear = currentYear;
                 let wday = day - weekday + offset; // Correct calculation for the week day
                 let dayDiv = document.createElement('div');
                 if (wday < 1){
@@ -461,7 +463,7 @@ include('header.php');
                                     }  
                                     // Add click event to show appointment details
                                     item.addEventListener('click', () => {
-                                        openAppointmentInfo(appointment, wday);
+                                        openAppointmentInfo(appointment, tempYear, tempMonth, wday);
                                     });
                                 }
                                 item.classList.add('day-button');
@@ -516,7 +518,7 @@ include('header.php');
         }
 
 
-        function openAppointmentInfo(appointment, day) {
+        function openAppointmentInfo(appointment, year, month, day) {
             // Appointment information popup for a specific timeslot
             const popup = document.getElementById('appointmentPopup');
             const appointmentGrid = document.getElementById('appointmentGrid');
@@ -530,7 +532,7 @@ include('header.php');
             // BarberID needs to be changed in database to actually be the ID and reference the barber information table to get the name.
             appointmentDay.textContent = `Selected Appointment`;
             let appointmentInfoPara = document.createElement('p');
-            appointmentInfoPara.innerHTML = `Date: ${dayNames[new Date(currentYear, currentMonth, day).getDay()]}, ${monthNames[currentMonth]} ${day}, ${currentYear}
+            appointmentInfoPara.innerHTML = `Date: ${dayNames[new Date(year, month, day).getDay()]}, ${monthNames[month]} ${day}, ${year}
                                     \nTime: ${time}
                                     \nBarber: ${appointment.Barber_ID}`;
             appointmentGrid.appendChild(appointmentInfoPara);
@@ -538,7 +540,7 @@ include('header.php');
             let bookButton = document.createElement('button');
             bookButton.textContent = "Book Appointment";
             bookButton.addEventListener('click', () => {
-                bookAppointment(appointment, day, currentMonth, currentYear, time);
+                bookAppointment(appointment, day, month, year, time);
              });
 
             appointmentGrid.appendChild(bookButton);

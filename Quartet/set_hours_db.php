@@ -6,6 +6,7 @@
     Revisions:
         3/29/2025 - Brinley, add week to database.
         4/2/2025 - Brinley, refactoring
+        4/5/2025 - Brinley, fix mixed months information
     Other sources of code: ChatGPT
     Creation date: 3/14/2025
     Preconditions:
@@ -29,6 +30,7 @@ session_start();
 require 'db_connection.php';
 
 $daysOfWeek = range(0, 6); // initialize days of the week list
+
 $times = range(8, 17); // make range of valid times
 $barber = $_POST["barber"];
 $week = $_SESSION["week"];
@@ -49,9 +51,14 @@ $stmt->close();
 
 $month = (int)$_SESSION["month"] - 1;
 $startDate = $_SESSION["startDate"];
-$year = $_SESSION["year"];
+$year = (int)$_SESSION["year"];
+$daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month-1, $year); // Number of days in the month
+$tempMonth = (int)$month;
+$tempYear = $year;
 foreach ($times as $hour) { // create each row of times and checkboxees
     foreach ($daysOfWeek as $day) { //create variables for every day and time combo
+        $tempMonth = $month;
+        $tempYear = $year;
         $varName = $day . '-' . $hour;
         $$varName = isset($_POST[$varName]) ? $_POST[$varName] : "unchecked"; // Dynamically create the variable
         
@@ -64,11 +71,30 @@ foreach ($times as $hour) { // create each row of times and checkboxees
         die(json_encode(["error" => "SQL prepare failed: " . $conn->error]));
         }
 
+        // Double check date to see if valid
         $date = $day + (int)$startDate;
+
+        // if day of month is greater than the end of the month, change to next month; vice versa
+        if ($date > $daysInMonth) {
+            $tempMonth+=1;
+            if ($tempMonth > 11) {
+                $tempYear+=1;
+                $tempMonth = 0;
+            }
+            $date -= $daysInMonth;
+        }
+        if ($date < 1) {
+            $tempMonth-=1;
+            if ($tempMonth < 0) {
+                $tempYear-=1;
+                $tempMonth = 11;
+            }
+            $date += cal_days_in_month(CAL_GREGORIAN, $tempMonth, $tempYear);
+        }
         $available = $$varName != "unchecked" ? "Y" : "N";
 
         // Bind parameters to put them into the SQL query
-        $stmt->bind_param("sssss", $barber, $hour, $month, $date, $year);
+        $stmt->bind_param("sssss", $barber, $hour, $tempMonth, $date, $tempYear);
         $stmt->execute(); // execute the SQL query
 
         // prepare a query to insert a row into the confirmed appointments table in the database with the corresponding info
@@ -82,7 +108,7 @@ foreach ($times as $hour) { // create each row of times and checkboxees
         }
 
         // Bind parameters to put them into the SQL query
-        $stmt->bind_param("sssssss", $barber, $hour, $month, $date, $year, $week, $available);
+        $stmt->bind_param("sssssss", $barber, $hour, $tempMonth, $date, $tempYear, $week, $available);
         $stmt->execute(); // execute the SQL query
 
         $stmt->close();

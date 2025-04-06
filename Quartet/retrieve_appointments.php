@@ -7,6 +7,7 @@
     Revisions:
         3/29/2025 - Brinley, creation
         4/2/2025 - Brinley, refactoring
+        4/5/2025 - Brinley, fix weeks with mixed months
 */
 session_start(); //start the session
 
@@ -20,6 +21,7 @@ require 'db_connection.php';
 
 // Validate input
 $week = $_GET['week'];
+$year = $_GET['year'];
 $barber = isset($_GET['barber']) ?  $_GET['barber'] : -1;
 
 // check whether barber exists
@@ -38,12 +40,13 @@ if ($row['count'] == 0) {
 $query = "SELECT * FROM Appointment_Availability a 
           WHERE Barber_ID=? 
           AND Available='Y' 
-          AND (Week=? OR (Weekday != -1
+          AND ((Week=? AND Year=?) OR (Weekday != -1
           AND NOT EXISTS (SELECT 1 FROM Appointment_Availability b
                 WHERE a.Barber_ID = b.Barber_ID
                 AND a.Time = b.Time
                 AND b.Week = ?
-                AND a.Weekday != WEEKDAY(STR_TO_DATE(CONCAT(b.Year, '-', b.Month, '-', b.Day), '%Y-%m-%d'))
+                AND b.Year = ?
+                AND a.Weekday != WEEKDAY(STR_TO_DATE(CONCAT(b.Year, '-', b.Month+1, '-', b.Day), '%Y-%m-%d'))
                 AND b.Available = 'N')))"; // AND NOT EXISTS checks for non-available over recurring
 
 // execute queyr
@@ -53,7 +56,7 @@ if (!$stmt) {
 }
 
 // Bind parameters
-$stmt->bind_param("sii", $barber, $week, $week);
+$stmt->bind_param("sii", $barber, $week, $year, $week, $year);
 $stmt->execute();
 $result = $stmt->get_result();
 if (!$result) {
