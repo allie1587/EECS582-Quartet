@@ -8,6 +8,7 @@
         3/29/2025 - Brinley, creation
         4/2/2025 - Brinley, refactoring
         4/5/2025 - Brinley, fix weeks with mixed months
+        4/7/2025 - Brinley, allow minute intervals
 */
 session_start(); //start the session
 
@@ -44,6 +45,7 @@ $query = "SELECT * FROM Appointment_Availability a
           AND NOT EXISTS (SELECT 1 FROM Appointment_Availability b
                 WHERE a.Barber_ID = b.Barber_ID
                 AND a.Time = b.Time
+                AND a.Minute = b.Minute
                 AND b.Week = ?
                 AND b.Year = ?
                 AND a.Weekday != WEEKDAY(STR_TO_DATE(CONCAT(b.Year, '-', b.Month+1, '-', b.Day), '%Y-%m-%d'))

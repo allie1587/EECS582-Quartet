@@ -10,6 +10,7 @@
         4/2/2025 - Brinley, refactoring, fix Sunday start of week bug
         4/5/2025 - Brinley, fix weeks with mixed months
         4/6/2025 - Brinley, automatically set barber id based on who is logged in
+        4/7/2025 - Brinley, allow minute intervals
     Creation date:
 -->
 <?php
@@ -93,13 +94,26 @@ include("barber_header.php");
             <?php
             /* Checkbox time grid */
             $times = range(8, 17); // make range of valid times
+            $minutes = ['00', '15', '30', '45']; // make range of valid 15-minute intervals
             foreach ($times as $hour) { // create each row of times and checkboxees
                 $timeLabel = ($hour < 12) ? $hour . ' AM' : (($hour === 12) ? '12 PM' : ($hour - 12) . ' PM'); 
-                echo '<tr><td class="time-label">' . $timeLabel . '</td>'; // show the time
+                echo '<tr class="main-hour"><td class="time-label"><strong>' . $timeLabel . '</strong></td>'; // show the time
                 foreach (range(0, 6) as $day) { //create 7 checkboxes in line with the name of the day and hour for ease of database manipulation
-                    echo '<td><input type="checkbox" name="' . $day . '-' . $hour . '" id="' . $day . '-' . $hour . '"></td>';
+                    $id = $day . '-' . $hour;
+                    echo '<td><input type="checkbox" class="hour-checkbox" hour="'. $hour .'" day="'.$day.'" name="' . $id . '" id="' . $id . '"></td>';
                 }
                 echo '</tr>';
+
+                // Sub-rows for each 15-minute increment
+                foreach ($minutes as $minute) {
+                    $timeLabel = ($hour < 12) ? $hour . ':' . $minute . ' AM' : (($hour === 12) ? '12' . ':' . $minute . ' PM' : ($hour - 12) . ':' . $minute . ' PM'); 
+                    echo '<tr class="quarter-hour"><td class="time-label">' . $timeLabel . '</td>';
+                    foreach (range(0, 6) as $day) {
+                        $id = $day . '-' . $hour . '-' . $minute;
+                        echo '<td><input type="checkbox" name="' . $id . '" hour="'. $hour .'" day="'.$day.'" id="' . $id . '" class="minute-checkbox"></td>';
+                    }
+                    echo '</tr>';
+                }
             }
             ?>
         </table>
@@ -110,7 +124,6 @@ include("barber_header.php");
 <script>
         function retrieveAvailability() {
             // get the barber's current availability
-            
 
             // get barber
             let barber = document.getElementById("barber_username").value;
@@ -127,12 +140,12 @@ include("barber_header.php");
                 // check the checkboxes for corresponding found appointments
                 data.forEach(appointment => {
                     //find checkbox who has the same name as the appointment weekday
-                    let checkbox = document.getElementById(`${appointment.Weekday}-${appointment.Time}`);
+                    let checkbox = document.getElementById(`${appointment.Weekday}-${appointment.Time}-${appointment.Minute}`);
 
                     // if weekday not set, find the weekday by using the month day and year
                     if (appointment.Weekday == -1) {
                         let date = new Date(appointment.Year, appointment.Month, appointment.Day); 
-                        checkbox = document.getElementById(`${date.getDay()}-${appointment.Time}`);
+                        checkbox = document.getElementById(`${date.getDay()}-${appointment.Time}-${appointment.Minute}`);
                     }
 
                     // if checkbox with said name exists, check it
@@ -181,5 +194,29 @@ include("barber_header.php");
         }
         
         retrieveAvailability();
+
+        // function to fill all 15-minute intervals if a general hour checkbox is clicked
+        document.addEventListener('DOMContentLoaded', function () {
+            // When an hour-checkbox is changed...
+            document.querySelectorAll('.hour-checkbox').forEach(function (hourCheckbox) {
+                hourCheckbox.addEventListener('change', function () {
+                    // get general hour information
+                    const hour = this.getAttribute('hour');
+                    const day = this.getAttribute('day');
+                    const isChecked = this.checked;
+
+                    // Find and update all matching minute checkboxes
+                    document.querySelectorAll('.minute-checkbox').forEach(function (minuteCheckbox) {
+                        if (
+                            minuteCheckbox.getAttribute('hour') === hour &&
+                            minuteCheckbox.getAttribute('day') === day && isChecked
+                        ) {
+                            minuteCheckbox.checked = true;
+                        }
+                    });
+                });
+            });
+        });
+
     </script>
 </html>
