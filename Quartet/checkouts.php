@@ -4,6 +4,7 @@
     Author: Alexandra Stratton, Ben Renner, Brinley Hull, Jose Leyba, Kyle Moore
     Revisions:
         3/2/2025 -- Kyle Moore, add menu buttons
+        04/08/2025 -- Jose Leyba -- Reworked for new Databases
     Creation date: 3/2/2025
 -->
 
@@ -13,10 +14,21 @@ ini_set('display_errors', 1);
 include ("db_connection.php");
 
 $query = "
-    SELECT first_name, last_name, month, day, time, checkout_time
-    FROM Checkout_History
-    ORDER BY checkout_time DESC;
+    SELECT 
+        c.First_Name,
+        c.Last_Name,
+        MONTH(ch.Checkout_Time) AS Month,
+        DAY(ch.Checkout_Time) AS Day,
+        DATE_FORMAT(ch.Checkout_Time, '%H:%i') AS Time,
+        ch.Checkout_Time
+    FROM 
+        Checkout_History ch
+    JOIN 
+        Client c ON ch.Client_ID = c.Client_ID
+    ORDER BY 
+        ch.Checkout_time DESC;
 ";
+
 $result = $conn->query($query);
 $checkouts = $result->fetch_all(MYSQLI_ASSOC);
 $conn->close();
@@ -62,15 +74,14 @@ $conn->close();
         <tbody>
             <?php foreach ($checkouts as $checkout): ?>
                 <tr>
-                    <td><?php echo htmlspecialchars($checkout['first_name']); ?></td>
-                    <td><?php echo htmlspecialchars($checkout['last_name']); ?></td>
-                    <td><?php echo htmlspecialchars($checkout['month']); ?></td>
-                    <td><?php echo htmlspecialchars($checkout['day']); ?></td>
-                    <td><?php echo htmlspecialchars($checkout['time']); ?></td>
-                    <td><?php echo htmlspecialchars($checkout['checkout_time']); ?></td>
+                    <td><?php echo htmlspecialchars($checkout['First_Name']); ?></td>
+                    <td><?php echo htmlspecialchars($checkout['Last_Name']); ?></td>
+                    <td><?php echo htmlspecialchars($checkout['Month']); ?></td>
+                    <td><?php echo htmlspecialchars($checkout['Day']); ?></td>
+                    <td><?php echo htmlspecialchars($checkout['Time']); ?></td>
+                    <td><?php echo htmlspecialchars($checkout['Checkout_Time']); ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
   </body>
-</html>

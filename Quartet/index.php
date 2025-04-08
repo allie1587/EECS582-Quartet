@@ -26,7 +26,7 @@ if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
 require 'db_connection.php';
 
 // Get the reviews from the table
-$reviewsQuery = "SELECT Name, Rating, Review FROM Reviews ORDER BY Review_ID DESC";
+$reviewsQuery = "SELECT Name, Rating, Review FROM Testimonies ORDER BY Testimony_ID DESC";
 $reviewsResult = $conn->query($reviewsQuery);
 
 // Fetch the average rating
@@ -207,7 +207,7 @@ include('header.php');
 
     <!--Added section to work on the future for the reviews of the page-->
     <div class="reviews">
-        <h2>Reviews</h2>
+        <h2>Some Client Testimonies!</h2>
             <!--Shows the average rating to the users-->
             <div class="average-rating">
                 Average Rating: <?php echo $averageRating; ?>
