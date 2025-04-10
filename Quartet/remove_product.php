@@ -10,6 +10,7 @@ Purpose: Allow barbers to remove a product from the store
 <?php
 //Connects to the database
 require 'db_connection.php';
+session_start();
 
 if (isset($_GET['Product_ID'])) {
     //Gets the product_id

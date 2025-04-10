@@ -13,6 +13,7 @@ Other Sources: ChatGPT
 <?php
 // Connects to the database
 require 'db_connection.php';
+session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Generate a unique product ID
