@@ -7,20 +7,50 @@ Revisions:
 
  -->
  <?php
-// Connects to the database
+//Connects to the database
+session_start();
 require 'db_connection.php';
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$barber_id = $_SESSION['username'];
+$sql = "SELECT * FROM Barber_Information WHERE Barber_ID = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $barber_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
 
 
 $sql = "SELECT * FROM Barber_Information";
 $result = $conn->query($sql);
-$employees = [];
+$barbers = [];
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        $employees[] = $row;
+        $barbers[] = $row;
     }
 }
+//Remove employee
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_barber'])) {
+    // Retrieve form data
+    $barber_id= $_POST['barber_id'];
+    //Figure out all tables that contain Barber_ID
+    $sql = "DELETE Barber WHERE Barber_ID = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $barber_id);
+    $stmt->execute();
+    header("Location: employees.php");
+    exit();
+}
 ?>
-<?php include('barber_header.php'); ?>
+<?php 
+if ($user['Role'] == "Barber") {
+    include("barber_header.php");
+}
+//Otherwise cause an error
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -28,175 +58,79 @@ if ($result->num_rows > 0) {
     <!-- Title for Page -->
     <title>Employee List</title>
     <!-- Internal CSS for styling the page -->
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .employee-container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .add-btn-container {
-            text-align: right;
-            margin-bottom: 20px;
-        }
-        .add-btn {
-            background: #c4454d;
-            color: white;
-            font-size: 16px;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .add-btn:hover {
-            background: rgb(143, 48, 55);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background: #c4454d;
-            color: white;
-        }
-        td {
-            color: black;
-        }
-        tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-        tr:hover {
-            background: #f1f1f1;
-        }
-        img {
-            max-width: 80px;
-            height: auto;
-            border-radius: 5px;
-        }
-        .btn {
-            padding: 8px 15px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .edit-btn {
-            background: #007BFF;
-            color: white;
-        }
-        .edit-btn:hover {
-            background: #0056b3;
-        }
-        .delete-btn {
-            background: #FF6A13;
-            color: white;
-        }
-        .delete-btn:hover {
-            background: #FF8A3D;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            color: black;
-        }
-        .modal-content {
-            background-color: white;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 50%;
-            text-align: center;
-            border-radius: 10px;
-            color: black;
-        }
-        .close {
-            color: black;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover {
-            color: black;
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="style/barber_style.css">
 </head>
 <body>
-    <div class="employee-container">
+    <div class="container">
         <!-- Add Product Button at the Top Right -->
-        <div class="add-btn-container">
-            <a href="add_employee.php" class="add-btn">Add Employee</a>
-        </div>
-
-        <!-- Product Table -->
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
-                    <th>Phone Number</th>
-                    <th>Manage</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($employees as $employee): ?>
+        <a href="add_employee.php" class="add-btn">Add Employee</a>
+        <div class="card">
+            <table>
+                <thead>
                     <tr>
-                        <td><?php echo $employee['Barber_ID']; ?></td>
-                        <td><?php echo $employee['First_Name']; ?></td>
-                        <td><?php echo $employee['Last_Name']; ?></td>
-                        <td><?php echo $employee['Email']; ?></td>
-                        <td><?php echo $employee['Phone_Number']; ?></td>
-                        <td>
-                            <a href="edit_profile.php?Barber_ID=<?php echo $employee['Barber_ID']; ?>"><button class="btn edit-btn">Edit</button></a>
-                            <button class="btn delete-btn" onclick="confirmDelete('<?php echo $employee['Barber_ID']; ?>')">Delete</button>
-                        </td>
+                        <th>Barber ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Manage</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php foreach ($barbers as $barber): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($barber['Barber_ID']); ?></td>
+                            <td><?php echo htmlspecialchars($barber['First_Name']) . ' ' . htmlspecialchars($barber['Last_Name']);; ?></td>
+                            <td><?php echo htmlspecialchars($barber['Email']); ?></td>
+                            <td><?php echo htmlspecialchars($barber['Phone_Number']); ?></td>
+                            <td>
+                                <a href="edit_profile.php?Barber_ID=<?php echo $barber['Barber_ID']; ?>"><button class="edit-btn">Edit</button></a>
+                                <button class="remove-btn" onclick="confirmDelete('<?php echo $barber['Barber_ID']; ?>', '<?php echo htmlspecialchars($barber['First_Name'] . ' ' . $barber['Last_Name']); ?>')">Delete</button>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
     <!-- Delete Confirmation -->
-    <div id="deleteModal" class="modal">
+    <div id="deleteModal" class="modal" style="display: none;">
         <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Are you sure you want to remove this employee?</h2>
-            <button class="btn delete-btn" id="confirmDeleteBtn">Yes</button>
-            <button class="btn" onclick="closeModal()">No</button>
+        <div class="modal-header">
+            <h3 class="modal-title">Confirm Removal</h3>
+            <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
+        </div>
+        <div class="form-group">
+            <p>Are you sure you want to remove <strong id="displayBarberName"></strong>?</p>
+            <p class="warning-text">This action cannot be undone!</p>
+        </div>
+
+        <form id="deleteForm" method="POST">
+            <input type="hidden" name="barber_id" id="barber_id" value="">
+            <input type="hidden" name="remove_barber" value="1">
+            
+            <div class="modal-footer">
+                <button type="button" class="cancel-btn" onclick="closeDeleteModal()">Cancel</button>
+                <button type="submit" class="yes-btn">Yes, Delete</button>
+            </div>
+        </form>
+    </div>
         </div>
     <!-- Script for confirming deletion -->
     <script>
-        function confirmDelete(employeeId) {
-            document.getElementById('confirmDeleteBtn').setAttribute('onclick', `window.location.href='remove_employee.php?Barber_ID=${employeeId}'`);
+        function confirmDelete(barberId, barberName) {
+            document.getElementById('barber_id').value = barberId;
+            document.getElementById('displayBarberName').textContent = barberName;
             document.getElementById('deleteModal').style.display = 'block';
         }
-        function closeModal() {
+
+        function closeDeleteModal() {
             document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                closeDeleteModal();
+            }
         }
     </script>
 </body>

@@ -184,6 +184,9 @@ include("barber_header.php");
 <body>
 <h1><?= htmlspecialchars($barber['First_Name'] ?? '') ?> <?= htmlspecialchars($barber['Last_Name'] ?? '') ?>'s Profile</h1>
     <div class="container">
+    <div class="back-container">
+            <a href="employees.php" class="back-btn">Back</a>
+        </div>
         <form method="POST" enctype="multipart/form-data" id="barber-profile">
         <input type="hidden" name="Barber_ID" value="<?= $barber_id ?>">
             <!-- Personal Information -->
