@@ -4,21 +4,28 @@ Date: 03/17/2025
 Revisions:
     03/17/2025 -- Alexandra Stratton -- created barber_profile.php
     03/28/2025 -- Alexandra Stratton -- created the form for updating barber information
+    04/10/2025 -- Alexandra Stratton -- Reduced the complexity
     4/7/2025 - Brinley, update styling
 Purpose: Allows a barber to update their profile
-Sources: 
-    -- ChatGPT
 -->
 <?php
+//Connects to the database
 session_start();
-include("db_connection.php");
+require 'db_connection.php';
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
+// Error Messaging
 ini_set('display_errors', 1);
 $error = "";
 $success = "";
-// Initialize variables
-$barber = [];
+
+// Initializing Variables
+$barber_id= '';
+$barber= [];
 $gallery = [];
-$availability = [];
+$max_size = 10 * 1024 * 1024;
 $allowed_types = [
     'image/jpeg',  // JPEG
     'image/png',   // PNG
@@ -30,133 +37,130 @@ $allowed_types = [
     'image/heif',  // HEIF
     'image/heic'   // HEIC
 ];
+// Retrieve Information
+if (isset($_SESSION['username'])) {
+    $barber_id = $_SESSION['username'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
-    error_log("Form submission received: " . print_r($_POST, true));
-    error_log("Files received: " . print_r($_FILES, true));
-
-    if (!isset($_SESSION['username'])) {
-        die("User not logged in");
+    // Barber Information
+    $sql = "SELECT *
+            FROM Barber_Information
+            WHERE Barber_ID = ?";
+    $stmt = $conn->prepare($sql);
+    if ($stmt) {
+        $stmt->bind_param("s", $barber_id);
+        $stmt->execute();
+        $barber = $stmt->get_result()->fetch_assoc();
+        $photo = $barber['Photo'] ?? '';
     }
-
-    $username = $_SESSION['username'];
-    $first_name = $conn->real_escape_string($_POST['first_name']);
-    $last_name = $conn->real_escape_string($_POST['last_name']);
-    $email = $conn->real_escape_string($_POST['email']);
-    $phone = $conn->real_escape_string($_POST['phone']);
-    $instagram = isset($_POST['instagram']) ? $conn->real_escape_string($_POST['instagram']) : '';
-    $facebook = isset($_POST['facebook']) ? $conn->real_escape_string($_POST['facebook']) : '';
-    $tiktok = isset($_POST['tiktok']) ? $conn->real_escape_string($_POST['tiktok']) : '';
-
-    // Update basic profile info
-    $stmt = $conn->prepare("UPDATE Barber_Information SET 
-                         First_Name=?, Last_Name=?, Email=?, Phone_Number=?, Instagram=?, Facebook=?, TikTok=?
-                         WHERE Barber_ID=?");
-    if (!$stmt) {
-        die("Prepare failed: " . $conn->error);
+    // Barber Gallery
+    $sql = "SELECT *
+            FROM Barber_Gallery
+            WHERE Barber_ID = ?";
+    $stmt = $conn->prepare($sql);
+    if ($stmt) {
+        $stmt->bind_param("s", $barber_id);
+        $stmt->execute();
+        $gallery = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
-    $stmt->bind_param("ssssssss", $first_name, $last_name, $email, $phone, $instagram, $facebook, $tiktok, $username);
-    if (!$stmt->execute()) {
-        die("Execute failed: " . $stmt->error);
-    }
-    $stmt->close();
-
-    // Handle profile photo upload
-    if (isset($_FILES['photo_image']) && $_FILES['photo_image']['error'] == UPLOAD_ERR_OK) {
+}
+// Update Profile
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Update'])){
+    // Barber Information
+    $first_name = $conn->real_escape_string($_POST['First_Name']);
+    $last_name = $conn->real_escape_string($_POST['Last_Name']);
+    $email = $conn->real_escape_string($_POST['Email']);
+    $phone = $conn->real_escape_string($_POST['Phone']);
+    $instagram = isset($_POST['Instagram']) ? $conn->real_escape_string($_POST['Instagram']) : '';
+    $facebook = isset($_POST['Facebook']) ? $conn->real_escape_string($_POST['Facebook']) : '';
+    $tiktok = isset($_POST['TikTok']) ? $conn->real_escape_string($_POST['TikTok']) : '';
+    // Barber's Photo
+    if (isset($_FILES['Photo']) && $_FILES['Photo']['error'] == UPLOAD_ERR_OK) {
         $image_dir = 'images/';
         if (!is_dir($image_dir)) {
             mkdir($image_dir, 0755, true);
         }
-
-        $file_name = uniqid() . '_' . basename($_FILES['photo_image']['name']);
+        $file_name = basename($_FILES['Photo']['name']);
         $file_path = $image_dir . $file_name;
-
-        $max_size = 10 * 1024 * 1024; // 10MB
-
-        $file_info = finfo_open(FILEINFO_MIME_TYPE);
-        $mime_type = finfo_file($file_info, $_FILES['photo_image']['tmp_name']);
-        finfo_close($file_info);
-        if (!in_array($mime_type, $allowed_types)) {
-            die("Error: Only JPEG, PNG, and GIF images are allowed.");
+        // Validate the file size
+        if ($_FILES['Photo']['size'] > $max_size) {
+            echo "Error: File size must be less than 10MB.";
+            exit();
         }
-        if ($_FILES['photo_image']['size'] > $max_size) {
-            die("Error: File size must be less than 10MB.");
+        if (!in_array($_FILES['Photo']['type'], $allowed_types)) {
+            echo "Error: Only JPEG, PNG, and GIF images are allowed.";
+            exit();
         }
-        if (move_uploaded_file($_FILES['photo_image']['tmp_name'], $file_path)) {
-            // Update the photo path in database
-            $stmt = $conn->prepare("UPDATE Barber_Information SET Photo=? WHERE Barber_ID=?");
-            $stmt->bind_param("ss", $file_path, $username);
-            $stmt->execute();
-            $stmt->close();
+        // Move the image to the designated directory
+        if (move_uploaded_file($_FILES['Photo']['tmp_name'], $file_path)) {
+            $photo = $file_path; 
         } else {
-            die("Error uploading file.");
+            echo "Error: Failed to move uploaded file.";
+            exit();
         }
     }
-    if (isset($_POST['delete_gallery'])) {
-        foreach ($_POST['delete_gallery'] as $imageId) {
-            $imageId = $conn->real_escape_string($imageId);
-
-            // Get image path first
-            $stmt = $conn->prepare("SELECT image FROM Barber_Gallery WHERE ID = ? AND Barber_ID = ?");
-            $stmt->bind_param("is", $imageId, $username);
+    $sql = "UPDATE Barber_Information SET First_Name = ?, Last_Name = ?, Email = ?, Phone_Number = ?, Instagram = ?, Facebook = ?, TikTok = ?, Photo = ?
+            WHERE Barber_ID = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sssssssss", $first_name, $last_name, $email, $phone, $instagram, $facebook, $tiktok, $photo, $barber_id);
+    $stmt->execute();
+    $stmt->close();
+    // Barber's Portfolio 
+    if (isset($_POST['Remove_Photo'])) {
+        foreach ($_POST['Remove_Photo'] as $image_id) {
+            $image_id = $conn->real_escape_string($image_id);
+            $sql = "SELECT Image
+                    FROM Barber_Gallery WHERE ID = ? AND Barber_ID = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("is", $image_id, $barber_id);
             $stmt->execute();
             $result = $stmt->get_result();
             if ($image = $result->fetch_assoc()) {
                 // Delete the file from the file system
-                if (file_exists($image['image'])) {
-                    unlink($image['image']);
+                if (file_exists($image['Image'])) {
+                    unlink($image['Image']);
                 }
             }
-            $stmt->close();
-
-            // Delete the record from the database
-            $stmt = $conn->prepare("DELETE FROM Barber_Gallery WHERE ID = ? AND Barber_ID = ?");
-            $stmt->bind_param("is", $imageId, $username);
+            $sql = "DELETE FROM Barber_Gallery WHERE ID = ? AND Barber_ID = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("is", $image_id, $barber_id);
             $stmt->execute();
             $stmt->close();
         }
     }
-    if (isset($_FILES['new_gallery_images']) && is_array($_FILES['new_gallery_images']['name'])) {
+    if (isset($_FILES['Add_Photos']) && is_array($_FILES['Add_Photos']['name'])) {
         $image_dir = 'images/gallery/';
         if (!is_dir($image_dir)) {
             mkdir($image_dir, 0755, true);
         }
-
-
-        $max_size = 10 * 1024 * 1024; // 10MB
-
-        foreach ($_FILES['new_gallery_images']['tmp_name'] as $key => $tmp_name) {
-            if ($_FILES['new_gallery_images']['error'][$key] !== UPLOAD_ERR_OK) {
-                continue; // Skip files with errors
+        foreach ($_FILES['Add_Photos']['tmp_name'] as $image => $tmp_name) {
+            if ($_FILES['Add_Photos']['error'][$image] !== UPLOAD_ERR_OK) {
+                continue;
             }
-
-            // Get MIME type of uploaded file
-            $file_info = finfo_open(FILEINFO_MIME_TYPE);
-            $mime_type = finfo_file($file_info, $tmp_name);
-            finfo_close($file_info);
-
-            if (!in_array($mime_type, $allowed_types)) {
-                continue; // Skip unsupported file types
-            }
-            if ($_FILES['new_gallery_images']['size'][$key] > $max_size) {
-                continue; // Skip oversized files
-            }
-
-            $file_name = uniqid() . '_' . basename($_FILES['new_gallery_images']['name'][$key]);
+            $file_name = basename($_FILES['Add_Photos']['name'][$image]);
             $file_path = $image_dir . $file_name;
-
-            // Move uploaded file to desired directory
+            if ($_FILES['Add_Photos']['size'][$image] > $max_size) {
+                echo "Error: File size must be less than 10MB.";
+                exit();
+            }
+            if (!in_array($_FILES['Add_Photos']['type'][$image], $allowed_types)) {
+                echo "Error: Only JPEG, PNG, and GIF images are allowed.";
+                exit();
+            }
+            // Move the image to the designated directory
             if (move_uploaded_file($tmp_name, $file_path)) {
-                // Insert record into the database
-                $stmt = $conn->prepare("INSERT INTO Barber_Gallery (barber_id, image) VALUES (?, ?)");
-                $stmt->bind_param("ss", $username, $file_path);
+                $gallery_photo = $file_path; 
+                $sql = "INSERT INTO Barber_Gallery (Barber_ID, Image) Values (?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ss", $barber_id, $file_path);
                 $stmt->execute();
                 $stmt->close();
+            } else {
+                echo "Error: Failed to move uploaded file.";
+                exit();
             }
         }
     }
-
-    // Redirect to prevent form resubmission
+    // Prevent form resubmission
     if (!headers_sent()) {
         header("Location: barber_profile.php");
         exit();
@@ -165,364 +169,217 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
         exit();
     }
 }
-
-// Load current user's data
-if (isset($_SESSION['username'])) {
-    $username = $_SESSION['username'];
-
-    // Get barber info
-    $stmt = $conn->prepare("SELECT * FROM Barber_Information WHERE Barber_ID = ?");
-    if ($stmt) {
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $barber = $result->fetch_assoc();
-        $stmt->close();
-    }
-
-    // Get gallery images
-    $stmt = $conn->prepare("SELECT * FROM Barber_Gallery WHERE Barber_ID = ?");
-    if ($stmt) {
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $gallery = $result->fetch_all(MYSQLI_ASSOC);
-        $stmt->close();
-    }
-}
-// Includes the side navagation bar on barberside
+?>
+<?php
 include("barber_header.php");
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="style/barber.css">
-    <script src="scripts/validate.js"></script>
-    <title>Barber Customize</title>
+    <link rel="stylesheet" href="style/barber_style.css">
 </head>
-
 <body>
+<h1><?= htmlspecialchars($barber['First_Name'] ?? '') ?> <?= htmlspecialchars($barber['Last_Name'] ?? '') ?>'s Profile</h1>
     <div class="container">
-        <h1>Profile</h1>
-        <form method="POST" enctype="multipart/form-data" id="barber-profile-form" onsubmit="return validateBeforeSubmit();">
-            <!-- Barber's personal information -->
+        <form method="POST" enctype="multipart/form-data" id="barber-profile">
+            <!-- Personal Information -->
             <div class="form-section">
-                <h2>Personal Information</h2>
-
+                <h3>Personal Information</h3>
                 <div class="form-group">
-                    <label for="first_name"><strong>First Name:</strong></label>
-                    <input type="text" name="first_name" id="first_name"
-                        value="<?php echo htmlspecialchars($barber['First_Name'] ?? ''); ?>" required>
-                    <span id="first_name-error" style="color: red; display: none;"></span>
+                    <label for="First_Name">First Name:</label>
+                    <input type="text" name="First_Name" id="First_Name" required
+                           value="<?= htmlspecialchars($barber['First_Name'] ?? '') ?>">
+                    <span class="error" id="First_Name-error"></span>
                 </div>
-
                 <div class="form-group">
-                    <label for="last_name"><strong>Last Name:</strong></label>
-                    <input type="text" name="last_name" id="last_name"
-                        value="<?php echo htmlspecialchars($barber['Last_Name'] ?? ''); ?>" required>
-                    <span id="last_name-error" style="color: red; display: none;"></span>
+                    <label for="Last_Name">Last Name:</label>
+                    <input type="text" name="Last_Name" id="Last_Name" required
+                           value="<?= htmlspecialchars($barber['Last_Name'] ?? '') ?>">
+                    <span class="error" id="Last_Name-error"></span>
                 </div>
-
                 <div class="form-group">
-                    <label for="email"><strong>Email:</strong></label>
-                    <input type="email" name="email" id="email"
-                        value="<?php echo htmlspecialchars($barber['Email'] ?? ''); ?>">
-                    <span id="email-error" style="color: red; display: none;"></span>
+                    <label for="Email">Email:</label>
+                    <input type="email" name="Email" id="Email"
+                           value="<?= htmlspecialchars($barber['Email'] ?? '') ?>">
+                    <span class="error" id="Email-error"></span>
                 </div>
-
                 <div class="form-group">
-                    <label for="phone"><strong>Phone:</strong></label>
-                    <input type="tel" name="phone" id="phone"
-                        value="<?php echo htmlspecialchars($barber['Phone_Number'] ?? ''); ?>">
-                    <span id="phone-error" style="color: red; display: none;"></span>
+                    <label for="Phone">Phone:</label>
+                    <input type="tel" name="Phone" id="Phone"
+                           value="<?= htmlspecialchars($barber['Phone_Number'] ?? '') ?>">
+                    <span class="error" id="Phone-error"></span>
                 </div>
             </div>
-            <!-- Barber's Social Media -->
+
+            <!-- Professional Photo -->
             <div class="form-section">
-                <h2>Social Media</h2>
-
+                <h3>Professional Photo</h3>
                 <div class="form-group">
-                    <label for="instagram"><strong>Instagram:</strong></label>
-                    <input type="text" name="instagram" id="instagram" placeholder="Enter your Instagram username"
-                        value="<?php echo htmlspecialchars($barber['Instagram'] ?? ''); ?>">
-                    <span id="instagram-error" style="color: red; display: none;"></span>
-                    <a id="instagram-link" href="<?= !empty($barber['Instagram']) ? 'https://www.instagram.com/' . htmlspecialchars($barber['Instagram']) : '#' ?>"
-                        target="_blank" style="<?= empty($barber['Instagram']) ? 'display:none' : '' ?>">Visit Profile</a>
-                </div>
-
-                <div class="form-group">
-                    <label for="facebook"><strong>Facebook:</strong></label>
-                    <input type="text" name="facebook" id="facebook" placeholder="Enter your Facebook username"
-                        value="<?php echo htmlspecialchars($barber['Facebook'] ?? ''); ?>">
-                    <span id="facebook-error" style="color: red; display: none;"></span>
-                    <a id="facebook-link" href="<?= !empty($barber['Facebook']) ? 'https://www.facebook.com/' . htmlspecialchars($barber['Facebook']) : '#' ?>"
-                        target="_blank" style="<?= empty($barber['Facebook']) ? 'display:none' : '' ?>">Visit Profile</a>
-                </div>
-
-                <div class="form-group">
-                    <label for="tiktok"><strong>TikTok:</strong></label>
-                    <input type="text" name="tiktok" id="tiktok" placeholder="Enter your TikTok username"
-                        value="<?php echo htmlspecialchars($barber['TikTok'] ?? ''); ?>">
-                    <span id="tiktok-error" style="color: red; display: none;"></span>
-                    <a id="tiktok-link" href="<?= !empty($barber['TikTok']) ? 'https://www.tiktok.com/@' . htmlspecialchars($barber['TikTok']) : '#' ?>"
-                        target="_blank" style="<?= empty($barber['TikTok']) ? 'display:none' : '' ?>">Visit Profile</a>
-                </div>
-    </div>
-
-    <!-- Barber's Professial Photo -->
-    <div class="form-section">
-        <h2>Profile Photo</h2>
-        <div class="form-group">
-            <label for="photo_image"><strong>Upload New Photo:</strong></label>
-            <input type="file" name="photo_image" id="photo_image" accept="image/*">
-            <span id="photo_image-error" style="color: red; display: none;"></span>
-            <?php if (!empty($barber['Photo'])): ?>
-                <div class="current-photo">
-                    <p>Current Photo:</p>
-                    <img id="preview-image" src="<?= htmlspecialchars($barber['Photo']) ?>" width="150">
-                </div>
-            <?php else: ?>
-                <img id="preview-image" src="" width="150" style="display:none;">
-            <?php endif; ?>
-        </div>
-    </div>
-
-
-    <!-- Gallery Section -->
-    <div class="form-section">
-        <h2>Gallery</h2>
-        <div class="gallery-container" id="galleryContainer">
-            <?php foreach ($gallery as $image): ?>
-                <div class="gallery-item" data-image-id="<?= $image['ID'] ?>">
-                    <img class="gallery-image-preview" src="<?= htmlspecialchars($image['Image']) ?>" width="150">
-                    <div class="gallery-controls">
-                        <button type="button" class="btn btn-danger remove-gallery-item">Remove</button>
-                    </div>
-                    <input type="hidden" name="keep_gallery[]" value="<?= $image['ID'] ?>">
-                </div>
-            <?php endforeach; ?>
-        </div>
-
-        <button type="button" id="addGalleryBtn" class="btn btn-primary">+ Add Image</button>
-        <div id="gallery-errors" class="error-message"></div>
-
-        <!-- Adding New Gallery Images -->
-        <template id="galleryItemTemplate">
-            <div class="gallery-item">
-                <input type="file" name="new_gallery_images[]" class="gallery-image-input" accept="image/*">
-                <img class="gallery-image-preview" src="" style="display: none; width: 150px;">
-                <div class="gallery-error error-message"></div>
-                <div class="gallery-controls">
-                    <button type="button" class="btn btn-danger remove-gallery-item">Remove</button>
+                    <label for="Photo">Upload Photo:</label>
+                    <input type="file" name="Photo" id="Photo" accept="image/*">
+                    <?php if(!empty($photo)): ?>
+                        <img id="preview-image" src="<?= htmlspecialchars($photo) ?>" width="150">
+                    <?php else: ?>
+                        <img id="preview-image" src="" width="150" style="display:none;">
+                    <?php endif; ?>
                 </div>
             </div>
-        </template>
+
+            <!-- Social Media -->
+            <div class="form-section">
+                <h3>Social Media</h3>
+                <div class="form-group">
+                    <label for="Instagram">Instagram:</label>
+                    <input type="text" name="Instagram" id="Instagram"
+                           value="<?= htmlspecialchars($barber['Instagram'] ?? '') ?>">
+                </div>
+                <div class="form-group">
+                    <label for="Facebook">Facebook:</label>
+                    <input type="text" name="Facebook" id="Facebook"
+                           value="<?= htmlspecialchars($barber['Facebook'] ?? '') ?>">
+                </div>
+                <div class="form-group">
+                    <label for="TikTok">TikTok:</label>
+                    <input type="text" name="TikTok" id="TikTok"
+                           value="<?= htmlspecialchars($barber['TikTok'] ?? '') ?>">
+                </div>
+            </div>
+
+            <!-- Portfolio -->
+            <div class="form-section">
+                <h3>Portfolio</h3>
+                <div class="gallery-container">
+                    <?php foreach($gallery as $image): ?>
+                        <div class="gallery-item">
+                            <img src="<?= htmlspecialchars($image['Image']) ?>" width="100">
+                            <button type="button" class="remove-btn" data-id="<?= $image['ID'] ?>">Remove</button>
+                            <input type="checkbox" name="Remove_Photo[]" value="<?= $image['ID'] ?>" style="display:none;">
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <button type="button" id="add-image">Add Image</button>
+                <div id="new-images-container"></div>
+            </div>
+
+            <button type="submit" name="Update" class="update-btn">Update Profile</button>
+        </form>
     </div>
 
-    <button type="submit" name="update_profile" class="update-btn">Update Profile</button>
-    </form>
-    </div>
+    <!-- Validation Script -->
     <script>
-        // Function to update social media links in real-time
-        function setupSocialMediaLiveUpdates() {
-            // Instagram
-            const instagramInput = document.getElementById('instagram');
-            const instagramLink = document.getElementById('instagram-link');
-
-            instagramInput?.addEventListener('input', function() {
-                const username = this.value.trim();
-                if (username) {
-                    instagramLink.href = `https://www.instagram.com/${username}`;
-                    instagramLink.style.display = 'inline';
-                } else {
-                    instagramLink.style.display = 'none';
-                }
+        function validateField(fieldId, validationFn) {
+            const field = document.getElementById(fieldId);
+            const error = document.getElementById(fieldId + '-error');
+            
+            field.addEventListener('blur', function() {
+                const isValid = validationFn(field.value.trim(), error);
+                field.classList.toggle('invalid', !isValid);
             });
-
-            // Facebook
-            const facebookInput = document.getElementById('facebook');
-            const facebookLink = document.getElementById('facebook-link');
-
-            facebookInput?.addEventListener('input', function() {
-                const username = this.value.trim();
-                if (username) {
-                    facebookLink.href = `https://www.facebook.com/${username}`;
-                    facebookLink.style.display = 'inline';
-                } else {
-                    facebookLink.style.display = 'none';
-                }
-            });
-
-            // TikTok
-            const tiktokInput = document.getElementById('tiktok');
-            const tiktokLink = document.getElementById('tiktok-link');
-
-            tiktokInput?.addEventListener('input', function() {
-                const username = this.value.trim();
-                if (username) {
-                    tiktokLink.href = `https://www.tiktok.com/@${username}`;
-                    tiktokLink.style.display = 'inline';
-                } else {
-                    tiktokLink.style.display = 'none';
-                }
+            
+            field.addEventListener('input', function() {
+                error.textContent = '';
+                field.classList.remove('invalid');
             });
         }
-        // Initialize validation
-        document.addEventListener('DOMContentLoaded', function() {
-            setupSocialMediaLiveUpdates();
-            // Initialize barber profile validation
-            initBarberProfileValidation();
 
-            // Gallery management functions
-            const galleryContainer = document.getElementById('galleryContainer');
-            const addGalleryBtn = document.getElementById('addGalleryBtn');
-            const galleryTemplate = document.getElementById('galleryItemTemplate');
-            const allowedImageTypes = [
-                'image/jpeg', 'image/png', 'image/gif', 'image/bmp',
-                'image/webp', 'image/svg+xml', 'image/tiff',
-                'image/heif', 'image/heic'
-            ];
-
-            // Add new gallery item
-            addGalleryBtn.addEventListener('click', function() {
-                const newItem = galleryTemplate.content.cloneNode(true);
-                const newInput = newItem.querySelector('.gallery-image-input');
-
-                newInput.addEventListener('change', function() {
-                    validateGalleryImage(this);
-                });
-
-                galleryContainer.appendChild(newItem);
-            });
-
-            // Remove gallery item
-            galleryContainer.addEventListener('click', function(e) {
-                if (e.target.classList.contains('remove-gallery-item')) {
-                    const galleryItem = e.target.closest('.gallery-item');
-                    const imageId = galleryItem.dataset.imageId;
-
-                    if (imageId) {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'delete_gallery[]';
-                        input.value = imageId;
-                        document.querySelector('form').appendChild(input);
-                    }
-
-                    galleryItem.remove();
-                }
-            });
-
-            // Initialize existing gallery items
-            document.querySelectorAll('.gallery-image-input').forEach(input => {
-                input.addEventListener('change', function() {
-                    validateGalleryImage(this);
-                });
-            });
-
-            // Preview profile photo
-            document.getElementById('photo_image')?.addEventListener('change', function() {
-                const preview = document.getElementById('preview-image');
-                if (this.files && this.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        preview.src = e.target.result;
-                        preview.style.display = 'block';
-                    };
-                    reader.readAsDataURL(this.files[0]);
-                }
-            });
-
-            // Validate gallery image
-            function validateGalleryImage(input) {
-                const item = input.closest('.gallery-item');
-                const errorElement = item.querySelector('.gallery-error');
-                const preview = item.querySelector('.gallery-image-preview');
-
-                if (input.files && input.files[0]) {
-                    const file = input.files[0];
-
-                    if (!allowedImageTypes.includes(file.type)) {
-                        errorElement.textContent = 'Invalid image type. Allowed: JPEG, PNG, GIF, BMP, WebP, SVG, TIFF, HEIF, HEIC';
-                        input.value = '';
-                        preview.style.display = 'none';
-                        return false;
-                    }
-
-                    if (file.size > 10 * 1024 * 1024) {
-                        errorElement.textContent = 'File size must be less than 10MB';
-                        input.value = '';
-                        preview.style.display = 'none';
-                        return false;
-                    }
-
-                    errorElement.textContent = '';
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        preview.src = e.target.result;
-                        preview.style.display = 'block';
-                    };
-                    reader.readAsDataURL(file);
-                    return true;
-                }
+        // Field Validations
+        validateField('First_Name', (value, error) => {
+            if (!value) {
+                error.textContent = 'First name is required';
                 return false;
+            }
+            if (!/^[A-Za-z\s'-]+$/.test(value)) {
+                error.textContent = 'Only letters and basic punctuation allowed';
+                return false;
+            }
+            return true;
+        });
+
+        validateField('Last_Name', (value, error) => {
+            if (!value) {
+                error.textContent = 'Last name is required';
+                return false;
+            }
+            if (!/^[A-Za-z\s'-]+$/.test(value)) {
+                error.textContent = 'Only letters and basic punctuation allowed';
+                return false;
+            }
+            return true;
+        });
+
+        validateField('Email', (value, error) => {
+            if (value && !/^\S+@\S+\.\S+$/.test(value)) {
+                error.textContent = 'Invalid email format';
+                return false;
+            }
+            return true;
+        });
+
+        validateField('Phone', (value, error) => {
+            if (value) {
+                const digits = value.replace(/\D/g, '');
+                if (digits.length !== 10) {
+                    error.textContent = 'Phone must be 10 digits';
+                    return false;
+                }
+            }
+            return true;
+        });
+
+        // Form Submission
+        document.getElementById('barber-profile').addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            // Trigger validation for all fields
+            document.querySelectorAll('input[required]').forEach(input => {
+                input.dispatchEvent(new Event('blur'));
+                if (input.classList.contains('invalid')) isValid = false;
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                document.querySelector('.invalid')?.scrollIntoView({behavior: 'smooth', block: 'center'});
+            }
+        });
+    </script>
+
+    <!-- Gallery and Image Preview Script -->
+    <script>
+        // Profile Photo Preview
+        document.getElementById('Photo').addEventListener('change', function(e) {
+            const preview = document.getElementById('preview-image');
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(this.files[0]);
             }
         });
 
-        function validatePhone(input, errorElement) {
-            const value = input.value.trim();
-            const isRequired = isFieldRequired(input.id);
+        // Gallery Management
+        document.getElementById('add-image').addEventListener('click', function() {
+            const container = document.getElementById('new-images-container');
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.name = 'Add_Photos[]';
+            input.accept = 'image/*';
+            container.appendChild(input);
+        });
 
-            if (!isRequired && !value) {
-                errorElement.style.display = 'none';
-                input.classList.remove('is-invalid', 'is-valid');
-                return true;
-            }
-
-            if (value || isRequired) {
-                let numbers = value.replace(/\D/g, '');
-
-                if (!numbers) {
-                    showError(input, errorElement, "Phone number cannot be empty");
-                    return false;
-                }
-
-                if (numbers.length === 11 && numbers.startsWith('1')) {
-                    numbers = numbers.substring(1);
-                }
-
-                if (numbers.length !== 10) {
-                    showError(input, errorElement, "Please enter a valid 10-digit phone number");
-                    return false;
-                }
-
-                input.value = numbers;
-            }
-
-            showSuccess(input, errorElement);
-            return true;
-        }
-
-        function validateBeforeSubmit() {
-            let isValid = true;
-
-
-
-
-            // Check if any field has an error message displayed
-            document.querySelectorAll('span[id$="-error"]').forEach(errorSpan => {
-                if (errorSpan.style.display !== 'none' && errorSpan.textContent.trim() !== '') {
-                    isValid = false;
-                }
+        // Remove Gallery Items
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const checkbox = this.nextElementSibling;
+                checkbox.checked = true;
+                this.parentElement.style.display = 'none';
             });
-
-            return isValid;
-        }
+        });
     </script>
 </body>
-
 </html>

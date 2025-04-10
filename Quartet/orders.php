@@ -2,17 +2,27 @@
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 03/32/2025
 Revisions:
-     03/31/2025 -- Alexandra Stratton -- created employee_list.php
- Purpose: Allow the manager to see all the employees
+     03/31/2025 -- Alexandra Stratton -- created orders.php
+ Purpose: Allow the manager/barber to see all the orders
 
  -->
  <?php
-// Connects to the database
+//Connects to the database
+session_start();
 require 'db_connection.php';
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-$error = "";
-$success = "";
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$barber_id = $_SESSION['username'];
+$sql = "SELECT Role FROM Barber_Information WHERE Barber_ID = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $barber_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+
 
 $sql = "SELECT * FROM Orders";
 $result = $conn->query($sql);
@@ -25,23 +35,23 @@ if ($result->num_rows > 0) {
         $stmt->bind_param("i", $client_id);
         $stmt->execute();
         $client_result = $stmt->get_result();
-
         // Fetch client data
         if ($client_result->num_rows > 0) {
-            $order['client'] = $client_result->fetch_assoc();
+            $order['Client'] = $client_result->fetch_assoc();
         } else {
-            $order['client'] = null;
+            $order['Client'] = null;
         }
-
         $stmt->close(); 
         $orders[] = $order;
     }
 }
 ?>
-
-<?php 
-//check if manager or barber
-include('barber_header.php');
+<?php
+if ($user['Role'] == "Barber") {
+    include("barber_header.php");
+} else {
+    include("manager_header.php");
+}
 ?>
 
 <!DOCTYPE html>
@@ -50,127 +60,42 @@ include('barber_header.php');
     <!-- Title for Page -->
     <title>Orders</title>
     <!-- Internal CSS for styling the page -->
-    <link rel="stylesheet" href="style1.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .order-container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .add-btn-container {
-            text-align: right;
-            margin-bottom: 20px;
-        }
-        .add-btn {
-            background: #c4454d;
-            color: white;
-            font-size: 16px;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .add-btn:hover {
-            background: rgb(143, 48, 55);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background: #c4454d;
-            color: white;
-        }
-        td {
-            color: black;
-        }
-        tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-        tr:hover {
-            background: #f1f1f1;
-        }
-        
-        .dropdown-container {
-            display: none;
-            background-color: #262626;
-            padding-left: 8px;
-        }
-    </style>
+    <link rel="stylesheet" href="style/barber_style.css">
 </head>
 <body>
-    <h1>Order</h1>
-    <?php if (!empty($error)): ?>
-        <p style="color: red;"><?php echo $error; ?></p>
-    <?php endif; ?>
-    <?php if (!empty($success)): ?>
-        <p style="color: green;"><?php echo $success; ?></p>
-    <?php endif; ?>
-    <div class="order-container">
-        <!-- Product Table -->
-        <table>
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Client Name</th>
-                    <th>Date</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>View</th>
-                </tr>
-            </thead>
+    <div class="container">
+    <h1>Orders</h1>
+        <div class="card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Client Name</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>View</th>
+                    </tr>
+                </thead>
             <tbody>
                 <?php foreach ($orders as $order): ?>
                     <tr>
-                        <td><?php echo $order['Order_ID']; ?></td>
-                        <td> <?php echo $order['client']['First_Name']  . ' '  . $order['client']['Last_Name']; ?> </td>
-                        <td><?php echo $order['Created_At']; ?></td>
-                        <td>$<?php echo $order['Total_Price']; ?></td>
-                        <td>  
-                             <?php echo $order['Status']; ?>
+                        <td><?php echo htmlspecialchars($order['Order ID']); ?></td>
+                        <td><?php echo htmlspecialchars($order['Client']['First_Name']) . ' ' . htmlspecialchars($order['Client']['Last_Name']); ?></td>
+                        <td><?php echo date('M j, Y g:i A', strtotime($order['Created_At'])); ?></td>
+                        <td>$<?php echo number_format($order['Total_Price'], 2); ?></td>
+                        <td>
+                            <span class="status-badge status-<?php echo htmlspecialchars($order['Status']); ?>">
+                                <?php echo ucfirst(htmlspecialchars($order['Status'])); ?>
+                            </span>
                         </td>
                         <td>
-                            <a href="manage_orders.php?Order_ID=<?php echo $order['Order_ID']; ?>"><button class="btn view-btn">View</button></a>
+                            <a href="manage_orders.php?Order_ID=<?php echo $order['Order_ID']; ?>"><button class="view-btn">View</button></a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
     </div>
-    <script>
-        var dropdown = document.getElementsByClassName("dropdown-btn");
-var i;
-
-for (i = 0; i < dropdown.length; i++) {
-  dropdown[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var dropdownContent = this.nextElementSibling;
-    if (dropdownContent.style.display === "block") {
-      dropdownContent.style.display = "none";
-    } else {
-      dropdownContent.style.display = "block";
-    }
-  });
-}
-    </script>
 </body>
 </html>
