@@ -102,7 +102,7 @@ include("header.php");
 <head>
     <!-- Title for Page --> 
     <title>Place Order</title>
-    <link rel="stylesheet" href="style1.css">
+    <link rel="stylesheet" href="style/style1.css">
     <style>
         /* Style for the page */
 

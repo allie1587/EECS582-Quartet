@@ -22,7 +22,7 @@ session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!--Name of Page-->
     <title>Home Page</title>
-    <link rel="stylesheet" href="style1.css">
+    <link rel="stylesheet" href="style/style1.css">
     <!--Style choices for page, they include font used, margins, alignation, background color, display types, and some others-->
     <style>
         button {

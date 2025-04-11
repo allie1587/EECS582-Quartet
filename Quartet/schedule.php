@@ -40,7 +40,7 @@ include('header.php');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Title of the page displayed in the browser tab -->
     <title>Schedule</title>
-    <link rel="stylesheet" href="style1.css">
+    <link rel="stylesheet" href="style/style1.css">
     <!-- Internal CSS for styling the page -->
     <style>
         /* Applies styles to the entire body */

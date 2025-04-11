@@ -34,7 +34,7 @@ foreach ($cart_items as $item) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="style1.css">
+    <link rel="stylesheet" href="style/style1.css">
     <title>Shopping Cart</title>
     <style>
 

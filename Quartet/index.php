@@ -43,7 +43,7 @@ include('header.php');
 <head>
     <!--Name of Page-->
     <title>Home Page</title>
-    <link rel="stylesheet" href="style1.css">
+    <link rel="stylesheet" href="style/style1.css">
 
     <style>
 
