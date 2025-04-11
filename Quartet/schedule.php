@@ -17,6 +17,7 @@
         3/28/2025 -- Brinley, gray out timeslots before current time
         4/2/2025 - Brinley, refactoring; fix Sunday button bug
         4/5/2025 - Brinley, fix incorrect month display on week view
+        4/10/2025 - Brinley, add minute
     Creation date:
     Other sources: ChatGPT
 -->
@@ -444,7 +445,7 @@ include('header.php');
                                 } else {
                                     let time = (appointment.Time <= 12 ? appointment.Time : appointment.Time - 12);
                                     let period = (appointment.Time < 12 ? "AM" : "PM");
-                                    item.textContent = time + period;
+                                    item.textContent = time + ":" + appointment.Minute + period;
                                     
                                     // Change button color based on barber
                                     if (appointment.Barber_ID === "JL") {
@@ -523,7 +524,8 @@ include('header.php');
             const popup = document.getElementById('appointmentPopup');
             const appointmentGrid = document.getElementById('appointmentGrid');
             const appointmentDay = document.getElementById('appointmentDay');
-            const time = (appointment.Time <= 12 ? appointment.Time : appointment.Time-12) + (appointment.Time < 12 ? "AM" : "PM");
+            const time = appointment.Time;
+            const minute = appointment.Minute;
 
             // Clear the popup
             appointmentGrid.innerHTML = "";
@@ -533,14 +535,14 @@ include('header.php');
             appointmentDay.textContent = `Selected Appointment`;
             let appointmentInfoPara = document.createElement('p');
             appointmentInfoPara.innerHTML = `Date: ${dayNames[new Date(year, month, day).getDay()]}, ${monthNames[month]} ${day}, ${year}
-                                    \nTime: ${time}
+                                    \nTime: ${(time <= 12 ? time : time-12) + ":" + minute + (time < 12 ? "AM" : "PM")}
                                     \nBarber: ${appointment.Barber_ID}`;
             appointmentGrid.appendChild(appointmentInfoPara);
 
             let bookButton = document.createElement('button');
             bookButton.textContent = "Book Appointment";
             bookButton.addEventListener('click', () => {
-                bookAppointment(appointment, day, month, year, time);
+                bookAppointment(appointment, day, month, year, time, minute);
              });
 
             appointmentGrid.appendChild(bookButton);
@@ -550,7 +552,7 @@ include('header.php');
 
         }
 
-        function bookAppointment(appointment, day, month, year, time) {
+        function bookAppointment(appointment, day, month, year, time, minute) {
             // Function to show client a space to add their information and confirm their appointment.
             fetch('set_appointment.php', {
                 method: 'POST',
@@ -561,7 +563,8 @@ include('header.php');
                                         day: day,
                                         month: month,
                                         year: year,
-                                        time: time
+                                        time: time,
+                                        minute: minute
                  })
             })
             .then(response => response.json())

@@ -10,7 +10,7 @@
         3/3/2025 - Added unique 7-digit integer AppointmentID
         3/4/2025 - Added email confirmation functionality using PHPMailer
         4/2/2025 - Brinley, refactoring and implementing client ID
-        4/10/2025 - Brinley, add services
+        4/10/2025 - Brinley, add services and minute
     Preconditions:
         Acceptable inputs: 
             A form with method "post" that sends variable strings for variables fname, lname, email, and phone
@@ -89,7 +89,8 @@ $phone = $_POST['phone'];
 $day = $_SESSION["day"];
 $month = $_SESSION["month"];
 $year = $_SESSION["year"];
-$time = date("G", strtotime($_SESSION['time'])); 
+$time = $_SESSION['time'];//date("G", strtotime($_SESSION['time']));
+$minute = $_SESSION['minute'];
 $barber = $_SESSION['appointment']["Barber_ID"];
 $service = $_POST['service'];
 
@@ -136,8 +137,8 @@ if ($count == 0) {
 $appointmentID = generateUniqueAppointmentID($conn);
 
 // Prepare a query to insert a row into the confirmed appointments table in the database with the corresponding info
-$query = "INSERT INTO Confirmed_Appointments (Barber_ID, Client_ID, Month, Day, Year, Time, Appointment_ID, Service_ID)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+$query = "INSERT INTO Confirmed_Appointments (Barber_ID, Client_ID, Month, Day, Year, Time, Minute, Appointment_ID, Service_ID)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 // Prepare the query 
 $stmt = $conn->prepare($query);
@@ -146,7 +147,7 @@ if (!$stmt) { // If the query is not valid, throw error
 }
 
 // Bind parameters to put them into the SQL query
-$stmt->bind_param("sissssii", $barber, $client, $month, $day, $year, $time, $appointmentID, $service);
+$stmt->bind_param("sissssiii", $barber, $client, $month, $day, $year, $time, $minute, $appointmentID, $service);
 $stmt->execute(); // Execute the SQL query
 
 // Close the database connections

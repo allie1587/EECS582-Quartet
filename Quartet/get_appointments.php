@@ -8,41 +8,44 @@
         3/16/2025 - Brinley, add filtering
         3/28/2025 - Brinley, remove confirmed appointments
         4/2/2025 - Brinley, refactoring
+        4/10/2025 - Brinley, hide overlapping appointment times
 */
 session_start(); //start the session
+
+require 'db_connection.php';
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 header('Content-Type: application/json'); // Ensure JSON response
 
-//connect to the database
-$mysqli = new mysqli('sql312.infinityfree.com', 'if0_38323969', 'Quartet44', 'if0_38323969_quartet');
-if ($mysqli->connect_error) {
-    die(json_encode(["error" => "Database connection failed: " . $mysqli->connect_error]));
-}
-
 // Validate input
 $year = isset($_GET['year']) ? (int)$_GET['year'] : 0;
 $month = isset($_GET['month']) ? (int)$_GET['month'] : 0;
 $day = isset($_GET['day']) ? (int)$_GET['day'] : 0;
-$weekday = isset($_GET['weekday']) ? $_GET['weekday'] : 0;
+$weekday = isset($_GET['weekday']) ? $_GET['weekday'] : date('w', strtotime("$year-$month-$day"));
 $barberID = isset($_SESSION['barberFilter']) ? ($_SESSION['barberFilter'] == "" ? null : $_SESSION['barberFilter']) : null;
 $time = isset($_SESSION['timeFilter']) ? ($_SESSION['timeFilter'] == "" ? null : $_SESSION['timeFilter']) : null;
 
 // Prepare SQL query
 $query = "SELECT * FROM Appointment_Availability a 
           WHERE Available='Y' 
-          AND (Weekday=? OR (Month=? AND Day=? AND Year=?))
-          AND NOT EXISTS (SELECT 1 FROM Confirmed_Appointments c
+          AND (Weekday=? OR (Month=? AND Day=? AND Year=? 
+                AND NOT EXISTS (SELECT 1 FROM Appointment_Availability d WHERE 
+                                d.Barber_ID = a.Barber_ID
+                                AND d.Time = a.Time 
+                                AND d.Minute = a.Minute
+                                AND d.Weekday = ?)))
+          AND NOT EXISTS (SELECT 1 FROM Confirmed_Appointments c JOIN Services s ON c.Service_ID = s.Service_ID
                 WHERE c.Barber_ID = a.Barber_ID 
-                AND c.Time = a.Time 
+                AND (c.Time*60 + c.Minute + s.Duration > a.Time*60 + a.Minute)
                 AND c.Month = ?
                 AND c.Day = ?
                 AND c.Year = ?)
           AND NOT EXISTS (SELECT 1 FROM Appointment_Availability b
                 WHERE a.Barber_ID = b.Barber_ID
                 AND a.Time = b.Time
+                AND a.Minute = b.Minute
                 AND b.Month = ?
                 AND b.Day = ?
                 AND b.Year = ?
@@ -59,20 +62,20 @@ if ($time !== null) {
 // order by time
 $query .= " ORDER BY Time";
 
-$stmt = $mysqli->prepare($query);
+$stmt = $conn->prepare($query);
 if (!$stmt) {
-    die(json_encode(["error" => "SQL prepare failed: " . $mysqli->error]));
+    die(json_encode(["error" => "SQL prepare failed: " . $conn->error]));
 }
 
 // Bind parameters
 if ($barberID !== null && $time !== null) {
-    $stmt->bind_param("iiiiiiiiiiss", $weekday, $month, $day, $year, $month, $day, $year, $month, $day, $year, $barberID, $time);
+    $stmt->bind_param("iiiiiiiiiiiss", $weekday, $month, $day, $year, $weekday, $month, $day, $year, $month, $day, $year, $barberID, $time);
 } else if ($barberID !== null) {
-    $stmt->bind_param("iiiiiiiiiis", $weekday, $month, $day, $year, $month, $day, $year, $month, $day, $year, $barberID);
+    $stmt->bind_param("iiiiiiiiiiis", $weekday, $month, $day, $year, $weekday, $month, $day, $year, $month, $day, $year, $barberID);
 } else if ($time !== null) {
-    $stmt->bind_param("iiiiiiiiiis", $weekday, $month, $day, $year, $month, $day, $year, $month, $day, $year, $time);
+    $stmt->bind_param("iiiiiiiiiiis", $weekday, $month, $day, $year, $weekday, $month, $day, $year, $month, $day, $year, $time);
 } else {
-    $stmt->bind_param("iiiiiiiiii", $weekday, $month, $day, $year, $month, $day, $year, $month, $day, $year);
+    $stmt->bind_param("iiiiiiiiiii", $weekday, $month, $day, $year, $weekday, $month, $day, $year, $month, $day, $year);
 }
 $stmt->execute();
 $result = $stmt->get_result();
@@ -90,5 +93,5 @@ while ($row = $result->fetch_assoc()) {
 echo json_encode($appointments, JSON_PRETTY_PRINT);
 
 $stmt->close();
-$mysqli->close();
+$conn->close();
 ?>

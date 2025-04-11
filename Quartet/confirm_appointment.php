@@ -127,7 +127,7 @@ if ($result->num_rows > 0) {
             <input type="text" id="appointment_date" name="appointment_date" value="<?php echo $monthNames[$_SESSION['month']]?> <?php echo $_SESSION['day']?>, <?php echo $_SESSION['year']?>" readonly><br><br>
             
             <label for="appointment_time">Time:</label><br>
-            <input type="text" id="appointment_time" name="appointment_time" value="<?php echo $_SESSION['time']?>" readonly><br><br>
+            <input type="text" id="appointment_time" name="appointment_time" value="<?php echo $_SESSION['time'] . ":" . $_SESSION['minute']?>" readonly><br><br>
             
             <label for="appointment_barber">Barber:</label><br>
             <input type="text" id="appointment_barber" name="appointment_barber" value="<?php echo $_SESSION['appointment']["Barber_ID"]?>" readonly><br><br>
