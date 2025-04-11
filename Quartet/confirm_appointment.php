@@ -8,6 +8,7 @@
     Revisions:
         3/2/2025 - Brinley, commenting and deleting unnecessary code
         4/2/2025 - Brinley, refactoring
+        4/10/2025 - Brinley, add services
     Preconditions:
         Acceptable inputs: 
             Previously set session information for month, day, year, time, and appointment
@@ -34,6 +35,27 @@ $monthNames = [
     'July', 'August', 'September', 'October', 'November', 'December'
 ];
 include('header.php');
+
+require 'db_connection.php';
+session_start();
+
+
+$sql = "SELECT * FROM Barber_Services, Services WHERE Barber_ID = ? AND Barber_Services.Service_ID = Services.Service_ID";
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    echo "Error preparing statement: " . $conn->error;
+    exit();
+}
+
+$stmt->bind_param("s", $_SESSION['appointment']["Barber_ID"]);
+$stmt->execute();
+$result = $stmt->get_result();
+$services = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $services[] = $row;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -110,6 +132,15 @@ include('header.php');
             <label for="appointment_barber">Barber:</label><br>
             <input type="text" id="appointment_barber" name="appointment_barber" value="<?php echo $_SESSION['appointment']["Barber_ID"]?>" readonly><br><br>
             
+            <label for="service">Select Service:</label>
+            <select id="service" name="service">
+                <?php foreach ($services as $service): ?>
+                    <option value="<?php echo $service['Service_ID']?>"><?php echo $service['Name']?></option>
+                <?php endforeach; ?>
+            </select>
+
+            <br>
+            <br>
             <button type="submit">Confirm Appointment</button>
         </form>
    </div>

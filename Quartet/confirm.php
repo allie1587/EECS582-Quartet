@@ -10,6 +10,7 @@
         3/3/2025 - Added unique 7-digit integer AppointmentID
         3/4/2025 - Added email confirmation functionality using PHPMailer
         4/2/2025 - Brinley, refactoring and implementing client ID
+        4/10/2025 - Brinley, add services
     Preconditions:
         Acceptable inputs: 
             A form with method "post" that sends variable strings for variables fname, lname, email, and phone
@@ -38,8 +39,9 @@ require 'config.php';
 // Connect to the database
 require 'db_connection.php';
 
-error_reporting(E_ALL);
 ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 // Function to generate a unique 7-digit integer
 function generateUniqueAppointmentID($conn) {
@@ -89,6 +91,7 @@ $month = $_SESSION["month"];
 $year = $_SESSION["year"];
 $time = date("G", strtotime($_SESSION['time'])); 
 $barber = $_SESSION['appointment']["Barber_ID"];
+$service = $_POST['service'];
 
 // get or create client id
 $client = -1;
@@ -127,18 +130,14 @@ if ($count == 0) {
     // Bind parameters to put them into the SQL query
     $stmt->bind_param("isssi", $client, $fname, $lname, $email, $phone);
     $stmt->execute(); // Execute the SQL query
-    $result = $stmt->get_result(); // get row results
-    if (!$result) {
-        die(json_encode(["error" => "SQL execution failed: " . $stmt->error]));
-    }
 }
 
 // Generate a unique 7-digit appointment ID
 $appointmentID = generateUniqueAppointmentID($conn);
 
 // Prepare a query to insert a row into the confirmed appointments table in the database with the corresponding info
-$query = "INSERT INTO Confirmed_Appointments (Barber_ID, Client_ID, Month, Day, Year, Time, Appointment_ID)
-          VALUES (?, ?, ?, ?, ?, ?, ?)";
+$query = "INSERT INTO Confirmed_Appointments (Barber_ID, Client_ID, Month, Day, Year, Time, Appointment_ID, Service_ID)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
 // Prepare the query 
 $stmt = $conn->prepare($query);
@@ -147,7 +146,7 @@ if (!$stmt) { // If the query is not valid, throw error
 }
 
 // Bind parameters to put them into the SQL query
-$stmt->bind_param("sissssi", $barber, $client, $month, $day, $year, $time, $appointmentID);
+$stmt->bind_param("sissssii", $barber, $client, $month, $day, $year, $time, $appointmentID, $service);
 $stmt->execute(); // Execute the SQL query
 
 // Close the database connections
