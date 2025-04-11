@@ -10,6 +10,13 @@ Purpose: Allow customers to place orders from their shopping cart
 
 <?php
 session_start();
+
+
+// Enable error reporting
+error_reporting(E_ALL);  // Report all PHP errors
+ini_set('display_errors', 1);  // Display errors to the browser
+ini_set('display_startup_errors', 1);  // Display startup errors
+
 require 'db_connection.php'; // Ensure this file contains your database connection logic
 $error = "";
 $success = "";
@@ -65,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Insert the order
-    $order_query = "INSERT INTO Orders (Client_ID, Comments) VALUES (?, ?)";
+    $order_query = "INSERT INTO Orders (Client_ID, Client_Comments) VALUES (?, ?)";
     $stmt = $conn->prepare($order_query);
     $stmt->bind_param("is", $client_id, $comments);
     $stmt->execute();
@@ -76,11 +83,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $product_id = $item['Product_ID'];
         $quantity = $item['Quantity'];
         $price = $item['Price'];
-        $item_total_price = $price * $quantity;
+        $price = $price * $quantity;
 
-        $order_item_query = "INSERT INTO Order_Items (Order_ID, Product_ID, Quantity, Price, Total_Price) VALUES (?, ?, ?, ?, ?)";
+        $order_item_query = "INSERT INTO Order_Items (Order_ID, Product_ID, Quantity, Price) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($order_item_query);
-        $stmt->bind_param("isidd", $order_id, $product_id, $quantity, $price, $item_total_price);
+        $stmt->bind_param("iiid", $order_id, $product_id, $quantity, $price);
         $stmt->execute();
     }
 

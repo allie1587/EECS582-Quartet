@@ -62,6 +62,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_change'])) {
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssi", $status, $barber_comments, $order_id);
     $stmt->execute();
+    
+    // Send email if status changed to 'ready' 
+    if ($status == 'ready') {
+        $client_email = $order['Email'];
+        $client_name = $order['First_Name'] . ' ' . $order['Last_Name'];
+        $subject = "Your Order #$order_id is Ready";
+        
+        $message = "
+        <html>
+        <head>
+            <title>Your Order is Ready</title>
+        </head>
+        <body>
+            <h2>Hello $client_name,</h2>
+            <p>Your order #$order_id is now ready for pickup!</p>
+            <p><strong>Order Details:</strong></p>
+            <ul>";
+        
+        foreach ($items as $item) {
+            $message .= "<li>{$item['Name']} - Quantity: {$item['Quantity']} - Price: $" . number_format($item['Price'], 2) . "</li>";
+        }
+        
+        $message .= "
+            </ul>
+            <p><strong>Total: $" . number_format($order['Total_Price'], 2) . "</strong></p>";
+        
+        if (!empty($barber_comments)) {
+            $message .= "<p><strong>Barber Notes:</strong> $barber_comments</p>";
+        }
+        
+        $message .= "
+            <p>Thank you for your business!</p>
+            <p>The Barber Shop Team</p>
+        </body>
+        </html>
+        ";
+        
+        // Set content-type header for HTML email
+        $headers = "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+        $headers .= "From: Your Barber Shop <noreply@yourbarbershop.com>" . "\r\n";
+        
+        // Send the email
+        mail($client_email, $subject, $message, $headers);
+    }
+    
     header("Location: manage_orders.php?Order_ID=$order_id");
     exit();
 }
