@@ -35,7 +35,6 @@
 
 // Start session to be able to get session information
 session_start();
-require 'config.php';
 // Connect to the database
 require 'db_connection.php';
 
