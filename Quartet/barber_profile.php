@@ -16,14 +16,22 @@ if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
+
+$barber_id = $_SESSION['username'];
+$sql = "SELECT * FROM Barber_Information WHERE Barber_ID = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $barber_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
 // Error Messaging
 ini_set('display_errors', 1);
 $error = "";
 $success = "";
 
 // Initializing Variables
-$barber_id= '';
-$barber= [];
+$barber_id = '';
+$barber = [];
 $gallery = [];
 $max_size = 10 * 1024 * 1024;
 $allowed_types = [
@@ -64,7 +72,7 @@ if (isset($_SESSION['username'])) {
     }
 }
 // Update Profile
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Update'])){
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Update'])) {
     // Barber Information
     $first_name = $conn->real_escape_string($_POST['First_Name']);
     $last_name = $conn->real_escape_string($_POST['Last_Name']);
@@ -92,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Update'])){
         }
         // Move the image to the designated directory
         if (move_uploaded_file($_FILES['Photo']['tmp_name'], $file_path)) {
-            $photo = $file_path; 
+            $photo = $file_path;
         } else {
             echo "Error: Failed to move uploaded file.";
             exit();
@@ -148,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Update'])){
             }
             // Move the image to the designated directory
             if (move_uploaded_file($tmp_name, $file_path)) {
-                $gallery_photo = $file_path; 
+                $gallery_photo = $file_path;
                 $sql = "INSERT INTO Barber_Gallery (Barber_ID, Image) Values (?, ?)";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("ss", $barber_id, $file_path);
@@ -171,19 +179,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Update'])){
 }
 ?>
 <?php
-include("barber_header.php");
+if ($user['Role'] == 'Barber') {
+    include("barber_header.php");
+} else {
+    // This until the rest of the barber side is working
+    include("manager_header.php");
+    //header("Location: login.php");
+    //exit();
+}
+
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="style/barber_style.css">
 </head>
+
 <body>
-<h1><?= htmlspecialchars($barber['First_Name'] ?? '') ?> <?= htmlspecialchars($barber['Last_Name'] ?? '') ?>'s Profile</h1>
+    <h1><?= htmlspecialchars($barber['First_Name'] ?? '') ?> <?= htmlspecialchars($barber['Last_Name'] ?? '') ?>'s Profile</h1>
     <div class="container">
         <form method="POST" enctype="multipart/form-data" id="barber-profile">
             <!-- Personal Information -->
@@ -192,25 +210,29 @@ include("barber_header.php");
                 <div class="form-group">
                     <label for="First_Name">First Name:</label>
                     <input type="text" name="First_Name" id="First_Name" required
-                           value="<?= htmlspecialchars($barber['First_Name'] ?? '') ?>">
+                        value="<?= htmlspecialchars($barber['First_Name'] ?? '') ?>"
+                        onchange="validateName()">
                     <span class="error" id="First_Name-error"></span>
                 </div>
                 <div class="form-group">
                     <label for="Last_Name">Last Name:</label>
                     <input type="text" name="Last_Name" id="Last_Name" required
-                           value="<?= htmlspecialchars($barber['Last_Name'] ?? '') ?>">
+                        value="<?= htmlspecialchars($barber['Last_Name'] ?? '') ?>"
+                        onchange="validateName()">
                     <span class="error" id="Last_Name-error"></span>
                 </div>
                 <div class="form-group">
                     <label for="Email">Email:</label>
                     <input type="email" name="Email" id="Email"
-                           value="<?= htmlspecialchars($barber['Email'] ?? '') ?>">
+                        value="<?= htmlspecialchars($barber['Email'] ?? '') ?>"
+                        onchange="validateEmail()">
                     <span class="error" id="Email-error"></span>
                 </div>
                 <div class="form-group">
                     <label for="Phone">Phone:</label>
                     <input type="tel" name="Phone" id="Phone"
-                           value="<?= htmlspecialchars($barber['Phone_Number'] ?? '') ?>">
+                        value="<?= htmlspecialchars($barber['Phone_Number'] ?? '') ?>"
+                        onchange="validatePhone()">
                     <span class="error" id="Phone-error"></span>
                 </div>
             </div>
@@ -221,7 +243,7 @@ include("barber_header.php");
                 <div class="form-group">
                     <label for="Photo">Upload Photo:</label>
                     <input type="file" name="Photo" id="Photo" accept="image/*">
-                    <?php if(!empty($photo)): ?>
+                    <?php if (!empty($photo)): ?>
                         <img id="preview-image" src="<?= htmlspecialchars($photo) ?>" width="150">
                     <?php else: ?>
                         <img id="preview-image" src="" width="150" style="display:none;">
@@ -235,17 +257,17 @@ include("barber_header.php");
                 <div class="form-group">
                     <label for="Instagram">Instagram:</label>
                     <input type="text" name="Instagram" id="Instagram"
-                           value="<?= htmlspecialchars($barber['Instagram'] ?? '') ?>">
+                        value="<?= htmlspecialchars($barber['Instagram'] ?? '') ?>">
                 </div>
                 <div class="form-group">
                     <label for="Facebook">Facebook:</label>
                     <input type="text" name="Facebook" id="Facebook"
-                           value="<?= htmlspecialchars($barber['Facebook'] ?? '') ?>">
+                        value="<?= htmlspecialchars($barber['Facebook'] ?? '') ?>">
                 </div>
                 <div class="form-group">
                     <label for="TikTok">TikTok:</label>
                     <input type="text" name="TikTok" id="TikTok"
-                           value="<?= htmlspecialchars($barber['TikTok'] ?? '') ?>">
+                        value="<?= htmlspecialchars($barber['TikTok'] ?? '') ?>">
                 </div>
             </div>
 
@@ -253,7 +275,7 @@ include("barber_header.php");
             <div class="form-section">
                 <h3>Portfolio</h3>
                 <div class="gallery-container">
-                    <?php foreach($gallery as $image): ?>
+                    <?php foreach ($gallery as $image): ?>
                         <div class="gallery-item">
                             <img src="<?= htmlspecialchars($image['Image']) ?>" width="100">
                             <button type="button" class="remove-btn" data-id="<?= $image['ID'] ?>">Remove</button>
@@ -269,82 +291,123 @@ include("barber_header.php");
         </form>
     </div>
 
-    <!-- Validation Script -->
     <script>
-        function validateField(fieldId, validationFn) {
-            const field = document.getElementById(fieldId);
-            const error = document.getElementById(fieldId + '-error');
-            
-            field.addEventListener('blur', function() {
-                const isValid = validationFn(field.value.trim(), error);
-                field.classList.toggle('invalid', !isValid);
-            });
-            
-            field.addEventListener('input', function() {
-                error.textContent = '';
-                field.classList.remove('invalid');
-            });
+        // Validate name fields (First and Last)
+        function validateName() {
+            const nameInput = document.getElementById(this.id);
+            const nameError = document.getElementById(this.id + '-error');
+            const nameValue = nameInput.value.trim();
+
+            if (!nameValue) {
+                nameError.textContent = "This field is required";
+                nameError.style.display = 'block';
+                nameInput.classList.add('invalid');
+                return false;
+            } else if (!/^[A-Za-z\s'-]+$/.test(nameValue)) {
+                nameError.textContent = "Only letters and basic punctuation allowed";
+                nameError.style.display = 'block';
+                nameInput.classList.add('invalid');
+                return false;
+            } else if (nameValue.length > 50) {
+                nameError.textContent = "Maximum 50 characters allowed";
+                nameError.style.display = 'block';
+                nameInput.classList.add('invalid');
+                return false;
+            } else {
+                nameError.style.display = 'none';
+                nameInput.classList.remove('invalid');
+                return true;
+            }
         }
 
-        // Field Validations
-        validateField('First_Name', (value, error) => {
-            if (!value) {
-                error.textContent = 'First name is required';
-                return false;
-            }
-            if (!/^[A-Za-z\s'-]+$/.test(value)) {
-                error.textContent = 'Only letters and basic punctuation allowed';
-                return false;
-            }
-            return true;
-        });
+        // Validate email
+        function validateEmail() {
+            const emailInput = document.getElementById('Email');
+            const emailError = document.getElementById('Email-error');
+            const emailValue = emailInput.value.trim();
 
-        validateField('Last_Name', (value, error) => {
-            if (!value) {
-                error.textContent = 'Last name is required';
+            if (emailValue && !/^\S+@\S+\.\S+$/.test(emailValue)) {
+                emailError.textContent = "Invalid email format";
+                emailError.style.display = 'block';
+                emailInput.classList.add('invalid');
                 return false;
+            } else {
+                emailError.style.display = 'none';
+                emailInput.classList.remove('invalid');
+                return true;
             }
-            if (!/^[A-Za-z\s'-]+$/.test(value)) {
-                error.textContent = 'Only letters and basic punctuation allowed';
-                return false;
-            }
-            return true;
-        });
+        }
 
-        validateField('Email', (value, error) => {
-            if (value && !/^\S+@\S+\.\S+$/.test(value)) {
-                error.textContent = 'Invalid email format';
-                return false;
-            }
-            return true;
-        });
+        // Validate phone
+        function validatePhone() {
+            const phoneInput = document.getElementById('Phone');
+            const phoneError = document.getElementById('Phone-error');
+            const phoneValue = phoneInput.value.trim();
+            const digits = phoneValue.replace(/\D/g, '');
 
-        validateField('Phone', (value, error) => {
-            if (value) {
-                const digits = value.replace(/\D/g, '');
-                if (digits.length !== 10) {
-                    error.textContent = 'Phone must be 10 digits';
+            if (phoneValue && digits.length !== 10) {
+                phoneError.textContent = "Phone must be 10 digits";
+                phoneError.style.display = 'block';
+                phoneInput.classList.add('invalid');
+                return false;
+            } else {
+                phoneError.style.display = 'none';
+                phoneInput.classList.remove('invalid');
+                return true;
+            }
+        }
+
+        // Validate photo upload
+        function validatePhoto() {
+            const photoInput = document.getElementById('Photo');
+            const photoError = document.getElementById('Photo-error');
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            const maxSize = 10 * 1024 * 1024; // 10MB
+
+            if (photoInput.files.length > 0) {
+                const file = photoInput.files[0];
+                if (!allowedTypes.includes(file.type)) {
+                    photoError.textContent = "Only JPEG, PNG, and GIF images are allowed";
+                    photoError.style.display = 'block';
                     return false;
+                } else if (file.size > maxSize) {
+                    photoError.textContent = "File size must be less than 10MB";
+                    photoError.style.display = 'block';
+                    return false;
+                } else {
+                    photoError.style.display = 'none';
+                    return true;
                 }
             }
-            return true;
-        });
+            return true; 
+        }
 
-        // Form Submission
-        document.getElementById('barber-profile').addEventListener('submit', function(e) {
-            let isValid = true;
-            
-            // Trigger validation for all fields
-            document.querySelectorAll('input[required]').forEach(input => {
-                input.dispatchEvent(new Event('blur'));
-                if (input.classList.contains('invalid')) isValid = false;
-            });
-            
-            if (!isValid) {
-                e.preventDefault();
-                document.querySelector('.invalid')?.scrollIntoView({behavior: 'smooth', block: 'center'});
+        // Form submission validation
+        function validateForm(event) {
+            const isFirstNameValid = validateName.call(document.getElementById('First_Name'));
+            const isLastNameValid = validateName.call(document.getElementById('Last_Name'));
+            const isEmailValid = validateEmail();
+            const isPhoneValid = validatePhone();
+            const isPhotoValid = validatePhoto();
+
+            if (!isFirstNameValid || !isLastNameValid || !isEmailValid || !isPhoneValid || !isPhotoValid) {
+                event.preventDefault();
+                return false;
             }
+            return true;
+        }
+
+        // Attach event listeners
+        document.getElementById('First_Name').addEventListener('blur', function() {
+            validateName.call(this);
         });
+        document.getElementById('Last_Name').addEventListener('blur', function() {
+            validateName.call(this);
+        });
+        document.getElementById('Email').addEventListener('blur', validateEmail);
+        document.getElementById('Phone').addEventListener('blur', validatePhone);
+        document.getElementById('Photo').addEventListener('change', validatePhoto);
+        document.getElementById('barber-profile').addEventListener('submit', validateForm);
     </script>
 
     <!-- Gallery and Image Preview Script -->
@@ -382,4 +445,5 @@ include("barber_header.php");
         });
     </script>
 </body>
+
 </html>

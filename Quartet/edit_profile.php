@@ -14,6 +14,13 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
+$barber_id = $_SESSION['username'];
+$sql = "SELECT * FROM Barber_Information WHERE Barber_ID = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $barber_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
 // Error Messaging
 ini_set('display_errors', 1);
 $error = "";
@@ -161,16 +168,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Update'])){
     }
     // Prevent form resubmission
     if (!headers_sent()) {
-        header("Location: barber_profile.php");
+        header("Location: employees.php");
         exit();
     } else {
-        echo '<script>window.location.href = "barber_profile.php";</script>';
+        echo '<script>window.location.href = "emloyees.php";</script>';
         exit();
     }
 }
 ?>
 <?php
-include("barber_header.php");
+if ($user['Role'] == 'Manager') {
+    include('manager_header.php');
+} else {
+    header("Location: login.php");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -274,81 +286,124 @@ include("barber_header.php");
 
     <!-- Validation Script -->
     <script>
-        function validateField(fieldId, validationFn) {
-            const field = document.getElementById(fieldId);
-            const error = document.getElementById(fieldId + '-error');
-            
-            field.addEventListener('blur', function() {
-                const isValid = validationFn(field.value.trim(), error);
-                field.classList.toggle('invalid', !isValid);
-            });
-            
-            field.addEventListener('input', function() {
-                error.textContent = '';
-                field.classList.remove('invalid');
-            });
+        // Validate name fields (First and Last)
+        function validateName() {
+            const nameInput = document.getElementById(this.id);
+            const nameError = document.getElementById(this.id + '-error');
+            const nameValue = nameInput.value.trim();
+
+            if (!nameValue) {
+                nameError.textContent = "This field is required";
+                nameError.style.display = 'block';
+                nameInput.classList.add('invalid');
+                return false;
+            } else if (!/^[A-Za-z\s'-]+$/.test(nameValue)) {
+                nameError.textContent = "Only letters and basic punctuation allowed";
+                nameError.style.display = 'block';
+                nameInput.classList.add('invalid');
+                return false;
+            } else if (nameValue.length > 50) {
+                nameError.textContent = "Maximum 50 characters allowed";
+                nameError.style.display = 'block';
+                nameInput.classList.add('invalid');
+                return false;
+            } else {
+                nameError.style.display = 'none';
+                nameInput.classList.remove('invalid');
+                return true;
+            }
         }
 
-        // Field Validations
-        validateField('First_Name', (value, error) => {
-            if (!value) {
-                error.textContent = 'First name is required';
-                return false;
-            }
-            if (!/^[A-Za-z\s'-]+$/.test(value)) {
-                error.textContent = 'Only letters and basic punctuation allowed';
-                return false;
-            }
-            return true;
-        });
+        // Validate email
+        function validateEmail() {
+            const emailInput = document.getElementById('Email');
+            const emailError = document.getElementById('Email-error');
+            const emailValue = emailInput.value.trim();
 
-        validateField('Last_Name', (value, error) => {
-            if (!value) {
-                error.textContent = 'Last name is required';
+            if (emailValue && !/^\S+@\S+\.\S+$/.test(emailValue)) {
+                emailError.textContent = "Invalid email format";
+                emailError.style.display = 'block';
+                emailInput.classList.add('invalid');
                 return false;
+            } else {
+                emailError.style.display = 'none';
+                emailInput.classList.remove('invalid');
+                return true;
             }
-            if (!/^[A-Za-z\s'-]+$/.test(value)) {
-                error.textContent = 'Only letters and basic punctuation allowed';
-                return false;
-            }
-            return true;
-        });
+        }
 
-        validateField('Email', (value, error) => {
-            if (value && !/^\S+@\S+\.\S+$/.test(value)) {
-                error.textContent = 'Invalid email format';
-                return false;
-            }
-            return true;
-        });
+        // Validate phone
+        function validatePhone() {
+            const phoneInput = document.getElementById('Phone');
+            const phoneError = document.getElementById('Phone-error');
+            const phoneValue = phoneInput.value.trim();
+            const digits = phoneValue.replace(/\D/g, '');
 
-        validateField('Phone', (value, error) => {
-            if (value) {
-                const digits = value.replace(/\D/g, '');
-                if (digits.length !== 10) {
-                    error.textContent = 'Phone must be 10 digits';
+            if (phoneValue && digits.length !== 10) {
+                phoneError.textContent = "Phone must be 10 digits";
+                phoneError.style.display = 'block';
+                phoneInput.classList.add('invalid');
+                return false;
+            } else {
+                phoneError.style.display = 'none';
+                phoneInput.classList.remove('invalid');
+                return true;
+            }
+        }
+
+        // Validate photo upload
+        function validatePhoto() {
+            const photoInput = document.getElementById('Photo');
+            const photoError = document.getElementById('Photo-error');
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            const maxSize = 10 * 1024 * 1024; // 10MB
+
+            if (photoInput.files.length > 0) {
+                const file = photoInput.files[0];
+                if (!allowedTypes.includes(file.type)) {
+                    photoError.textContent = "Only JPEG, PNG, and GIF images are allowed";
+                    photoError.style.display = 'block';
                     return false;
+                } else if (file.size > maxSize) {
+                    photoError.textContent = "File size must be less than 10MB";
+                    photoError.style.display = 'block';
+                    return false;
+                } else {
+                    photoError.style.display = 'none';
+                    return true;
                 }
             }
-            return true;
-        });
+            return true; 
+        }
 
-        // Form Submission
-        document.getElementById('barber-profile').addEventListener('submit', function(e) {
-            let isValid = true;
-            
-            // Trigger validation for all fields
-            document.querySelectorAll('input[required]').forEach(input => {
-                input.dispatchEvent(new Event('blur'));
-                if (input.classList.contains('invalid')) isValid = false;
-            });
-            
-            if (!isValid) {
-                e.preventDefault();
-                document.querySelector('.invalid')?.scrollIntoView({behavior: 'smooth', block: 'center'});
+        // Form submission validation
+        function validateForm(event) {
+            const isFirstNameValid = validateName.call(document.getElementById('First_Name'));
+            const isLastNameValid = validateName.call(document.getElementById('Last_Name'));
+            const isEmailValid = validateEmail();
+            const isPhoneValid = validatePhone();
+            const isPhotoValid = validatePhoto();
+
+            if (!isFirstNameValid || !isLastNameValid || !isEmailValid || !isPhoneValid || !isPhotoValid) {
+                event.preventDefault();
+                return false;
             }
+            return true;
+        }
+
+        // Attach event listeners
+        document.getElementById('First_Name').addEventListener('blur', function() {
+            validateName.call(this);
         });
+        document.getElementById('Last_Name').addEventListener('blur', function() {
+            validateName.call(this);
+        });
+        document.getElementById('Email').addEventListener('blur', validateEmail);
+        document.getElementById('Phone').addEventListener('blur', validatePhone);
+        document.getElementById('Photo').addEventListener('change', validatePhoto);
+        document.getElementById('barber-profile').addEventListener('submit', validateForm);
     </script>
+
 
     <!-- Gallery and Image Preview Script -->
     <script>

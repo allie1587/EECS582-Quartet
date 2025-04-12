@@ -8,12 +8,25 @@ Revisions:
     03/14/2025 -- Alexandra Stratton -- Implemented header.php
     03/15/2025  -- Alexandra Stratton  -- Commenting and fixing format
     03/15/2025 -- Alexandra Stratton -- Added error messaging 
+    04/11/2025 -- Alexandra Stratton -- Implement heading and fix structure
 Other Sources: ChatGPT
 -->
 <?php
 // Connects to the database
-require 'db_connection.php';
 session_start();
+require 'db_connection.php';
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$barber_id = $_SESSION['username'];
+$sql = "SELECT * FROM Barber_Information WHERE Barber_ID = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $barber_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Generate a unique product ID
@@ -84,8 +97,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 <?php
-//Adds the header to the page reducing redunacny
-include('header.php');
+if ($user['Role'] == 'Barber') {
+    include("barber_header.php");
+} else {
+    include("manager_header.php");
+}
 ?>
 <head>
 <!-- Title for Page --> 
@@ -196,7 +212,7 @@ include('header.php');
     <!--let's user know the current page they are on-->
     <h1>Add Product</h1>
     <!-- Allows barber's to add a new item to the store -->
-    <div class="add-container">
+    <div class="container">
     <form action="add_product.php" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
             <label for="product_name">Product Name:</label>
             <input type="text" name="product_name" id="product_name" required onchange="validateName()">

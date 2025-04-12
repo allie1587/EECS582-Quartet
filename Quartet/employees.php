@@ -46,8 +46,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_barber'])) {
 }
 ?>
 <?php 
+echo $user['Role'];
 if ($user['Role'] == "Barber") {
-    include("barber_header.php");
+    header("Location: login.php");
+    exit();
+}
+else {
+    include("manager_header.php");
 }
 //Otherwise cause an error
 ?>
@@ -61,6 +66,7 @@ if ($user['Role'] == "Barber") {
     <link rel="stylesheet" href="style/barber_style.css">
 </head>
 <body>
+    
     <div class="container">
         <!-- Add Product Button at the Top Right -->
         <a href="add_employee.php" class="add-btn">Add Employee</a>

@@ -118,7 +118,7 @@ body {
     <div class="sidenav" id="sideNav">
         <button class="closebtn" onclick="closeNav()">&times;</button>
         <a href="dashboard.php">Dashboard</a>
-        <a href="#">Appointments</a>
+        <a href="calendar.php">Appointments</a>
         <a href="barber_profile.php">Profile</a>
         <a href="set_hours.php">Hours</a>
         <a href="services.php">Services</a>
@@ -129,25 +129,12 @@ body {
         </button>
         <div class="dropdown-container">
             <a href="client.php">Client List</a>
-            <a href="feedback.php">Feedback</a>
-            <a href="reviews.php">Reviews</a>
+            <a href="see_feedback.php">Feedback</a>
+            <a href="#">Reviews</a>
         </div>
         <a href="logout.php"><i class="fa fa-sign-out"></i> Log Out</a>
-        <p>Testing Manager Side</p>
-        <button class="dropdown-btn">Employees 
-            <i class="fa fa-caret-down"></i>
-        </button>
-        <div class="dropdown-container">
-            <a href="employees.php">Employee List</a>
-            <a href="e#">Employee Services</a>
-            <a href="#">Employee Hours</a> 
-        </div>
     </div>
-
-    <div class="main-content">
-        <!-- Your page content will go here -->
-    </div>
-    </div>
+</div>
 <div id="content">
   <button class="openbtn" onclick="openNav()">☰</button>  
 </div>

@@ -57,7 +57,7 @@ if ($user['Role'] == "Barber") {
     </div>
     <div class="container">
         <div class="card">
-            <table id="clientTable"> <!-- Added id="clientTable" here -->
+            <table id="clientTable"> 
                 <thead>
                     <tr>
                         <th>Client ID</th>
