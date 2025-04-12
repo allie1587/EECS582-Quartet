@@ -26,6 +26,20 @@ h1 {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
+
+.content-wrapper {
+    transition: margin-left 0.3s ease;
+    margin-left: 10px;
+}
+
+.sidebar-active .content-wrapper {
+    margin-left: 300px; 
+}
+
+.sidebar-deactive .content-wrapper {
+    margin-left: 10px; 
+}
+
 /* Files: manage_orders.php */
 .order-wrapper {
     display: flex;

@@ -49,7 +49,7 @@ if (isset($_POST['checkout'])) {
 }
 // Get today's appointments
 $today_day = date('j'); // Current day of the month
-$today_month = date('n'); // Current month as a number
+$today_month = date('n') - 1; // Current month as a number
 $today_year = date('Y'); // Current year
 
 $sql = "SELECT Confirmed_Appointments.*, Client.First_Name, Client.Last_Name, Client.Email, Client.Phone 

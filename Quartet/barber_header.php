@@ -6,8 +6,6 @@ Revisions:
  Purpose: the header for the barber side.
 
  -->
-<!DOCTYPE html>
-<html>
 
 <!DOCTYPE html>
 <html>
@@ -24,7 +22,7 @@ body {
   height: 100%;
   width: 0;
   position: fixed;
-  z-index: 1;
+  z-index: 100;
   top: 0;
   left: 0;
   background-color: #111;
@@ -93,12 +91,21 @@ body {
 }
 
 .openbtn {
-  font-size: 20px;
-  cursor: pointer;
-  background-color: #111;
-  color: white;
-  padding: 10px 15px;
-  border: none;
+  position: fixed !important;
+  top: 10px !important;
+  left: 10px !important;
+  width: 40px !important;
+  height: 40px !important;
+  background-color: #333 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 5px !important;
+  cursor: pointer !important;
+  z-index: 10 !important;
+  font-size: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .openbtn:hover {
@@ -121,7 +128,7 @@ body {
 
 <div class="barber" id="barber">
     <div class="sidenav" id="sideNav">
-        <button class="closebtn" onclick="closeNav()">&times;</button>
+        <button class="closebtn" id="sidebar-deactive" onclick="closeNav()">&times;</button>
         <a href="dashboard.php">Dashboard</a>
         <a href="calendar.php">Appointments</a>
         <a href="checkouts.php">Checkout History????</a>
@@ -166,12 +173,26 @@ function closeNav() {
   document.getElementById("sideNav").style.width = "0";
   document.getElementById("content").style.marginLeft = "0";
 }
+
 document.addEventListener("DOMContentLoaded", function () {
     const toggleBtn = document.getElementById("sidebarToggle");
     const body = document.body;
 
     toggleBtn.addEventListener("click", function () {
-        body.classList.toggle("sidebar-active");
+        body.classList.add("sidebar-active");
+        body.classList.remove("sidebar-deactive");
+
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleBtn2 = document.getElementById("sidebar-deactive");
+    const body = document.body;
+
+    toggleBtn2.addEventListener("click", function () {
+        body.classList.add("sidebar-deactive");
+        body.classList.remove("sidebar-active");
+
     });
 });
 </script>

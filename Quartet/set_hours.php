@@ -62,12 +62,16 @@ include("barber_header.php");
         }
         .content-wrapper {
             transition: margin-left 0.3s ease;
-            margin-left: 0;
+            margin-left: 10px;
         }
 
         .sidebar-active .content-wrapper {
             margin-left: 300px
         }
+        .sidebar-deactive .content-wrapper {
+            margin-left: 10px; 
+        }
+
     </style>
 </head>
 <body>
