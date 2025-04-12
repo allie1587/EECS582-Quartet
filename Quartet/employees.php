@@ -46,7 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_barber'])) {
 }
 ?>
 <?php 
-echo $user['Role'];
 if ($user['Role'] == "Barber") {
     header("Location: login.php");
     exit();
@@ -54,7 +53,6 @@ if ($user['Role'] == "Barber") {
 else {
     include("manager_header.php");
 }
-//Otherwise cause an error
 ?>
 
 <!DOCTYPE html>

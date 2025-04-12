@@ -123,7 +123,7 @@ body {
         <div class="dropdown-container">
             <a href="client.php">Client List</a>
             <a href="see_feedback.php">Feedback</a>
-            <a href="#">Reviews</a>
+            <a href="testimonies.php">Reviews</a>
 
         </div>
         <button class="dropdown-btn">Employees 

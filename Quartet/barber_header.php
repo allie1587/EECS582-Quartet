@@ -119,6 +119,7 @@ body {
         <button class="closebtn" onclick="closeNav()">&times;</button>
         <a href="dashboard.php">Dashboard</a>
         <a href="calendar.php">Appointments</a>
+        <a href="checkouts.php">Checkout History????</a>
         <a href="barber_profile.php">Profile</a>
         <a href="set_hours.php">Hours</a>
         <a href="services.php">Services</a>
@@ -130,7 +131,7 @@ body {
         <div class="dropdown-container">
             <a href="client.php">Client List</a>
             <a href="see_feedback.php">Feedback</a>
-            <a href="#">Reviews</a>
+            <a href="testimonies.php">Reviews</a>
         </div>
         <a href="logout.php"><i class="fa fa-sign-out"></i> Log Out</a>
     </div>
