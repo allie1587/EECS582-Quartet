@@ -114,26 +114,27 @@ body {
     <div class="sidenav" id="sideNav">
         <button class="closebtn" onclick="closeNav()">&times;</button>
         <a href="dashboard.php">Dashboard</a>
-        <a href="#">Calendar</a> 
-        <a href="#">Appointments</a>
+        <a href="calendar.php">Appointments</a>
         <a href="product.php">Products</a>
         <a href="orders.php">Orders</a>
         <button class="dropdown-btn">Clients 
             <i class="fa fa-caret-down"></i>
         </button>
         <div class="dropdown-container">
-            <a href="clients.php">Client List</a>
-            <a href="reviews.php">Feedback</a>
+            <a href="client.php">Client List</a>
+            <a href="see_feedback.php">Feedback</a>
+            <a href="#">Reviews</a>
+
         </div>
         <button class="dropdown-btn">Employees 
             <i class="fa fa-caret-down"></i>
         </button>
         <div class="dropdown-container">
-            <a href="employee.php">Employee List</a>
-            <a href="employee_services.php">Employee Services</a>
-            <a href="employee_hours.php">Employee Hours</a> 
+            <a href="employees.php">Employee List</a>
+            <a href="#">Employee Services</a>
+            <a href="#">Employee Hours</a> 
         </div>
-        <a href="logout.php">Log Out</a>
+        <a href="logout.php"><i class="fa fa-sign-out"></i> Log Out</a>
     </div>
 </div>
 <div id="content">

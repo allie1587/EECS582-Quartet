@@ -2,7 +2,8 @@
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 03/32/2025
 Revisions:
-     03/31/2025 -- Alexandra Stratton -- created orders.php
+    03/31/2025 -- Alexandra Stratton -- created orders.php
+    4/11/2025 -- Alexandra Stratton -- Fixed bug
  Purpose: Allow the manager/barber to see all the orders
 
  -->
@@ -80,7 +81,7 @@ if ($user['Role'] == "Barber") {
             <tbody>
                 <?php foreach ($orders as $order): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($order['Order ID']); ?></td>
+                        <td><?php echo htmlspecialchars($order['Order_ID']); ?></td>
                         <td><?php echo htmlspecialchars($order['Client']['First_Name']) . ' ' . htmlspecialchars($order['Client']['Last_Name']); ?></td>
                         <td><?php echo date('M j, Y g:i A', strtotime($order['Created_At'])); ?></td>
                         <td>$<?php echo number_format($order['Total_Price'], 2); ?></td>

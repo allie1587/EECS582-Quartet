@@ -2,10 +2,24 @@
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 03/32/2025
 Revisions:
-     03/31/2025 -- Alexandra Stratton -- created manage_orders.php
+    03/31/2025 -- Alexandra Stratton -- created manage_orders.php
  Purpose: Allow the manager/barber to view more information about the order
 
  -->
+<?php
+// Error Messaging
+ini_set('display_errors', 1);
+$error = "";
+$success = "";
+?>
+<?php if (!empty($error)): ?>
+    <p style="color: red;"><?php echo $error; ?></p>
+<?php endif; ?>
+<?php if (!empty($success)): ?>
+    <p style="color: green;"><?php echo $success; ?></p>
+<?php endif; ?>
+
+
 <?php
 //Connects to the database
 session_start();
@@ -14,10 +28,7 @@ if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
-// Error Messaging
-ini_set('display_errors', 1);
-$error = "";
-$success = "";
+
 
 $barber_id = $_SESSION['username'];
 $sql = "SELECT Role FROM Barber_Information WHERE Barber_ID = ?";
@@ -62,52 +73,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_change'])) {
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssi", $status, $barber_comments, $order_id);
     $stmt->execute();
-    
-    // Send email if status changed to 'ready' 
-    if ($status == 'ready') {
-        $client_email = $order['Email'];
-        $client_name = $order['First_Name'] . ' ' . $order['Last_Name'];
-        $subject = "Your Order #$order_id is Ready";
-        
-        $message = "
-        <html>
-        <head>
-            <title>Your Order is Ready</title>
-        </head>
-        <body>
-            <h2>Hello $client_name,</h2>
-            <p>Your order #$order_id is now ready for pickup!</p>
-            <p><strong>Order Details:</strong></p>
-            <ul>";
-        
-        foreach ($items as $item) {
-            $message .= "<li>{$item['Name']} - Quantity: {$item['Quantity']} - Price: $" . number_format($item['Price'], 2) . "</li>";
-        }
-        
-        $message .= "
-            </ul>
-            <p><strong>Total: $" . number_format($order['Total_Price'], 2) . "</strong></p>";
-        
-        if (!empty($barber_comments)) {
-            $message .= "<p><strong>Barber Notes:</strong> $barber_comments</p>";
-        }
-        
-        $message .= "
-            <p>Thank you for your business!</p>
-            <p>The Barber Shop Team</p>
-        </body>
-        </html>
-        ";
-        
-        // Set content-type header for HTML email
-        $headers = "MIME-Version: 1.0" . "\r\n";
-        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-        $headers .= "From: Your Barber Shop <noreply@yourbarbershop.com>" . "\r\n";
-        
-        // Send the email
-        mail($client_email, $subject, $message, $headers);
-    }
-    
     header("Location: manage_orders.php?Order_ID=$order_id");
     exit();
 }

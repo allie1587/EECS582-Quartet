@@ -6,13 +6,26 @@ Revisions:
     03/14/2025 -- Alexandra Stratton -- Implemented header.php
     03/15/2025  -- Alexandra Stratton  -- Commenting and fixing format
     03/15/2025 -- Alexandra Stratton -- Added error messaging 
+    04/11/2025 -- Alexandra Stratton -- Implement heading and fix structure
 Other Sources: ChatGTP
 Purpose: Allow barbers to edit the products seen in the store
 
 -->
 <?php
 //Connects to the database
+session_start();
 require 'db_connection.php';
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
+$barber_id = $_SESSION['username'];
+$sql = "SELECT * FROM Barber_Information WHERE Barber_ID = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $barber_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
 
 if (isset($_GET['Product_ID'])) {
     //Gets the product id
@@ -85,10 +98,12 @@ if (isset($_GET['Product_ID'])) {
 ?>
 
 <?php
-//Adds the header to the page reducing redunacny
-include('barber_header.php');
+if ($user['Role'] == 'Barber') {
+    include("barber_header.php");
+} else {
+    include("manager_header.php");
+}
 ?>
-
 <head>
     <!-- Title for Page -->
     <title>Edit Product</title>
@@ -240,7 +255,7 @@ include('barber_header.php');
     <!--let's user know the current page they are on-->
     <h1>Edit Product</h1>
     <!-- Allows barber's to add a new item to the store -->
-    <div class="edit-container">
+    <div class="container">
         <form action="edit_product.php?Product_ID=<?php echo $product['Product_ID']; ?>" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
             <label for="product_name">Product Name:</label>
             <input type="text" name="product_name" id="product_name" value="<?php echo $product['Name']; ?>" required onchange="validateName()">
