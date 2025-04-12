@@ -2,7 +2,8 @@
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 03/32/2025
 Revisions:
-     03/31/2025 -- Alexandra Stratton -- created employee_list.php
+     03/31/2025 -- Alexandra Stratton -- created employees.php
+     04/12/2025 -- Alexandra Stratton -- Removing employee
  Purpose: Allow the manager to see all the employees
 
  -->
@@ -32,18 +33,59 @@ if ($result->num_rows > 0) {
         $barbers[] = $row;
     }
 }
-//Remove employee
+//Remove employee with manual cascade
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_barber'])) {
-    // Retrieve form data
-    $barber_id= $_POST['barber_id'];
-    //Figure out all tables that contain Barber_ID
-    $sql = "DELETE Barber WHERE Barber_ID = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $barber_id);
-    $stmt->execute();
-    header("Location: employees.php");
-    exit();
+    $barber_id = $_POST['barber_id'];
+    $error = false;
+    
+    // Start transaction
+    $conn->begin_transaction();
+    
+    try {
+        // Delete from Barber_Gallery
+        $sql = "DELETE FROM Barber_Gallery WHERE Barber_ID = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $barber_id);
+        $stmt->execute();
+        
+        // Delete from Barber_Services
+        $sql = "DELETE FROM Barber_Services WHERE Barber_ID = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $barber_id);
+        $stmt->execute();
+        
+        // Delete from Confirmed_Appointments
+        $sql = "DELETE FROM Confirmed_Appointments WHERE Barber_ID = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $barber_id);
+        $stmt->execute();
+        
+        // Delete from Appointment_Availability
+        $sql = "DELETE FROM Appointment_Availability WHERE Barber_ID = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $barber_id);
+        $stmt->execute();
+        
+        // Finally delete the barber
+        $sql = "DELETE FROM Barber_Information WHERE Barber_ID = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $barber_id);
+        $stmt->execute();
+        
+        // Commit transaction if all queries succeeded
+        $conn->commit();
+        header("Location: employees.php");
+        exit();
+        
+    } catch (Exception $e) {
+        // Roll back transaction if any error occurs
+        $conn->rollback();
+        $error_message = "Error deleting barber: " . $e->getMessage();
+        error_log($error_message);
+        // You could display $error_message to the user if desired
+    }
 }
+
 ?>
 <?php 
 if ($user['Role'] == "Barber") {
@@ -66,8 +108,6 @@ else {
 <body>
     
     <div class="container">
-        <!-- Add Product Button at the Top Right -->
-        <a href="add_employee.php" class="add-btn">Add Employee</a>
         <div class="card">
             <table>
                 <thead>
