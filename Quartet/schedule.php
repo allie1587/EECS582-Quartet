@@ -71,16 +71,16 @@ include('header.php');
 
         .day {
             position: relative; /* Ensures child elements are positioned relative to this */
-            aspect-ratio: 1/.75;
+            /*aspect-ratio: 1/.75;*/
             background: rgb(252, 250, 250);
             border: 1px solid #ccc;
-            padding: 15px;
+            padding: 20px;
             border-radius: 5px;
             min-height: 60px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
         }
 
         .day span {
