@@ -101,6 +101,11 @@ body {
 .openbtn:hover {
   background-color: #444;
 }
+#content {
+  transition: margin-left 0.5s;
+  padding: 20px;
+}
+
 
 /* Some media queries for responsiveness */
 @media screen and (max-height: 450px) {
@@ -143,24 +148,18 @@ body {
 
 <script>
 var dropdown = document.getElementsByClassName("dropdown-btn");
-var i;
-
-for (i = 0; i < dropdown.length; i++) {
-  dropdown[i].addEventListener("click", function() {
+for (let i = 0; i < dropdown.length; i++) {
+  dropdown[i].addEventListener("click", function () {
     this.classList.toggle("active");
     var dropdownContent = this.nextElementSibling;
-    if (dropdownContent.style.display === "block") {
-      dropdownContent.style.display = "none";
-    } else {
-      dropdownContent.style.display = "block";
-    }
+    dropdownContent.style.display = 
+      dropdownContent.style.display === "block" ? "none" : "block";
   });
 }
 
 function openNav() {
   document.getElementById("sideNav").style.width = "250px";
   document.getElementById("content").style.marginLeft = "250px";
-  document.querySelector(".openbtn").style.display = "none";
   
 
 }
@@ -168,8 +167,15 @@ function openNav() {
 function closeNav() {
   document.getElementById("sideNav").style.width = "0";
   document.getElementById("content").style.marginLeft = "0";
-  document.querySelector(".openbtn").style.display = "block";
 }
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleBtn = document.getElementById("sidebarToggle");
+    const body = document.body;
+
+    toggleBtn.addEventListener("click", function () {
+        body.classList.toggle("sidebar-active");
+    });
+});
 </script>
 </body>
 </html>

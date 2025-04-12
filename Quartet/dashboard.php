@@ -97,9 +97,18 @@ else {
             padding: 8px;
             text-align: left;
         }
+        .content-wrapper {
+            transition: margin-left 0.3s ease;
+            margin-left: 0;
+        }
+
+        .sidebar-active .content-wrapper {
+            margin-left: 200px; /* or match sidebar width */
+        }
     </style>
   </head>
   <body>
+    <div class="content-wrapper">
         <h1>Today's Schedule (<?php echo date(' F j, Y'); ?>)</h1>
         <?php if (empty($appointments)): ?>
             <div class="no-appointments">
@@ -142,6 +151,6 @@ else {
                     </tbody>
                 </table>
             <?php endif; ?>
-            
+    </div>
   </body>
 </html>

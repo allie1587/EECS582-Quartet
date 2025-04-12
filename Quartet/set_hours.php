@@ -60,66 +60,75 @@ include("barber_header.php");
             padding: 5px;
             text-align: center;
         }
+        .content-wrapper {
+            transition: margin-left 0.3s ease;
+            margin-left: 0;
+        }
+
+        .sidebar-active .content-wrapper {
+            margin-left: 300px
+        }
     </style>
 </head>
 <body>
-    
-    <!-- calendar navigation with back and forward arrows, week of calendar date select. on edit/click, they reload the page with the new set date/week -->
-    <div class="calendar-navigation">
-        <a href="<?php echo $_SERVER['PHP_SELF'].'?week='.($week-1).'&year='.$year; ?>">&#9664;</a>
-        
-        <!-- Week of --- clickable/editable date showing current week we're looking at on the calendar-->
-        <h2>
-            Week of <input type="text" id="dateInput" placeholder="<?php echo $monthYear?>" onkeypress="if(event.key==='Enter') jumpToDate();">
-        </h2>
-        <a href="<?php echo $_SERVER['PHP_SELF'].'?week='.($week+1).'&year='.$year; ?>">&#9654;</a>
-    </div>
+    <div class="content-wrapper">
+        <!-- calendar navigation with back and forward arrows, week of calendar date select. on edit/click, they reload the page with the new set date/week -->
+        <div class="calendar-navigation">
+            <a href="<?php echo $_SERVER['PHP_SELF'].'?week='.($week-1).'&year='.$year; ?>">&#9664;</a>
+            
+            <!-- Week of --- clickable/editable date showing current week we're looking at on the calendar-->
+            <h2>
+                Week of <input type="text" id="dateInput" placeholder="<?php echo $monthYear?>" onkeypress="if(event.key==='Enter') jumpToDate();">
+            </h2>
+            <a href="<?php echo $_SERVER['PHP_SELF'].'?week='.($week+1).'&year='.$year; ?>">&#9654;</a>
+        </div>
 
-    <form method="POST" id="calendarForm">
-        <input type="text" value="<?php echo $_SESSION['username']?>" name="barber" id="barber_username">
-        <button type="button" name="retrieve" onclick="retrieveAvailability()">Retrieve</button>
-        <table class="calendar-table">
-            <tr>
+        <form method="POST" id="calendarForm">
+            <input type="text" value="<?php echo $_SESSION['username']?>" name="barber" id="barber_username">
+            <button type="button" name="retrieve" onclick="retrieveAvailability()">Retrieve</button>
+            <table class="calendar-table">
+                <tr>
+                    <?php
+                    $daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; // initialize days of the week list
+                    $startDayOfWeek = $dt->format('N'); 
+                    $startDate = clone $dt; 
+
+                    foreach ($daysOfWeek as $day) { //show the date on the head of each calendar week
+                        echo '<th>' . $day . ', ' . $startDate->format('n/j') . '</th>';
+                        $startDate->modify('+1 day');
+                    }
+                    ?>
+                </tr>
                 <?php
-                $daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; // initialize days of the week list
-                $startDayOfWeek = $dt->format('N'); 
-                $startDate = clone $dt; 
-
-                foreach ($daysOfWeek as $day) { //show the date on the head of each calendar week
-                    echo '<th>' . $day . ', ' . $startDate->format('n/j') . '</th>';
-                    $startDate->modify('+1 day');
-                }
-                ?>
-            </tr>
-            <?php
-            /* Checkbox time grid */
-            $times = range(8, 17); // make range of valid times
-            $minutes = ['00', '15', '30', '45']; // make range of valid 15-minute intervals
-            foreach ($times as $hour) { // create each row of times and checkboxees
-                $timeLabel = ($hour < 12) ? $hour . ' AM' : (($hour === 12) ? '12 PM' : ($hour - 12) . ' PM'); 
-                echo '<tr class="main-hour"><td class="time-label"><strong>' . $timeLabel . '</strong></td>'; // show the time
-                foreach (range(0, 6) as $day) { //create 7 checkboxes in line with the name of the day and hour for ease of database manipulation
-                    $id = $day . '-' . $hour;
-                    echo '<td><input type="checkbox" class="hour-checkbox" hour="'. $hour .'" day="'.$day.'" name="' . $id . '" id="' . $id . '"></td>';
-                }
-                echo '</tr>';
-
-                // Sub-rows for each 15-minute increment
-                foreach ($minutes as $minute) {
-                    $timeLabel = ($hour < 12) ? $hour . ':' . $minute . ' AM' : (($hour === 12) ? '12' . ':' . $minute . ' PM' : ($hour - 12) . ':' . $minute . ' PM'); 
-                    echo '<tr class="quarter-hour"><td class="time-label">' . $timeLabel . '</td>';
-                    foreach (range(0, 6) as $day) {
-                        $id = $day . '-' . $hour . '-' . $minute;
-                        echo '<td><input type="checkbox" name="' . $id . '" hour="'. $hour .'" day="'.$day.'" id="' . $id . '" class="minute-checkbox"></td>';
+                /* Checkbox time grid */
+                $times = range(8, 17); // make range of valid times
+                $minutes = ['00', '15', '30', '45']; // make range of valid 15-minute intervals
+                foreach ($times as $hour) { // create each row of times and checkboxees
+                    $timeLabel = ($hour < 12) ? $hour . ' AM' : (($hour === 12) ? '12 PM' : ($hour - 12) . ' PM'); 
+                    echo '<tr class="main-hour"><td class="time-label"><strong>' . $timeLabel . '</strong></td>'; // show the time
+                    foreach (range(0, 6) as $day) { //create 7 checkboxes in line with the name of the day and hour for ease of database manipulation
+                        $id = $day . '-' . $hour;
+                        echo '<td><input type="checkbox" class="hour-checkbox" hour="'. $hour .'" day="'.$day.'" name="' . $id . '" id="' . $id . '"></td>';
                     }
                     echo '</tr>';
+
+                    // Sub-rows for each 15-minute increment
+                    foreach ($minutes as $minute) {
+                        $timeLabel = ($hour < 12) ? $hour . ':' . $minute . ' AM' : (($hour === 12) ? '12' . ':' . $minute . ' PM' : ($hour - 12) . ':' . $minute . ' PM'); 
+                        echo '<tr class="quarter-hour"><td class="time-label">' . $timeLabel . '</td>';
+                        foreach (range(0, 6) as $day) {
+                            $id = $day . '-' . $hour . '-' . $minute;
+                            echo '<td><input type="checkbox" name="' . $id . '" hour="'. $hour .'" day="'.$day.'" id="' . $id . '" class="minute-checkbox"></td>';
+                        }
+                        echo '</tr>';
+                    }
                 }
-            }
-            ?>
-        </table>
-        <button type="submit" name="update" onclick="setFormAction('set_hours_db.php')">Update</button>
-        <button type="submit" name="updateall" onclick="setFormAction('set_hours_db_all.php')">Update Reccurring</button>
-    </form>
+                ?>
+            </table>
+            <button type="submit" name="update" onclick="setFormAction('set_hours_db.php')">Update</button>
+            <button type="submit" name="updateall" onclick="setFormAction('set_hours_db_all.php')">Update Reccurring</button>
+        </form>
+    </div>
 </body>
 <script>
         function retrieveAvailability() {
