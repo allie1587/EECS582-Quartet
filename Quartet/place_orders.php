@@ -72,9 +72,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Insert the order
-    $order_query = "INSERT INTO Orders (Client_ID, Client_Comments) VALUES (?, ?)";
+    $order_query = "INSERT INTO Orders (Client_ID, Client_Comments, Total_Price) VALUES (?, ?, ?)";
     $stmt = $conn->prepare($order_query);
-    $stmt->bind_param("is", $client_id, $comments);
+    $stmt->bind_param("isd", $client_id, $comments, $total_price);
     $stmt->execute();
     $order_id = $stmt->insert_id;
 
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $order_item_query = "INSERT INTO Order_Items (Order_ID, Product_ID, Quantity, Price) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($order_item_query);
-        $stmt->bind_param("iiid", $order_id, $product_id, $quantity, $price);
+        $stmt->bind_param("isid", $order_id, $product_id, $quantity, $price);
         $stmt->execute();
     }
 
