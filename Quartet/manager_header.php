@@ -128,7 +128,9 @@ body {
     <div class="sidenav" id="sideNav">
         <button class="closebtn" id="sidebar-deactive" onclick="closeNav()">&times;</button>
         <a href="dashboard.php">Dashboard</a>
-        <a href="calendar.php">Appointments</a>
+        <a href="appointments.php">Appointments</a>
+        <a href="checkouts.php">Checkout History</a>
+        <a href="barber_profile.php">Profile</a>
         <a href="product.php">Products</a>
         <a href="orders.php">Orders</a>
         <button class="dropdown-btn">Clients 
@@ -137,7 +139,7 @@ body {
         <div class="dropdown-container">
             <a href="client.php">Client List</a>
             <a href="see_feedback.php">Feedback</a>
-            <a href="testimonies.php">Reviews</a>
+            <a href="testimonies.php">Reviews & Testimonies</a>
 
         </div>
         <button class="dropdown-btn">Employees 

@@ -64,39 +64,42 @@ if ($user['Role'] == "Barber") {
     <link rel="stylesheet" href="style/barber_style.css">
 </head>
 <body>
-    <div class="container">
-    <h1>Orders</h1>
-        <div class="card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Order #</th>
-                        <th>Client Name</th>
-                        <th>Date</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>View</th>
-                    </tr>
-                </thead>
-            <tbody>
-                <?php foreach ($orders as $order): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($order['Order_ID']); ?></td>
-                        <td><?php echo htmlspecialchars($order['Client']['First_Name']) . ' ' . htmlspecialchars($order['Client']['Last_Name']); ?></td>
-                        <td><?php echo date('M j, Y g:i A', strtotime($order['Created_At'])); ?></td>
-                        <td>$<?php echo number_format($order['Total_Price'], 2); ?></td>
-                        <td>
-                            <span class="status-badge status-<?php echo htmlspecialchars($order['Status']); ?>">
-                                <?php echo ucfirst(htmlspecialchars($order['Status'])); ?>
-                            </span>
-                        </td>
-                        <td>
-                            <a href="manage_orders.php?Order_ID=<?php echo $order['Order_ID']; ?>"><button class="view-btn">View</button></a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+    <div class="content-wrapper">
+    <br><br>
+        <div class="container">
+        <h1>Orders</h1>
+            <div class="card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Client Name</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>View</th>
+                        </tr>
+                    </thead>
+                <tbody>
+                    <?php foreach ($orders as $order): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($order['Order_ID']); ?></td>
+                            <td><?php echo htmlspecialchars($order['Client']['First_Name']) . ' ' . htmlspecialchars($order['Client']['Last_Name']); ?></td>
+                            <td><?php echo date('M j, Y g:i A', strtotime($order['Created_At'])); ?></td>
+                            <td>$<?php echo number_format($order['Total_Price'], 2); ?></td>
+                            <td>
+                                <span class="status-badge status-<?php echo htmlspecialchars($order['Status']); ?>">
+                                    <?php echo ucfirst(htmlspecialchars($order['Status'])); ?>
+                                </span>
+                            </td>
+                            <td>
+                                <a href="manage_orders.php?Order_ID=<?php echo $order['Order_ID']; ?>"><button class="view-btn">View</button></a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 </html>
