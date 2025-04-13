@@ -151,11 +151,11 @@ body {
         <a href="logout.php"><i class="fa fa-sign-out"></i> Log Out</a>
     </div>
 </div>
-<div id="content">
-  <button class="openbtn" onclick="openNav()">☰</button>  
+<div id="main">
+  <button id="sidebarToggle" class="openbtn" onclick="openNav()">☰</button>  
 </div>
 
-<script>
+    <script>
 var dropdown = document.getElementsByClassName("dropdown-btn");
 for (let i = 0; i < dropdown.length; i++) {
   dropdown[i].addEventListener("click", function () {

@@ -9,9 +9,29 @@
 -->
 
 <?php
+session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-include ("db_connection.php");
+require 'db_connection.php';
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
+$barber_id = $_SESSION['username'];
+$sql = "SELECT Barber_Information.Role FROM Barber_Information WHERE Barber_ID = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $barber_id);
+$stmt->execute();
+$stmt->bind_result($role);
+$stmt->fetch();
+$stmt->close();
+
+if ($role == "Barber") {
+    include("barber_header.php");
+}
+else {
+    include("manager_header.php");
+}
 
 $query = "
     SELECT 
@@ -33,6 +53,8 @@ $result = $conn->query($query);
 $checkouts = $result->fetch_all(MYSQLI_ASSOC);
 $conn->close();
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -44,44 +66,33 @@ $conn->close();
   </head>
   
   <body>
-    <p>See history of checkouts here</p>
-    <div class="menu">
-    <button onclick="location.href='dashboard.php'">Dashboard</button>
-    <button onclick="location.href='checkouts.php'">Checkouts</button>
-    <button onclick="location.href='calendar.php'">Calendar</button>
-    <button onclick="location.href='clients.php'">Clients</button>
-    <button onclick="location.href='customize.php'">Customize</button>
-    <button onclick="location.href='see_feedback.php'">Feedback</button>
-
-    </div>
-    <button onclick="location.href='index.php'">Back to Customer Site</button>
-    <form method="post" action="logout.php">
-    <button type="submit" name="logout">Logout</button>
-    </form>
-
-    <h1>Checkout History</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Month</th>
-                <th>Day</th>
-                <th>Time</th>
-                <th>Checkout Time</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($checkouts as $checkout): ?>
+    <div class="content-wrapper">
+        <br><br>
+        <p>See history of previous appointments here</p>
+        <h1>Checkout History</h1>
+        <table>
+            <thead>
                 <tr>
-                    <td><?php echo htmlspecialchars($checkout['First_Name']); ?></td>
-                    <td><?php echo htmlspecialchars($checkout['Last_Name']); ?></td>
-                    <td><?php echo htmlspecialchars($checkout['Month']); ?></td>
-                    <td><?php echo htmlspecialchars($checkout['Day']); ?></td>
-                    <td><?php echo htmlspecialchars($checkout['Time']); ?></td>
-                    <td><?php echo htmlspecialchars($checkout['Checkout_Time']); ?></td>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Month</th>
+                    <th>Day</th>
+                    <th>Time</th>
+                    <th>Checkout Time</th>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php foreach ($checkouts as $checkout): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($checkout['First_Name']); ?></td>
+                        <td><?php echo htmlspecialchars($checkout['Last_Name']); ?></td>
+                        <td><?php echo htmlspecialchars($checkout['Month']); ?></td>
+                        <td><?php echo htmlspecialchars($checkout['Day']); ?></td>
+                        <td><?php echo htmlspecialchars($checkout['Time']); ?></td>
+                        <td><?php echo htmlspecialchars($checkout['Checkout_Time']); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
   </body>

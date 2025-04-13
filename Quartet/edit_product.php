@@ -20,12 +20,20 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 $barber_id = $_SESSION['username'];
-$sql = "SELECT * FROM Barber_Information WHERE Barber_ID = ?";
+$sql = "SELECT Barber_Information.Role FROM Barber_Information WHERE Barber_ID = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $barber_id);
 $stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
+$stmt->bind_result($role);
+$stmt->fetch();
+$stmt->close();
+
+if ($role == "Barber") {
+    include("barber_header.php");
+}
+else {
+    include("manager_header.php");
+}
 
 if (isset($_GET['Product_ID'])) {
     //Gets the product id
@@ -94,14 +102,6 @@ if (isset($_GET['Product_ID'])) {
 } else {
     echo "Product not found.";
     exit();
-}
-?>
-
-<?php
-if ($user['Role'] == 'Barber') {
-    include("barber_header.php");
-} else {
-    include("manager_header.php");
 }
 ?>
 <head>
@@ -248,176 +248,192 @@ if ($user['Role'] == 'Barber') {
         .back-btn:hover {
             background: rgb(143, 48, 55);
         }
+
+        .content-wrapper {
+            transition: margin-left 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .sidebar-active .content-wrapper {
+            margin-left: 300px; 
+        }
+
+        .sidebar-deactive .content-wrapper {
+            margin-left: 10px; 
+        }
     </style>
 </head>
 
 <body>
-    <!--let's user know the current page they are on-->
-    <h1>Edit Product</h1>
-    <!-- Allows barber's to add a new item to the store -->
-    <div class="container">
-        <form action="edit_product.php?Product_ID=<?php echo $product['Product_ID']; ?>" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
-            <label for="product_name">Product Name:</label>
-            <input type="text" name="product_name" id="product_name" value="<?php echo $product['Name']; ?>" required onchange="validateName()">
-            <span id="name-error" style="color: red; display: none;"></span>
-            <br>
-            <label for="product_description">Product Description:</label>
-            <textarea name="product_description" required><?php echo $product['Description']; ?></textarea>
-            <br>
-            <label for="product_price">Product Price:</label>
-            <input type="number" name="product_price" id="product_price" step="0.01" value="<?php echo $product['Price']; ?>" required onchange="validatePrice()">
-            <span id="price-error" style="color: red; display: none;"></span>
-            <br>
-            <!-- Image preview section -->
-            <div class="image-preview-wrapper">
-                <!-- Current image box (left side) -->
-                <div class="image-preview-box">
-                    <div class="current-image-label">Current Image:</div>
-                    <img id="current-image-preview" class="image-preview" src="<?php echo $product['Image']; ?>" alt="Current Product Image" <?php echo empty($product['Image']) ? 'style="display:none;"' : ''; ?>>
-                    <div id="no-image-message" <?php echo !empty($product['Image']) ? 'style="display:none;"' : ''; ?>>No image currently set</div>
+    <div class="content-wrapper">
+    <br><br>
+        <!--let's user know the current page they are on-->
+        <h1>Edit Product</h1>
+        <!-- Allows barber's to add a new item to the store -->
+        <div class="container">
+            <form action="edit_product.php?Product_ID=<?php echo $product['Product_ID']; ?>" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+                <label for="product_name">Product Name:</label>
+                <input type="text" name="product_name" id="product_name" value="<?php echo $product['Name']; ?>" required onchange="validateName()">
+                <span id="name-error" style="color: red; display: none;"></span>
+                <br>
+                <label for="product_description">Product Description:</label>
+                <textarea name="product_description" required><?php echo $product['Description']; ?></textarea>
+                <br>
+                <label for="product_price">Product Price:</label>
+                <input type="number" name="product_price" id="product_price" step="0.01" value="<?php echo $product['Price']; ?>" required onchange="validatePrice()">
+                <span id="price-error" style="color: red; display: none;"></span>
+                <br>
+                <!-- Image preview section -->
+                <div class="image-preview-wrapper">
+                    <!-- Current image box (left side) -->
+                    <div class="image-preview-box">
+                        <div class="current-image-label">Current Image:</div>
+                        <img id="current-image-preview" class="image-preview" src="<?php echo $product['Image']; ?>" alt="Current Product Image" <?php echo empty($product['Image']) ? 'style="display:none;"' : ''; ?>>
+                        <div id="no-image-message" <?php echo !empty($product['Image']) ? 'style="display:none;"' : ''; ?>>No image currently set</div>
+                    </div>
+
+                    <!-- New image box (right side) -->
+                    <div class="image-preview-box">
+                        <div id="new-image-label" class="new-image-label">New Image:</div>
+                        <img id="new-image-preview" class="image-preview" src="" alt="New Product Image Preview" style="display:none;">
+                    </div>
                 </div>
 
-                <!-- New image box (right side) -->
-                <div class="image-preview-box">
-                    <div id="new-image-label" class="new-image-label">New Image:</div>
-                    <img id="new-image-preview" class="image-preview" src="" alt="New Product Image Preview" style="display:none;">
+                <label for="product_image">Upload Image:</label>
+                <div class="file-input-container">
+                    <input type="file" name="product_image" id="file-input" accept="image/*" onchange="validateImage()">
+                    <label for="file-input" class="file-input-label">Choose File</label>
+                    <span id="file-name" class="file-name"></span>
+                    <span id="image-error" style="color: red; display: none;"></span>
                 </div>
-            </div>
 
-            <label for="product_image">Upload Image:</label>
-            <div class="file-input-container">
-                <input type="file" name="product_image" id="file-input" accept="image/*" onchange="validateImage()">
-                <label for="file-input" class="file-input-label">Choose File</label>
-                <span id="file-name" class="file-name"></span>
-                <span id="image-error" style="color: red; display: none;"></span>
-            </div>
-
-            <br>
+                <br>
 
 
-            <button type="submit" class="update-btn">Update Product</button>
-        </form>
-    </div>
-    <!-- Redirects to product.php page (Barber's side) -->
-    <div class="back-btn">
-        <a href="product.php" class="back-btn"><button class="back-btn">Back to Product List</button></a>
-    </div>
-    <script>
-        // Function to preview the selected image
-        function previewSelectedImage(event) {
-            const fileInput = event.target;
-            const newImagePreview = document.getElementById('new-image-preview');
-            const newImageLabel = document.getElementById('new-image-label');
-            const noImageMessage = document.getElementById('no-image-message');
+                <button type="submit" class="update-btn">Update Product</button>
+            </form>
+        </div>
+        <!-- Redirects to product.php page (Barber's side) -->
+        <div class="back-btn">
+            <a href="product.php" class="back-btn"><button class="back-btn">Back to Product List</button></a>
+        </div>
+        <script>
+            // Function to preview the selected image
+            function previewSelectedImage(event) {
+                const fileInput = event.target;
+                const newImagePreview = document.getElementById('new-image-preview');
+                const newImageLabel = document.getElementById('new-image-label');
+                const noImageMessage = document.getElementById('no-image-message');
 
-            if (fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
+                if (fileInput.files && fileInput.files[0]) {
+                    const reader = new FileReader();
 
-                reader.onload = function(e) {
-                    newImagePreview.src = e.target.result;
-                    newImagePreview.style.display = 'block';
-                    newImageLabel.style.display = 'block';
+                    reader.onload = function(e) {
+                        newImagePreview.src = e.target.result;
+                        newImagePreview.style.display = 'block';
+                        newImageLabel.style.display = 'block';
+                    }
+
+                    reader.readAsDataURL(fileInput.files[0]);
+                } else {
+                    newImagePreview.style.display = 'none';
+                    newImageLabel.style.display = 'none';
                 }
-
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                newImagePreview.style.display = 'none';
-                newImageLabel.style.display = 'none';
             }
-        }
-        // Function to display the selected file name
-        function displayFileName() {
-            const fileInput = document.getElementById('file-input');
-            const fileNameDisplay = document.getElementById('file-name');
+            // Function to display the selected file name
+            function displayFileName() {
+                const fileInput = document.getElementById('file-input');
+                const fileNameDisplay = document.getElementById('file-name');
 
-            if (fileInput.files.length > 0) {
-                fileNameDisplay.textContent = fileInput.files[0].name;
-            } else {
-                fileNameDisplay.textContent = '';
+                if (fileInput.files.length > 0) {
+                    fileNameDisplay.textContent = fileInput.files[0].name;
+                } else {
+                    fileNameDisplay.textContent = '';
+                }
             }
-        }
 
-        // Validate product name
-        function validateName() {
-            const nameInput = document.getElementById('product_name');
-            const nameError = document.getElementById('name-error');
-            if (nameInput.value.length > 70) {
-                nameError.textContent = "Maximum 70 characters allowed";
-                nameError.style.display = 'inline';
-                return false;
-            } else {
-                nameError.style.display = 'none';
-                return true;
-            }
-        }
-
-        // Validate product price
-        function validatePrice() {
-            const priceInput = document.getElementById('product_price');
-            const priceError = document.getElementById('price-error');
-            if (priceInput.value <= 0 || isNaN(priceInput.value)) {
-                priceError.textContent = "Price must be a positive number";
-                priceError.style.display = 'inline';
-                return false;
-            } else {
-                priceError.style.display = 'none';
-                return true;
-            }
-        }
-        // Validate product image
-        function validateImage() {
-            const imageInput = document.getElementById('file-input');
-            const imageError = document.getElementById('image-error');
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            const maxSize = 10 * 1024 * 1024; // 10MB
-
-            if (imageInput.files.length > 0) {
-                const file = imageInput.files[0];
-                if (!allowedTypes.includes(file.type)) {
-                    imageError.textContent = "Only JPEG, PNG, and GIF images are allowed.";
-                    imageError.style.display = 'inline';
+            // Validate product name
+            function validateName() {
+                const nameInput = document.getElementById('product_name');
+                const nameError = document.getElementById('name-error');
+                if (nameInput.value.length > 70) {
+                    nameError.textContent = "Maximum 70 characters allowed";
+                    nameError.style.display = 'inline';
                     return false;
-                } else if (file.size > maxSize) {
-                    imageError.textContent = "File size must be less than 10MB.";
-                    imageError.style.display = 'inline';
+                } else {
+                    nameError.style.display = 'none';
+                    return true;
+                }
+            }
+
+            // Validate product price
+            function validatePrice() {
+                const priceInput = document.getElementById('product_price');
+                const priceError = document.getElementById('price-error');
+                if (priceInput.value <= 0 || isNaN(priceInput.value)) {
+                    priceError.textContent = "Price must be a positive number";
+                    priceError.style.display = 'inline';
                     return false;
+                } else {
+                    priceError.style.display = 'none';
+                    return true;
+                }
+            }
+            // Validate product image
+            function validateImage() {
+                const imageInput = document.getElementById('file-input');
+                const imageError = document.getElementById('image-error');
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                const maxSize = 10 * 1024 * 1024; // 10MB
+
+                if (imageInput.files.length > 0) {
+                    const file = imageInput.files[0];
+                    if (!allowedTypes.includes(file.type)) {
+                        imageError.textContent = "Only JPEG, PNG, and GIF images are allowed.";
+                        imageError.style.display = 'inline';
+                        return false;
+                    } else if (file.size > maxSize) {
+                        imageError.textContent = "File size must be less than 10MB.";
+                        imageError.style.display = 'inline';
+                        return false;
+                    } else {
+                        imageError.style.display = 'none';
+                        displayFileName();
+                        previewSelectedImage({
+                            target: imageInput
+                        });
+                        return true;
+                    }
                 } else {
                     imageError.style.display = 'none';
                     displayFileName();
-                    previewSelectedImage({
-                        target: imageInput
-                    });
+                    document.getElementById('new-image-preview').style.display = 'none';
+                    document.getElementById('new-image-label').style.display = 'none';
                     return true;
                 }
-            } else {
-                imageError.style.display = 'none';
-                displayFileName();
-                document.getElementById('new-image-preview').style.display = 'none';
-                document.getElementById('new-image-label').style.display = 'none';
-                return true;
             }
-        }
-        // Validate the entire form
-        function validateForm(event) {
-            const isNameValid = validateName();
-            const isPriceValid = validatePrice();
-            const isImageValid = validateImage();
+            // Validate the entire form
+            function validateForm(event) {
+                const isNameValid = validateName();
+                const isPriceValid = validatePrice();
+                const isImageValid = validateImage();
 
-            if (!isNameValid || !isPriceValid || !isImageValid) {
-                event.preventDefault(); // Prevent form submission
-                return false;
+                if (!isNameValid || !isPriceValid || !isImageValid) {
+                    event.preventDefault(); // Prevent form submission
+                    return false;
+                }
+                return true; // Allow form submission
             }
-            return true; // Allow form submission
-        }
-        // Initialize event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            const fileInput = document.getElementById('file-input');
-            fileInput.addEventListener('change', validateImage);
+            // Initialize event listeners
+            document.addEventListener('DOMContentLoaded', function() {
+                const fileInput = document.getElementById('file-input');
+                fileInput.addEventListener('change', validateImage);
 
-            // Initialize the form validation
-            document.querySelector('form').addEventListener('submit', validateForm);
-        });
-    </script>
+                // Initialize the form validation
+                document.querySelector('form').addEventListener('submit', validateForm);
+            });
+        </script>
+    </div>
 </body>
 
 </html>

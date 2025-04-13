@@ -16,12 +16,20 @@ if (!isset($_SESSION['username'])) {
 }
 
 $barber_id = $_SESSION['username'];
-$sql = "SELECT Role FROM Barber_Information WHERE Barber_ID = ?";
+$sql = "SELECT Barber_Information.Role FROM Barber_Information WHERE Barber_ID = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $barber_id);
 $stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
+$stmt->bind_result($role);
+$stmt->fetch();
+$stmt->close();
+if ($role == "Barber") {
+    include("barber_header.php");
+}
+else {
+    include("manager_header.php");
+}
+
 
 $sql = "SELECT * FROM Client";
 $result = $conn->query($sql);
@@ -32,13 +40,7 @@ if ($result->num_rows > 0) {
     }
 }
 ?>
-<?php
-if ($user['Role'] == "Barber") {
-    include("barber_header.php");
-} else {
-    include("manager_header.php");
-}
-?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -51,54 +53,57 @@ if ($user['Role'] == "Barber") {
 </head>
 
 <body>
-    <h1>Client List</h1>
-    <div class="search-bar">
-        <input type="text" id="search-input" placeholder="Search by...">
-    </div>
-    <div class="container">
-        <div class="card">
-            <table id="clientTable"> 
-                <thead>
-                    <tr>
-                        <th>Client ID</th>
-                        <th>Client Name</th>
-                        <th>Email</th>
-                        <th>Phone Number</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($clients as $client): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($client['Client_ID']); ?></td>
-                            <td><?php echo htmlspecialchars($client['First_Name']) . ' ' . htmlspecialchars($client['Last_Name']); ?></td>
-                            <td><?php echo htmlspecialchars($client['Email']); ?></td>
-                            <td><?php echo htmlspecialchars($client['Phone']); ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+    <div class="content-wrapper">
+    <br><br>
+        <h1>Client List</h1>
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Search by...">
         </div>
-    </div>
-    <script>
-        // JavaScript for filtering the table - fixed version
-        document.getElementById("search-input").addEventListener("input", function() {
-            const filter = this.value.toLowerCase().trim();
-            const rows = document.querySelectorAll("#clientTable tbody tr");
+        <div class="container">
+            <div class="card">
+                <table id="clientTable"> 
+                    <thead>
+                        <tr>
+                            <th>Client ID</th>
+                            <th>Client Name</th>
+                            <th>Email</th>
+                            <th>Phone Number</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($clients as $client): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($client['Client_ID']); ?></td>
+                                <td><?php echo htmlspecialchars($client['First_Name']) . ' ' . htmlspecialchars($client['Last_Name']); ?></td>
+                                <td><?php echo htmlspecialchars($client['Email']); ?></td>
+                                <td><?php echo htmlspecialchars($client['Phone']); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <script>
+            // JavaScript for filtering the table - fixed version
+            document.getElementById("search-input").addEventListener("input", function() {
+                const filter = this.value.toLowerCase().trim();
+                const rows = document.querySelectorAll("#clientTable tbody tr");
 
-            rows.forEach(row => {
-                let match = false;
-                const cells = row.querySelectorAll("td");
+                rows.forEach(row => {
+                    let match = false;
+                    const cells = row.querySelectorAll("td");
 
-                cells.forEach(cell => {
-                    if (cell.textContent.toLowerCase().includes(filter)) {
-                        match = true;
-                    }
+                    cells.forEach(cell => {
+                        if (cell.textContent.toLowerCase().includes(filter)) {
+                            match = true;
+                        }
+                    });
+
+                    row.style.display = match ? "" : "none";
                 });
-
-                row.style.display = match ? "" : "none";
             });
-        });
-    </script>
+        </script>
+    </div>
 </body>
 
 </html>
