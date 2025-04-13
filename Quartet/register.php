@@ -22,6 +22,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error_message = "All fields are required.";
     } elseif ($password !== $confirm_password) {
         $error_message = "Passwords do not match.";
+    } elseif (strlen($fname) > 50) {
+        $error_message = "First name must not exceed 50 characters.";
+    } elseif (strlen($lname) > 50) {
+        $error_message = "Last Name must not exceed 50 characters.";
+    } elseif (strlen($username) > 30) {
+        $error_message = "Username must not exceed 30 characters.";
+    } elseif (strlen($password) > 75) {
+        $error_message = "Password must not exceed 75 characters.";
     } else {
         //Attempt to secure password
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
