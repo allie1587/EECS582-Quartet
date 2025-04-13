@@ -178,16 +178,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Update'])) {
     }
 }
 ?>
-<?php
-if ($user['Role'] == 'Barber') {
+<?php 
+if ($role == "Barber") {
     include("barber_header.php");
-} else {
-    // This until the rest of the barber side is working
-    include("manager_header.php");
-    //header("Location: login.php");
-    //exit();
 }
-
+else {
+    include("manager_header.php");
+}
+?>
 ?>
 
 <!DOCTYPE html>
