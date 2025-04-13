@@ -1,12 +1,15 @@
-<!--
-Authors: Alexandra, Jose, Brinley, Ben, Kyle
-Date: 04/13/2025
-Revisions:
-    04/13/2025 -- Alexandra Stratton -- created appointments.php
- Purpose: Allows everyone to see all the appointments
+<!-- 
+    calendar.php
+    A page for the barber to view their calendar of scheduled appointments
+    Author: Alexandra Stratton, Ben Renner, Brinley Hull, Jose Leyba, Kyle Moore
+    Creation date: 04/13/2025
+    Revisions:
+      4/13/2025 - Ben, created functionality, merged existing files
+      04/13/2025 -- Alexandra Stratton -- created appointments.php
 -->
+
 <?php
-//Connects to the database
+// Existing code...
 session_start();
 require 'db_connection.php';
 if (!isset($_SESSION['username'])) {
@@ -15,24 +18,73 @@ if (!isset($_SESSION['username'])) {
 }
 
 $barber_id = $_SESSION['username'];
-$sql = "SELECT Role FROM Barber_Information WHERE Barber_ID = ?";
+$sql = "SELECT * FROM Barber_Information WHERE Barber_ID = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $barber_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 
-$sql = "SELECT Confirmed_Appointments.*, Client.First_Name, Client.Last_Name, Client.Email, Client.Phone 
-          FROM Confirmed_Appointments
-          JOIN Client ON Confirmed_Appointments.Client_ID = Client.Client_ID
-          WHERE Confirmed_Appointments.Barber_ID = ? 
-          ORDER BY Confirmed_Appointments.Time ASC, Confirmed_Appointments.Minute ASC";
+// Handle appointment cancellation
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_cancel'])) {
+    $cancel_id = $_POST['cancel_id'];
 
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $barber_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$appointments = $result->fetch_all(MYSQLI_ASSOC);
+    $delete_stmt = $conn->prepare("DELETE FROM Confirmed_Appointments WHERE Appointment_ID = ?");
+    $delete_stmt->bind_param("i", $cancel_id);
+    if ($delete_stmt->execute()) {
+        $success = "Appointment cancelled successfully.";
+    } else {
+        $error = "Failed to cancel appointment.";
+    }
+}
+// Error Messaging
+ini_set('display_errors', 1);
+$error = "";
+$success = "";
+
+// ✅ Get all confirmed appointments for the logged-in barber
+$appointments = [];
+$appt_query = "SELECT * FROM Confirmed_Appointments WHERE Barber_ID = ? ORDER BY Month, Day, Year, Time";
+$appt_stmt = $conn->prepare($appt_query);
+$appt_stmt->bind_param("s", $barber_id);
+$appt_stmt->execute();
+$appt_result = $appt_stmt->get_result();
+
+while ($row = $appt_result->fetch_assoc()) {
+    // Get client details using Client_ID
+    $client_id = $row['Client_ID'];
+    $client_query = "SELECT First_Name, Last_Name, Email, Phone FROM Client WHERE Client_ID = ?";
+    $client_stmt = $conn->prepare($client_query);
+    $client_stmt->bind_param("s", $client_id);
+    $client_stmt->execute();
+    $client_result = $client_stmt->get_result();
+    $client_info = $client_result->fetch_assoc();
+
+    // Add client info to the appointment array
+    if ($client_info) {
+        $row['Client_First'] = $client_info['First_Name'];
+        $row['Client_Last'] = $client_info['Last_Name'];
+        $row['Client_Email'] = $client_info['Email'];
+        $row['Client_Phone'] = $client_info['Phone'];
+    }
+
+    // Get service details using Service_ID
+    $service_id = $row['Service_ID'];
+    $service_query = "SELECT Name, Duration FROM Services WHERE Service_ID = ?";
+    $service_stmt = $conn->prepare($service_query);
+    $service_stmt->bind_param("s", $service_id);
+    $service_stmt->execute();
+    $service_result = $service_stmt->get_result();
+    $service_info = $service_result->fetch_assoc();
+
+    // Add service info to the appointment array
+    if ($service_info) {
+        $row['Service_Name'] = $service_info['Name'];
+        $row['Service_Duration'] = $service_info['Duration'];
+    }
+
+    $appointments[] = $row;
+}
 ?>
 <?php
 if ($user['Role'] == "Barber") {
@@ -41,86 +93,114 @@ if ($user['Role'] == "Barber") {
     include("manager_header.php");
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <!-- Title for Page -->
-    <title>Appointment List</title>
-    <!-- Internal CSS for styling the page -->
+  <head>
+    <title>Appointments</title>
     <link rel="stylesheet" href="style/barber_style.css">
-</head>
+  </head>
+  <body>
+    <h1>Appointments</h1>
+    <!-- ✅ Display appointments in a table -->
+    <?php if (count($appointments) > 0): ?>
+      <div class="container">
+        <div class="card">
+          <table border="1" cellpadding="10" cellspacing="0">
+            <thead>
+              <tr>
+                <th>Client Info</th>
+                <th>Service Info</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Completed</th>
+                <th>Cancel</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($appointments as $appt): ?>
+                <tr>
+                <td><!-- Client Section -->
+                  <?php
+                    echo "Name: " . htmlspecialchars($appt['Client_First'] . ' ' . $appt['Client_Last']) . "<br>";
+                    echo "Email: " . htmlspecialchars($appt['Client_Email']) . "<br>";
+                    echo "Phone: " . htmlspecialchars($appt['Client_Phone']);
+                  ?>
+                </td>
+                <td><!-- Service Section -->
+                  <?php
+                    echo "Name: " . htmlspecialchars($appt['Service_Name']) . "<br>";
+                    echo "Duration: " . htmlspecialchars($appt['Service_Duration']) . " mins";
+                  ?>
+                </td>
+                  <td><!-- Date Section -->
+                    <?php
+                      // Optional: convert numeric month to full name
+                      $month = (int)$appt['Month'] + 1;
+                      $date = DateTime::createFromFormat('!m-d-Y', $month . '-' . $appt['Day'] . '-' . $appt['Year']);
+                      echo $date ? $date->format('F j, Y') : "{$month}/{$appt['Day']}/{$appt['Year']}";
+                    ?>
+                  </td>
+                  <td> <!-- Time Section -->
+                    <?php
+                      $hour = (int)$appt['Time']; // convert string to integer
+                      $minute = (int)$appt['Minute'];
+                      $formatted_time = date("g:i A", strtotime(sprintf("%02d:%02d", $hour, $minute)));
+                      echo $formatted_time;
+                    ?>
+                  </td>
+                  <td style="text-align: center;"> <!-- Completed Section --> 
+                  <?php
+                    $hour = (int)$appt['Time'];
+                    $minute = (int)$appt['Minute'];
+                    $month = (int)$appt['Month'] + 1; // fix: month starts at 0 in database
+                    $appt_datetime = DateTime::createFromFormat('Y-m-d H:i', sprintf(
+                        '%04d-%02d-%02d %02d:%02d',
+                        $appt['Year'],
+                        $month,
+                        $appt['Day'],
+                        $hour,
+                        $minute
+                    ));
+                    $now = new DateTime();
 
-<body>
-    <div class="content-wrapper">
-    <br><br>
-        <h1>Appointment List</h1>
-        <div class="search-bar">
-            <input type="text" id="search-input" placeholder="Search by appointment...">
-        </div>
-        <div class="container">
-            <div class="card">
-            <?php if (empty($appointments)): ?>
-                <div class="no-appointments">
-                    <p>No appointments scheduled yet.</p>
-                </div>
-                <?php else: ?>
-                    <table  id="appointmentTable">
-                        <thead>
-                            <tr>
-                                <th>Appointment ID</th>
-                                <th>Client</th>
-                                <th>Contact</th>
-                                <th>Time</th>
-                                <th>Service</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($appointments as $appt): 
-                                $time = $appt['Time'] . ':' . str_pad($appt['Minute'], 2, '0', STR_PAD_LEFT);
-                                ?>
-                                <tr>
-                                    <td>
-                                        <?php echo htmlspecialchars($appt['Appointment_ID']); ?>
-                                    </td>
-                                    <td>
-                                        <?php echo htmlspecialchars($appt['First_Name'] . ' ' . $appt['Last_Name']); ?>
-                                    </td>
-                                    <td>
-                                        <?php echo htmlspecialchars($appt['Phone']); ?><br>
-                                        <?php echo htmlspecialchars($appt['Email']); ?>
-                                    </td>
-                                    <td><?php echo htmlspecialchars($time); ?></td>
-                                    <td><?php echo htmlspecialchars($appt['Service_ID']); ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                <?php endif; ?>
-            </div>
-        </div>
-        <script>
-            // JavaScript for filtering the table - fixed version
-            document.getElementById("search-input").addEventListener("input", function() {
-                const filter = this.value.toLowerCase().trim();
-                const rows = document.querySelectorAll("#appointmentTable tbody tr");
-
-                rows.forEach(row => {
-                    let match = false;
-                    const cells = row.querySelectorAll("td");
-
-                    cells.forEach(cell => {
-                        if (cell.textContent.toLowerCase().includes(filter)) {
-                            match = true;
-                        }
-                    });
-
-                    row.style.display = match ? "" : "none";
-                });
-            });
-        </script>
+                    echo $appt_datetime < $now ? '✅' : '❌';
+                  ?>
+                  </td>
+                  <td style="text-align: center;">
+                    <button onclick="showConfirmPopup(<?php echo $appt['Appointment_ID']; ?>)">Cancel</button>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        <?php else: ?>
+          <p>No appointments scheduled.</p>
+        <?php endif; ?>
+      </div>
     </div>
-</body>
+    <!-- Cancel Confirmation Popup -->
+    <div id="cancelPopup" style="display: none; position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); 
+        align-items: center; justify-content: center;">
+      <div style="background: white; padding: 30px; border-radius: 10px; text-align: center;">
+        <p>Are you sure you want to cancel this appointment?</p>
+        <form method="post">
+          <input type="hidden" name="cancel_id" id="cancel_id" value="">
+          <button type="button" onclick="hideConfirmPopup()">No, Back</button>
+          <button type="submit" name="confirm_cancel">Yes, Cancel</button>
+        </form>
+      </div>
+    </div>
 
+    <script>
+      function showConfirmPopup(appointmentId) {
+        document.getElementById('cancel_id').value = appointmentId;
+        document.getElementById('cancelPopup').style.display = 'flex';
+      }
+
+      function hideConfirmPopup() {
+        document.getElementById('cancelPopup').style.display = 'none';
+      }
+    </script>
+  </body>
 </html>
