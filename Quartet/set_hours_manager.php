@@ -1,6 +1,6 @@
 <!-- 
-    set_hours.php
-    A page for the barber to set their hours.
+    set_hours_manager.php
+    A page for the barber to set their hours on the manager side.
     Author: Alexandra Stratton, Ben Renner, Brinley Hull, Jose Leyba, Kyle Moore
     Revisions:
         2/27/2025 -- Alexandra Stratton, add weekly calendar
@@ -11,7 +11,6 @@
         4/5/2025 - Brinley, fix weeks with mixed months
         4/6/2025 - Brinley, automatically set barber id based on who is logged in
         4/7/2025 - Brinley, allow minute intervals
-        4/12/2025 - Brinley, hide barber name retrieval box
     Creation date: 2/27/2025
 -->
 <?php
@@ -33,7 +32,29 @@ $_SESSION["startDate"] = $dt->format("d");
 
 $monthYear = $dt->format('m/d/y'); // Get the numerical date
 
-include("barber_header.php");
+require 'db_connection.php';
+
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$barber_id = $_SESSION['username'];
+$sql = "SELECT Role FROM Barber_Information WHERE Barber_ID = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $barber_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+
+if ($user['Role'] == "Manager") {
+    include("manager_header.php");
+}
+else {
+    //die("Must be a manager");
+    header("Location: login.php");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -89,7 +110,9 @@ include("barber_header.php");
         </div>
 
         <form method="POST" id="calendarForm">
-            <input type="text" value="<?php echo $_SESSION['username']?>" name="barber" id="barber_username" hidden>
+            <label>Enter barber's username to set or retrieve hours:</label>
+            <input type="text" value="<?php echo $_SESSION['username']?>" name="barber" id="barber_username">
+            <button type="button" name="retrieve" onclick="retrieveAvailability()">Retrieve availability</button>
             <table class="calendar-table">
                 <tr>
                     <?php

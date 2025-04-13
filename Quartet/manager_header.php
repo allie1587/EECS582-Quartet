@@ -146,7 +146,7 @@ body {
         <div class="dropdown-container">
             <a href="employees.php">Employee List</a>
             <a href="#">Employee Services</a>
-            <a href="#">Employee Hours</a> 
+            <a href="set_hours_manager.php">Employee Hours</a> 
         </div>
         <a href="logout.php"><i class="fa fa-sign-out"></i> Log Out</a>
     </div>
