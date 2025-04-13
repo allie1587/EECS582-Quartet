@@ -143,7 +143,7 @@ body {
         <div class="dropdown-container">
             <a href="client.php">Client List</a>
             <a href="see_feedback.php">Feedback</a>
-            <a href="testimonies.php">Reviews</a>
+            <a href="testimonies.php">Reviews & Testimonies</a>
         </div>
         <a href="logout.php"><i class="fa fa-sign-out"></i> Log Out</a>
     </div>
