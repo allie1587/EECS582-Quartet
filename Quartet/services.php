@@ -10,7 +10,26 @@ Revisions:
 // Connects to the database
 require 'db_connection.php';
 session_start();
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
 
+$barber_id = $_SESSION['username'];
+$sql = "SELECT Barber_Information.Role FROM Barber_Information WHERE Barber_ID = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $barber_id);
+$stmt->execute();
+$stmt->bind_result($role);
+$stmt->fetch();
+$stmt->close();
+
+if ($role == "Barber") {
+    include("barber_header.php");
+}
+else {
+    include("manager_header.php");
+}
 
 $sql = "SELECT * FROM Services";
 $result = $conn->query($sql);
@@ -37,7 +56,6 @@ if ($result->num_rows > 0) {
         $barber_services[] = $row;
     }
 }
-include('barber_header.php');
 ?>
 
 <!DOCTYPE html>
@@ -161,87 +179,103 @@ include('barber_header.php');
             color: black;
             cursor: pointer;
         }
+        .content-wrapper {
+            transition: margin-left 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .sidebar-active .content-wrapper {
+            margin-left: 300px; 
+        }
+
+        .sidebar-deactive .content-wrapper {
+            margin-left: 10px; 
+        }
+
     </style>
 </head>
 <body>
-    <h1>Service List</h1>
-    <div class="product-container">
-        <!-- Add Service Button at the Top Right -->
-        <div class="add-btn-container">
-            <a href="add_service.php" class="add-btn">Add Service</a>
+    <div class="content-wrapper">
+    <br><br>
+        <h1>Service List</h1>
+        <div class="product-container">
+            <!-- Add Service Button at the Top Right -->
+            <div class="add-btn-container">
+                <a href="add_service.php" class="add-btn">Add Service</a>
+            </div>
+
+            
+            <table>
+                <p>Your services</p>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($barber_services as $service): ?>
+                        <tr>
+                            <td><?php echo $service['Name']; ?></td>
+                            <td>$<?php echo number_format($service['Price'], 2); ?></td>
+                            <td><?php echo $service['Duration'] . " min"; ?></td>
+                            <td>
+                                <a href="delete_barber_service.php?Service_ID=<?php echo $service['Service_ID']; ?>"><button>Delete</button>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+
+            <!-- All services Table -->
+            <table>
+                <p>All services</p>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($services as $service): ?>
+                        <tr>
+                            <td><?php echo $service['Name']; ?></td>
+                            <td>$<?php echo number_format($service['Price'], 2); ?></td>
+                            <td><?php echo $service['Duration'] . " min"; ?></td>
+                            <td>
+                                <a href="edit_service.php?Service_ID=<?php echo $service['Service_ID']; ?>"><button class="btn edit-btn">Edit</button></a>
+                            </td>
+                            <td>
+                                <button class="btn delete-btn" onclick="confirmDelete('<?php echo $service['Service_ID']; ?>')">Delete</button>
+                            </td>
+                            <td>
+                                <a href="add_barber_service.php?Service_ID=<?php echo $service['Service_ID']; ?>"><button>Add to your services</button>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
-
-        
-        <table>
-            <p>Your services</p>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Duration</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($barber_services as $service): ?>
-                    <tr>
-                        <td><?php echo $service['Name']; ?></td>
-                        <td>$<?php echo number_format($service['Price'], 2); ?></td>
-                        <td><?php echo $service['Duration'] . " min"; ?></td>
-                        <td>
-                            <a href="delete_barber_service.php?Service_ID=<?php echo $service['Service_ID']; ?>"><button>Delete</button>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-
-        <!-- All services Table -->
-        <table>
-            <p>All services</p>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Duration</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($services as $service): ?>
-                    <tr>
-                        <td><?php echo $service['Name']; ?></td>
-                        <td>$<?php echo number_format($service['Price'], 2); ?></td>
-                        <td><?php echo $service['Duration'] . " min"; ?></td>
-                        <td>
-                            <a href="edit_service.php?Service_ID=<?php echo $service['Service_ID']; ?>"><button class="btn edit-btn">Edit</button></a>
-                        </td>
-                        <td>
-                            <button class="btn delete-btn" onclick="confirmDelete('<?php echo $service['Service_ID']; ?>')">Delete</button>
-                        </td>
-                        <td>
-                            <a href="add_barber_service.php?Service_ID=<?php echo $service['Service_ID']; ?>"><button>Add to your services</button>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <!-- Delete Confirmation -->
+        <div id="deleteModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Are you sure you want to remove this service?</h2>
+                <button class="btn delete-btn" id="confirmDeleteBtn">Yes</button>
+                <button class="btn" onclick="closeModal()">No</button>
+            </div>
+        <!-- Script for confirming deletion -->
+        <script>
+            function confirmDelete(serviceID) {
+                document.getElementById('confirmDeleteBtn').setAttribute('onclick', `window.location.href='remove_service.php?Service_ID=${serviceID}'`);
+                document.getElementById('deleteModal').style.display = 'block';
+            }
+            function closeModal() {
+                document.getElementById('deleteModal').style.display = 'none';
+            }
+        </script>
     </div>
-    <!-- Delete Confirmation -->
-    <div id="deleteModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Are you sure you want to remove this service?</h2>
-            <button class="btn delete-btn" id="confirmDeleteBtn">Yes</button>
-            <button class="btn" onclick="closeModal()">No</button>
-        </div>
-    <!-- Script for confirming deletion -->
-    <script>
-        function confirmDelete(serviceID) {
-            document.getElementById('confirmDeleteBtn').setAttribute('onclick', `window.location.href='remove_service.php?Service_ID=${serviceID}'`);
-            document.getElementById('deleteModal').style.display = 'block';
-        }
-        function closeModal() {
-            document.getElementById('deleteModal').style.display = 'none';
-        }
-    </script>
 </body>
 </html>

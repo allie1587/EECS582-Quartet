@@ -96,174 +96,178 @@ if ($user['Role'] == "Barber") {
 </head>
 
 <body>
-    <!-- Display error or success messages -->
-    <?php if (!empty($error)): ?>
-        <p style="color: red;"><?php echo $error; ?></p>
-    <?php endif; ?>
-    <?php if (!empty($success)): ?>
-        <p style="color: green;"><?php echo $success; ?></p>
-    <?php endif; ?>
-    <h1>Order #<?php echo htmlspecialchars($order['Order_ID']) ?></h1>
-    <div class="container">
-        <div class="back-container">
-            <a href="orders.php" class="back-btn">Back</a>
-        </div>
-        <div class="order-wrapper">
-            <div class="card client-info">
-                <h2>Client Details</h2>
-                <p><strong>Name:</strong> <?php echo htmlspecialchars($order['First_Name'] . ' ' . $order['Last_Name']); ?></p>
-                <p><strong>Email:</strong> <?php echo htmlspecialchars($order['Email']); ?></p>
-                <p><strong>Phone:</strong> <?php echo htmlspecialchars($order['Phone']); ?></p>
-                <?php if (!empty($order['Client_Comments'])): ?>
-                    <p><strong>Client Comments:</strong></p><br>
-                    <?php echo htmlspecialchars($order['Client_Comments']) ?>
-                <?php endif; ?>
-                <?php if (!empty($order['Barber_Comments'])): ?>
-                    <p><strong>Barber Notes:</strong></p><br>
-                    <?php echo htmlspecialchars($order['Barber_Comments']) ?>
-                <?php endif; ?>
+    <div class="content-wrapper">
+    <br><br>
+        <!-- Display error or success messages -->
+        <?php if (!empty($error)): ?>
+            <p style="color: red;"><?php echo $error; ?></p>
+        <?php endif; ?>
+        <?php if (!empty($success)): ?>
+            <p style="color: green;"><?php echo $success; ?></p>
+        <?php endif; ?>
+        <h1>Order #<?php echo htmlspecialchars($order['Order_ID']) ?></h1>
+        <div class="container">
+            <div class="back-container">
+                <a href="orders.php" class="back-btn">Back</a>
             </div>
-            <div class="card order-details">
-                <h2>Order Details</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($items as $item): ?>
+            <div class="order-wrapper">
+                <div class="card client-info">
+                    <h2>Client Details</h2>
+                    <p><strong>Name:</strong> <?php echo htmlspecialchars($order['First_Name'] . ' ' . $order['Last_Name']); ?></p>
+                    <p><strong>Email:</strong> <?php echo htmlspecialchars($order['Email']); ?></p>
+                    <p><strong>Phone:</strong> <?php echo htmlspecialchars($order['Phone']); ?></p>
+                    <?php if (!empty($order['Client_Comments'])): ?>
+                        <p><strong>Client Comments:</strong></p><br>
+                        <?php echo htmlspecialchars($order['Client_Comments']) ?>
+                    <?php endif; ?>
+                    <?php if (!empty($order['Barber_Comments'])): ?>
+                        <p><strong>Barber Notes:</strong></p><br>
+                        <?php echo htmlspecialchars($order['Barber_Comments']) ?>
+                    <?php endif; ?>
+                </div>
+                <div class="card order-details">
+                    <h2>Order Details</h2>
+                    <table>
+                        <thead>
                             <tr>
-                                <td>
-                                    <div class="product-cell">
-                                        <img src="<?php echo $item['Image']; ?>" alt="<?php echo $item['Name']; ?>" class="product-image">
-                                        <?php echo htmlspecialchars($item['Name']); ?>
-                                    </div>
-                                </td>
-                                <td>
-                                    x<?php echo $item['Quantity']; ?>
-                                </td>
-                                <td>
-                                    $<?php echo number_format($item['Price'], 2); ?>
-                                </td>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
                             </tr>
-                        <?php endforeach; ?>
-                </table>
-                <div class="total-price">
-                    Total: $<?php echo number_format($order['Total_Price'], 2); ?>
-                </div>
-                <div class="status-section">
-                    <div>
-                        <span>Current Status: </span>
-                        <span class="current-status"><?php echo ucfirst(htmlspecialchars($order['Status'])); ?></span>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($items as $item): ?>
+                                <tr>
+                                    <td>
+                                        <div class="product-cell">
+                                            <img src="<?php echo $item['Image']; ?>" alt="<?php echo $item['Name']; ?>" class="product-image">
+                                            <?php echo htmlspecialchars($item['Name']); ?>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        x<?php echo $item['Quantity']; ?>
+                                    </td>
+                                    <td>
+                                        $<?php echo number_format($item['Price'], 2); ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                    </table>
+                    <div class="total-price">
+                        Total: $<?php echo number_format($order['Total_Price'], 2); ?>
                     </div>
-                    <button class="change-btn" onclick="openStatusModal()">Change Status</button>
+                    <div class="status-section">
+                        <div>
+                            <span>Current Status: </span>
+                            <span class="current-status"><?php echo ucfirst(htmlspecialchars($order['Status'])); ?></span>
+                        </div>
+                        <button class="change-btn" onclick="openStatusModal()">Change Status</button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div id="statusModal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">Change Order Status</h3>
-                    <button class="close-btn" onclick="closeStatusModal()">&times;</button>
+            <div id="statusModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Change Order Status</h3>
+                        <button class="close-btn" onclick="closeStatusModal()">&times;</button>
+                    </div>
+                    <form id="statusForm">
+                        <div class="form-group">
+                            <label for="Select_Status">Select Status</label>
+                            <select id="Select_Status" class="form-control" required>
+                                <option value="pending" <?php echo ($order['Status'] == 'pending') ? 'selected' : ''; ?>>Pending</option>
+                                <option value="ready" <?php echo ($order['Status'] == 'ready') ? 'selected' : ''; ?>>Ready</option>
+                                <option value="cancelled" <?php echo ($order['Status'] == 'cancelled') ? 'selected' : ''; ?>>Cancelled</option>
+                                <option value="completed" <?php echo ($order['Status'] == 'completed') ? 'selected' : ''; ?>>Completed</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="barber_comments">Barber Notes</label>
+                            <textarea id="barber_comments" class="form-control" placeholder="Add any notes here..."><?php echo htmlspecialchars($order['Barber_Comments'] ?? ''); ?></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="confirm-btn" onclick="openConfirmModal()">Continue</button>
+                        </div>
+                    </form>
                 </div>
-                <form id="statusForm">
+            </div>
+
+            <div id="confirmModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Confirm Status Change</h3>
+                    </div>
                     <div class="form-group">
-                        <label for="Select_Status">Select Status</label>
-                        <select id="Select_Status" class="form-control" required>
-                            <option value="pending" <?php echo ($order['Status'] == 'pending') ? 'selected' : ''; ?>>Pending</option>
-                            <option value="ready" <?php echo ($order['Status'] == 'ready') ? 'selected' : ''; ?>>Ready</option>
-                            <option value="cancelled" <?php echo ($order['Status'] == 'cancelled') ? 'selected' : ''; ?>>Cancelled</option>
-                            <option value="completed" <?php echo ($order['Status'] == 'completed') ? 'selected' : ''; ?>>Completed</option>
-                        </select>
+                        <p>Are you sure you want to change the order status to <strong id="displayStatus"></strong>?</p>
+                        <div id="commentsDisplay" style="margin-top: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 4px;">
+                            <strong>Barber Notes:</strong>
+                            <p id="displayComments" style="margin: 5px 0 0 0;"></p>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="barber_comments">Barber Notes</label>
-                        <textarea id="barber_comments" class="form-control" placeholder="Add any notes here..."><?php echo htmlspecialchars($order['Barber_Comments'] ?? ''); ?></textarea>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="confirm-btn" onclick="openConfirmModal()">Continue</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+                    <form id="confirmForm" method="POST" action="">
+                        <div class="modal-footer">
+                            <input type="hidden" name="new_status" id="new_status" value="">
+                            <input type="hidden" name="barber_notes" id="barber_notes" value="">
+                            <input type="hidden" name="confirm_change" value="1">
 
-        <div id="confirmModal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">Confirm Status Change</h3>
+                            <button type="button" class="cancel-btn" onclick="closeConfirmModal()">Cancel</button>
+                            <button type="submit" class="yes-btn">Yes</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <p>Are you sure you want to change the order status to <strong id="displayStatus"></strong>?</p>
-                    <div id="commentsDisplay" style="margin-top: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 4px;">
-                        <strong>Barber Notes:</strong>
-                        <p id="displayComments" style="margin: 5px 0 0 0;"></p>
-                    </div>
-                </div>
-                <form id="confirmForm" method="POST" action="">
-                    <div class="modal-footer">
-                        <input type="hidden" name="new_status" id="new_status" value="">
-                        <input type="hidden" name="barber_notes" id="barber_notes" value="">
-                        <input type="hidden" name="confirm_change" value="1">
-
-                        <button type="button" class="cancel-btn" onclick="closeConfirmModal()">Cancel</button>
-                        <button type="submit" class="yes-btn">Yes</button>
-                    </div>
-                </form>
             </div>
-        </div>
 
-        <script>
-            function openStatusModal() {
-                document.getElementById('statusModal').style.display = 'block';
-            }
-
-            function closeStatusModal() {
-                document.getElementById('statusModal').style.display = 'none';
-            }
-
-            function openConfirmModal() {
-                const status = document.getElementById('Select_Status').value;
-                const comments = document.getElementById('barber_comments').value;
-
-                if (!status) {
-                    alert("Please select a status.");
-                    return;
+            <script>
+                function openStatusModal() {
+                    document.getElementById('statusModal').style.display = 'block';
                 }
 
-                // Update display elements
-                document.getElementById('displayStatus').textContent =
-                    document.querySelector('#Select_Status option:checked').textContent;
-                document.getElementById('displayComments').textContent = comments || 'No notes provided';
+                function closeStatusModal() {
+                    document.getElementById('statusModal').style.display = 'none';
+                }
 
-                // Set form values
-                document.getElementById('new_status').value = status;
-                document.getElementById('barber_notes').value = comments;
+                function openConfirmModal() {
+                    const status = document.getElementById('Select_Status').value;
+                    const comments = document.getElementById('barber_comments').value;
 
-                // Switch modals
-                closeStatusModal();
-                document.getElementById('confirmModal').style.display = 'block';
-            }
-
-            function closeConfirmModal() {
-                document.getElementById('confirmModal').style.display = 'none';
-                openStatusModal();
-            }
-
-            window.onclick = function(event) {
-                if (event.target.classList.contains('modal')) {
-                    if (document.getElementById('statusModal').style.display === 'block') {
-                        closeStatusModal();
+                    if (!status) {
+                        alert("Please select a status.");
+                        return;
                     }
-                    if (document.getElementById('confirmModal').style.display === 'block') {
-                        closeConfirmModal();
+
+                    // Update display elements
+                    document.getElementById('displayStatus').textContent =
+                        document.querySelector('#Select_Status option:checked').textContent;
+                    document.getElementById('displayComments').textContent = comments || 'No notes provided';
+
+                    // Set form values
+                    document.getElementById('new_status').value = status;
+                    document.getElementById('barber_notes').value = comments;
+
+                    // Switch modals
+                    closeStatusModal();
+                    document.getElementById('confirmModal').style.display = 'block';
+                }
+
+                function closeConfirmModal() {
+                    document.getElementById('confirmModal').style.display = 'none';
+                    openStatusModal();
+                }
+
+                window.onclick = function(event) {
+                    if (event.target.classList.contains('modal')) {
+                        if (document.getElementById('statusModal').style.display === 'block') {
+                            closeStatusModal();
+                        }
+                        if (document.getElementById('confirmModal').style.display === 'block') {
+                            closeConfirmModal();
+                        }
                     }
                 }
-            }
-        </script>
+            </script>
+        </div>
+    </div>
 </body>
 
 </html>

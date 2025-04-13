@@ -63,7 +63,7 @@ if ($user['Role'] == "Barber") {
             <div class="card">
             <?php if (empty($appointments)): ?>
                 <div class="no-appointments">
-                    <p>No appointments scheduled for today.</p>
+                    <p>No appointments scheduled yet.</p>
                 </div>
                 <?php else: ?>
                     <table  id="appointmentTable">

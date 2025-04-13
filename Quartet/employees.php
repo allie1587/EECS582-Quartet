@@ -106,76 +106,78 @@ else {
     <link rel="stylesheet" href="style/barber_style.css">
 </head>
 <body>
-    
-    <div class="container">
-        <div class="card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Barber ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone Number</th>
-                        <th>Manage</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($barbers as $barber): ?>
+    <div class="content-wrapper">
+    <br><br>
+        <div class="container">
+            <div class="card">
+                <table>
+                    <thead>
                         <tr>
-                            <td><?php echo htmlspecialchars($barber['Barber_ID']); ?></td>
-                            <td><?php echo htmlspecialchars($barber['First_Name']) . ' ' . htmlspecialchars($barber['Last_Name']);; ?></td>
-                            <td><?php echo htmlspecialchars($barber['Email']); ?></td>
-                            <td><?php echo htmlspecialchars($barber['Phone_Number']); ?></td>
-                            <td>
-                                <a href="edit_profile.php?Barber_ID=<?php echo $barber['Barber_ID']; ?>"><button class="edit-btn">Edit</button></a>
-                                <button class="remove-btn" onclick="confirmDelete('<?php echo $barber['Barber_ID']; ?>', '<?php echo htmlspecialchars($barber['First_Name'] . ' ' . $barber['Last_Name']); ?>')">Delete</button>
-                            </td>
+                            <th>Barber ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone Number</th>
+                            <th>Manage</th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <!-- Delete Confirmation -->
-    <div id="deleteModal" class="modal" style="display: none;">
-        <div class="modal-content">
-        <div class="modal-header">
-            <h3 class="modal-title">Confirm Removal</h3>
-            <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
-        </div>
-        <div class="form-group">
-            <p>Are you sure you want to remove <strong id="displayBarberName"></strong>?</p>
-            <p class="warning-text">This action cannot be undone!</p>
-        </div>
-
-        <form id="deleteForm" method="POST">
-            <input type="hidden" name="barber_id" id="barber_id" value="">
-            <input type="hidden" name="remove_barber" value="1">
-            
-            <div class="modal-footer">
-                <button type="button" class="cancel-btn" onclick="closeDeleteModal()">Cancel</button>
-                <button type="submit" class="yes-btn">Yes, Delete</button>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($barbers as $barber): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($barber['Barber_ID']); ?></td>
+                                <td><?php echo htmlspecialchars($barber['First_Name']) . ' ' . htmlspecialchars($barber['Last_Name']);; ?></td>
+                                <td><?php echo htmlspecialchars($barber['Email']); ?></td>
+                                <td><?php echo htmlspecialchars($barber['Phone_Number']); ?></td>
+                                <td>
+                                    <a href="edit_profile.php?Barber_ID=<?php echo $barber['Barber_ID']; ?>"><button class="edit-btn">Edit</button></a>
+                                    <button class="remove-btn" onclick="confirmDelete('<?php echo $barber['Barber_ID']; ?>', '<?php echo htmlspecialchars($barber['First_Name'] . ' ' . $barber['Last_Name']); ?>')">Delete</button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
             </div>
-        </form>
-    </div>
         </div>
-    <!-- Script for confirming deletion -->
-    <script>
-        function confirmDelete(barberId, barberName) {
-            document.getElementById('barber_id').value = barberId;
-            document.getElementById('displayBarberName').textContent = barberName;
-            document.getElementById('deleteModal').style.display = 'block';
-        }
+        <!-- Delete Confirmation -->
+        <div id="deleteModal" class="modal" style="display: none;">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirm Removal</h3>
+                <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            <div class="form-group">
+                <p>Are you sure you want to remove <strong id="displayBarberName"></strong>?</p>
+                <p class="warning-text">This action cannot be undone!</p>
+            </div>
 
-        function closeDeleteModal() {
-            document.getElementById('deleteModal').style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                closeDeleteModal();
+            <form id="deleteForm" method="POST">
+                <input type="hidden" name="barber_id" id="barber_id" value="">
+                <input type="hidden" name="remove_barber" value="1">
+                
+                <div class="modal-footer">
+                    <button type="button" class="cancel-btn" onclick="closeDeleteModal()">Cancel</button>
+                    <button type="submit" class="yes-btn">Yes, Delete</button>
+                </div>
+            </form>
+        </div>
+            </div>
+        <!-- Script for confirming deletion -->
+        <script>
+            function confirmDelete(barberId, barberName) {
+                document.getElementById('barber_id').value = barberId;
+                document.getElementById('displayBarberName').textContent = barberName;
+                document.getElementById('deleteModal').style.display = 'block';
             }
-        }
-    </script>
+
+            function closeDeleteModal() {
+                document.getElementById('deleteModal').style.display = 'none';
+            }
+
+            window.onclick = function(event) {
+                if (event.target.classList.contains('modal')) {
+                    closeDeleteModal();
+                }
+            }
+        </script>
+    </div>
 </body>
 </html>

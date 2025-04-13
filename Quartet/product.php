@@ -11,9 +11,27 @@ Revisions:
 
  -->
 <?php
-// Connects to the database
+session_start();
 require 'db_connection.php';
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
+$barber_id = $_SESSION['username'];
+$sql = "SELECT Barber_Information.Role FROM Barber_Information WHERE Barber_ID = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $barber_id);
+$stmt->execute();
+$stmt->bind_result($role);
+$stmt->fetch();
+$stmt->close();
 
+if ($role == "Barber") {
+    include("barber_header.php");
+}
+else {
+    include("manager_header.php");
+}
 
 $sql = "SELECT * FROM Products";
 $result = $conn->query($sql);
@@ -24,7 +42,6 @@ if ($result->num_rows > 0) {
     }
 }
 ?>
-<?php include('barber_header.php'); ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -147,65 +164,81 @@ if ($result->num_rows > 0) {
             color: black;
             cursor: pointer;
         }
+        .content-wrapper {
+            transition: margin-left 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .sidebar-active .content-wrapper {
+            margin-left: 300px; 
+        }
+
+        .sidebar-deactive .content-wrapper {
+            margin-left: 10px; 
+        }
+
     </style>
 </head>
 <body>
-    <h1>Product List</h1>
-    <div class="product-container">
-        <!-- Add Product Button at the Top Right -->
-        <div class="add-btn-container">
-            <a href="add_product.php" class="add-btn">Add Product</a>
-        </div>
+    <div class="content-wrapper">
+    <br><br>
+        <h1>Product List</h1>
+        <div class="product-container">
+            <!-- Add Product Button at the Top Right -->
+            <div class="add-btn-container">
+                <a href="add_product.php" class="add-btn">Add Product</a>
+            </div>
 
-        <!-- Product Table -->
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Price</th>
-                    <th>Image</th>
-                    <th>Edit</th>
-                    <th>Delete</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($products as $product): ?>
+            <!-- Product Table -->
+            <table>
+                <thead>
                     <tr>
-                        <td><?php echo $product['Product_ID']; ?></td>
-                        <td><?php echo $product['Name']; ?></td>
-                        <td><?php echo $product['Description']; ?></td>
-                        <td>$<?php echo number_format($product['Price'], 2); ?></td>
-                        <td><img src="<?php echo $product['Image']; ?>" alt="<?php echo $product['Name']; ?>"></td>
-                        <td>
-                            <a href="edit_product.php?Product_ID=<?php echo $product['Product_ID']; ?>"><button class="btn edit-btn">Edit</button></a>
-                        </td>
-                        <td>
-                            <button class="btn delete-btn" onclick="confirmDelete('<?php echo $product['Product_ID']; ?>')">Delete</button>
-                        </td>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Image</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-    <!-- Delete Confirmation -->
-    <div id="deleteModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Are you sure you want to remove this product?</h2>
-            <button class="btn delete-btn" id="confirmDeleteBtn">Yes</button>
-            <button class="btn" onclick="closeModal()">No</button>
+                </thead>
+                <tbody>
+                    <?php foreach ($products as $product): ?>
+                        <tr>
+                            <td><?php echo $product['Product_ID']; ?></td>
+                            <td><?php echo $product['Name']; ?></td>
+                            <td><?php echo $product['Description']; ?></td>
+                            <td>$<?php echo number_format($product['Price'], 2); ?></td>
+                            <td><img src="<?php echo $product['Image']; ?>" alt="<?php echo $product['Name']; ?>"></td>
+                            <td>
+                                <a href="edit_product.php?Product_ID=<?php echo $product['Product_ID']; ?>"><button class="btn edit-btn">Edit</button></a>
+                            </td>
+                            <td>
+                                <button class="btn delete-btn" onclick="confirmDelete('<?php echo $product['Product_ID']; ?>')">Delete</button>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
-    <!-- Script for confirming deletion -->
-    <script>
-        function confirmDelete(productId) {
-            document.getElementById('confirmDeleteBtn').setAttribute('onclick', `window.location.href='remove_product.php?Product_ID=${productId}'`);
-            document.getElementById('deleteModal').style.display = 'block';
-        }
-        function closeModal() {
-            document.getElementById('deleteModal').style.display = 'none';
-        }
-    </script>
+        <!-- Delete Confirmation -->
+        <div id="deleteModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Are you sure you want to remove this product?</h2>
+                <button class="btn delete-btn" id="confirmDeleteBtn">Yes</button>
+                <button class="btn" onclick="closeModal()">No</button>
+            </div>
+        <!-- Script for confirming deletion -->
+        <script>
+            function confirmDelete(productId) {
+                document.getElementById('confirmDeleteBtn').setAttribute('onclick', `window.location.href='remove_product.php?Product_ID=${productId}'`);
+                document.getElementById('deleteModal').style.display = 'block';
+            }
+            function closeModal() {
+                document.getElementById('deleteModal').style.display = 'none';
+            }
+        </script>
+    </div>
 </body>
 </html>
