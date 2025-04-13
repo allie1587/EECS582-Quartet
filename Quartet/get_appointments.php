@@ -9,6 +9,7 @@
         3/28/2025 - Brinley, remove confirmed appointments
         4/2/2025 - Brinley, refactoring
         4/10/2025 - Brinley, hide overlapping appointment times
+        4/12/2025 - Brinley, fix get appointment logic
 */
 session_start(); //start the session
 
@@ -46,7 +47,7 @@ $query = "SELECT * FROM Appointment_Availability a
                                 AND d.Available = 'Y')))
           AND NOT EXISTS (SELECT 1 FROM Confirmed_Appointments c JOIN Services s ON c.Service_ID = s.Service_ID
                 WHERE c.Barber_ID = a.Barber_ID 
-                AND (c.Time*60 + c.Minute + s.Duration > a.Time*60 + a.Minute)
+                AND (c.Time*60 + c.Minute + s.Duration > a.Time*60 + a.Minute AND c.Time*60 + c.Minute <= a.Time*60 + a.Minute)
                 AND c.Month = ?
                 AND c.Day = ?
                 AND c.Year = ?)"; // AND NOT EXISTS statement removes confirmed or nonavailble appointments from list
