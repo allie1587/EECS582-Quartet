@@ -130,8 +130,8 @@ body {
     <div class="sidenav" id="sideNav">
         <button class="closebtn" id="sidebar-deactive" onclick="closeNav()">&times;</button>
         <a href="dashboard.php">Dashboard</a>
-        <a href="calendar.php">Appointments</a>
-        <a href="checkouts.php">Checkout History????</a>
+        <a href="appointments.php">Appointments</a>
+        <a href="checkouts.php">Checkout History</a>
         <a href="barber_profile.php">Profile</a>
         <a href="set_hours.php">Hours</a>
         <a href="services.php">Services</a>

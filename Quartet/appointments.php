@@ -53,71 +53,74 @@ if ($user['Role'] == "Barber") {
 </head>
 
 <body>
-    <h1>Appointment List</h1>
-    <div class="search-bar">
-        <input type="text" id="search-input" placeholder="Search by appointment...">
-    </div>
-    <div class="container">
-        <div class="card">
-        <?php if (empty($appointments)): ?>
-            <div class="no-appointments">
-                <p>No appointments scheduled for today.</p>
-            </div>
-            <?php else: ?>
-                <table  id="appointmentTable">
-                    <thead>
-                        <tr>
-                            <th>Appointment ID</th>
-                            <th>Client</th>
-                            <th>Contact</th>
-                            <th>Time</th>
-                            <th>Service</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($appointments as $appt): 
-                            $time = $appt['Time'] . ':' . str_pad($appt['Minute'], 2, '0', STR_PAD_LEFT);
-                            ?>
-                            <tr>
-                                <td>
-                                    <?php echo htmlspecialchars($appt['Appointment_ID']); ?>
-                                </td>
-                                <td>
-                                    <?php echo htmlspecialchars($appt['First_Name'] . ' ' . $appt['Last_Name']); ?>
-                                </td>
-                                <td>
-                                    <?php echo htmlspecialchars($appt['Phone']); ?><br>
-                                    <?php echo htmlspecialchars($appt['Email']); ?>
-                                </td>
-                                <td><?php echo htmlspecialchars($time); ?></td>
-                                <td><?php echo htmlspecialchars($appt['Service_ID']); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php endif; ?>
+    <div class="content-wrapper">
+    <br><br>
+        <h1>Appointment List</h1>
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Search by appointment...">
         </div>
-    </div>
-    <script>
-        // JavaScript for filtering the table - fixed version
-        document.getElementById("search-input").addEventListener("input", function() {
-            const filter = this.value.toLowerCase().trim();
-            const rows = document.querySelectorAll("#appointmentTable tbody tr");
+        <div class="container">
+            <div class="card">
+            <?php if (empty($appointments)): ?>
+                <div class="no-appointments">
+                    <p>No appointments scheduled for today.</p>
+                </div>
+                <?php else: ?>
+                    <table  id="appointmentTable">
+                        <thead>
+                            <tr>
+                                <th>Appointment ID</th>
+                                <th>Client</th>
+                                <th>Contact</th>
+                                <th>Time</th>
+                                <th>Service</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($appointments as $appt): 
+                                $time = $appt['Time'] . ':' . str_pad($appt['Minute'], 2, '0', STR_PAD_LEFT);
+                                ?>
+                                <tr>
+                                    <td>
+                                        <?php echo htmlspecialchars($appt['Appointment_ID']); ?>
+                                    </td>
+                                    <td>
+                                        <?php echo htmlspecialchars($appt['First_Name'] . ' ' . $appt['Last_Name']); ?>
+                                    </td>
+                                    <td>
+                                        <?php echo htmlspecialchars($appt['Phone']); ?><br>
+                                        <?php echo htmlspecialchars($appt['Email']); ?>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($time); ?></td>
+                                    <td><?php echo htmlspecialchars($appt['Service_ID']); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php endif; ?>
+            </div>
+        </div>
+        <script>
+            // JavaScript for filtering the table - fixed version
+            document.getElementById("search-input").addEventListener("input", function() {
+                const filter = this.value.toLowerCase().trim();
+                const rows = document.querySelectorAll("#appointmentTable tbody tr");
 
-            rows.forEach(row => {
-                let match = false;
-                const cells = row.querySelectorAll("td");
+                rows.forEach(row => {
+                    let match = false;
+                    const cells = row.querySelectorAll("td");
 
-                cells.forEach(cell => {
-                    if (cell.textContent.toLowerCase().includes(filter)) {
-                        match = true;
-                    }
+                    cells.forEach(cell => {
+                        if (cell.textContent.toLowerCase().includes(filter)) {
+                            match = true;
+                        }
+                    });
+
+                    row.style.display = match ? "" : "none";
                 });
-
-                row.style.display = match ? "" : "none";
             });
-        });
-    </script>
+        </script>
+    </div>
 </body>
 
 </html>

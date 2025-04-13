@@ -128,7 +128,7 @@ body {
     <div class="sidenav" id="sideNav">
         <button class="closebtn" id="sidebar-deactive" onclick="closeNav()">&times;</button>
         <a href="dashboard.php">Dashboard</a>
-        <a href="calendar.php">Appointments</a>
+        <a href="appointments.php">Appointments</a>
         <a href="product.php">Products</a>
         <a href="orders.php">Orders</a>
         <button class="dropdown-btn">Clients 
