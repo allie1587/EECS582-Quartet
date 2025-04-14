@@ -7,6 +7,12 @@ Revisions:
 
  -->
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require 'config.php';
+require 'PHPMailerMaster/src/Exception.php';
+require 'PHPMailerMaster/src/PHPMailer.php';
+require 'PHPMailerMaster/src/SMTP.php';
 // Error Messaging
 ini_set('display_errors', 1);
 $error = "";
@@ -63,6 +69,219 @@ $sql = "SELECT Order_Items.Quantity, Order_Items.Price, Products.Name, Products.
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $order_id);
 $stmt->execute();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_change'])) {
+    // Close any previous statements and free results
+    if (isset($stmt)) {
+        $stmt->close();
+    }
+    if (isset($result)) {
+        $result->free();
+    }
+    // Retrieve form data
+    $status = $_POST['new_status'];
+    $barber_comments = $_POST['barber_notes'];
+    // Prepare update statement
+    $sql = "UPDATE Orders SET Status = ?, Barber_Comments = ? WHERE Order_ID = ?";
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Prepare failed: " . $conn->error);
+    }
+    $stmt->bind_param("ssi", $status, $barber_comments, $order_id);
+    if (!$stmt->execute()) {
+        die("Execute failed: " . $stmt->error);
+    }
+    // Handle ready status email
+    if ($status == 'ready') {
+        try {
+            $mail = new PHPMailer(true);
+
+            // Server settings
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = SMTP_USERNAME;
+            $mail->Password = SMTP_PASSWORD; 
+            $mail->SMTPSecure = 'tls';
+            $mail->Port = 587;
+
+            // Sender
+            $mail->setFrom('quartetbarber@gmail.com', 'Quartet Barbershop');
+            
+            // Recipient
+            $client_email = $order['Email'];
+            $client_name = $order['First_Name'] . ' ' . $order['Last_Name'];
+            $mail->addAddress($client_email, $client_name);
+
+            // Email content
+            $mail->isHTML(true);
+            $mail->Subject = "Your Order #$order_id is Ready for Pickup";
+            
+            // Build HTML email body
+            $mail->Body = "
+                <html>
+                <head>
+                    <title>Order Ready Notification</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; }
+                        .order-details { margin: 20px 0; }
+                        .product { margin-bottom: 10px; }
+                        .total { font-weight: bold; font-size: 1.2em; }
+                        .notes { margin-top: 20px; padding: 10px; background-color: #f5f5f5; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Hello {$order['First_Name']},</h2>
+                    <p>We're excited to let you know that your order is ready for pickup!</p>
+                    
+                    <div class='order-details'>
+                        <h3>Order #$order_id Details</h3>
+                        <p><strong>Pickup Date:</strong> " . date('F j, Y') . "</p>";
+            
+            // Add products list
+            foreach ($items as $item) {
+                $mail->Body .= "
+                        <div class='product'>
+                            <img src='{$item['Image']}' alt='{$item['Name']}' width='50' style='vertical-align:middle; margin-right:10px;'>
+                            {$item['Name']} - 
+                            Quantity: {$item['Quantity']} - 
+                            Price: $" . number_format($item['Price'], 2) . "
+                        </div>";
+            }
+            
+            $mail->Body .= "
+                        <p class='total'>Total: $" . number_format($order['Total_Price'], 2) . "</p>
+                    </div>";
+            
+            // Add barber comments if available
+            if (!empty($barber_comments)) {
+                $mail->Body .= "
+                    <div class='notes'>
+                        <h4>Barber Notes:</h4>
+                        <p>" . nl2br(htmlspecialchars($barber_comments)) . "</p>
+                    </div>";
+            }
+            
+            $mail->Body .= "
+                    <p>Please visit us at your earliest convenience to pick up your order.</p>
+                    <p>Thank you for choosing Quartet Barbershop!</p>
+                    <p><strong>Business Hours:</strong><br>
+                    Monday-Friday: 9am-7pm<br>
+                    Saturday: 9am-5pm<br>
+                    Sunday: Closed</p>
+                </body>
+                </html>
+            ";
+            
+            $mail->send();
+            $success = "Order status updated and ready notification email sent!";
+        } catch (Exception $e) {
+            $error = "Status updated but ready notification email failed: " . $e->getMessage();
+            error_log("Ready email error for order #$order_id: " . $e->getMessage());
+        }
+    }
+    
+    // Handle cancelled status email
+    if ($status == 'cancelled') {
+        try {
+            $mail = new PHPMailer(true);
+
+            // Server settings
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = SMTP_USERNAME;
+            $mail->Password = SMTP_PASSWORD; 
+            $mail->SMTPSecure = 'tls';
+            $mail->Port = 587;
+
+            // Sender
+            $mail->setFrom('quartetbarber@gmail.com', 'Quartet Barbershop');
+            
+            // Recipient
+            $client_email = $order['Email'];
+            $client_name = $order['First_Name'] . ' ' . $order['Last_Name'];
+            $mail->addAddress($client_email, $client_name);
+
+            // Email content
+            $mail->isHTML(true);
+            $mail->Subject = "Your Order #$order_id Has Been Cancelled";
+            
+            // Build HTML email body
+            $mail->Body = "
+                <html>
+                <head>
+                    <title>Order Cancellation Notification</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; }
+                        .order-details { margin: 20px 0; }
+                        .product { margin-bottom: 10px; }
+                        .total { font-weight: bold; font-size: 1.2em; }
+                        .notes { margin-top: 20px; padding: 10px; background-color: #f5f5f5; }
+                        .cancellation { color: #d9534f; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Hello {$order['First_Name']},</h2>
+                    <div class='cancellation'>
+                        <h3>We're sorry to inform you that your Order #$order_id has been cancelled.</h3>
+                    </div>
+                    
+                    <div class='order-details'>
+                        <h3>Order Details</h3>";
+            
+            // Add products list
+            foreach ($items as $item) {
+                $mail->Body .= "
+                        <div class='product'>
+                            <img src='{$item['Image']}' alt='{$item['Name']}' width='50' style='vertical-align:middle; margin-right:10px;'>
+                            {$item['Name']} - 
+                            Quantity: {$item['Quantity']} - 
+                            Price: $" . number_format($item['Price'], 2) . "
+                        </div>";
+            }
+            
+            $mail->Body .= "
+                        <p class='total'>Order Total: $" . number_format($order['Total_Price'], 2) . "</p>
+                    </div>";
+            
+            // Add cancellation reason if available
+            if (!empty($barber_comments)) {
+                $mail->Body .= "
+                    <div class='notes'>
+                        <h4>Cancellation Reason:</h4>
+                        <p>" . nl2br(htmlspecialchars($barber_comments)) . "</p>
+                    </div>";
+            }
+            
+            $mail->Body .= "
+                    <p>If this cancellation was unexpected or you have any questions, please contact us.</p>
+                    <p>We hope to serve you again in the future.</p>
+                    <p><strong>Business Hours:</strong><br>
+                    Monday-Friday: 9am-7pm<br>
+                    Saturday: 9am-5pm<br>
+                    Sunday: Closed</p>
+                </body>
+                </html>
+            ";
+            
+            $mail->send();
+            $success = "Order status updated and cancellation notification email sent!";
+        } catch (Exception $e) {
+            $error = "Status updated but cancellation notification email failed: " . $e->getMessage();
+            error_log("Cancellation email error for order #$order_id: " . $e->getMessage());
+        }
+    }
+    
+    // If status changed but not to ready or cancelled
+    if ($status != 'ready' && $status != 'cancelled') {
+        $success = "Order status updated successfully!";
+    }
+    
+    header("Location: manage_orders.php?Order_ID=$order_id");
+    exit();
+}
+
 $result = $stmt->get_result();
 $items = $result->fetch_all(MYSQLI_ASSOC);
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_change'])) {
