@@ -7,6 +7,12 @@ Revisions:
 
  -->
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require 'config.php';
+require 'PHPMailerMaster/src/Exception.php';
+require 'PHPMailerMaster/src/PHPMailer.php';
+require 'PHPMailerMaster/src/SMTP.php';
 // Error Messaging
 ini_set('display_errors', 1);
 $error = "";
@@ -63,6 +69,128 @@ $sql = "SELECT Order_Items.Quantity, Order_Items.Price, Products.Name, Products.
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $order_id);
 $stmt->execute();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_change'])) {
+    // Retrieve form data
+    if (isset($stmt)) {
+        $stmt->close();
+    }
+    if (isset($result)) {
+        $result->free();
+    }
+    $status = $_POST['new_status'];
+    $barber_comments = $_POST['barber_notes'];
+
+    $sql = "UPDATE Orders SET Status = ?, Barber_Comments = ? WHERE Order_ID = ?";
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Prepare failed: " . $conn->error);
+    }
+    $stmt->bind_param("ssi", $status, $barber_comments, $order_id);
+    
+    
+    if (!$stmt->execute()) {
+        die("Execute failed: " . $stmt->error);
+    }
+    
+    // Send email if status changed to 'ready'
+    if ($status == 'ready') {
+        try {
+            $mail = new PHPMailer(true);
+
+            // Server settings
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = SMTP_USERNAME;
+            $mail->Password = SMTP_PASSWORD; 
+            $mail->SMTPSecure = 'tls';
+            $mail->Port = 587;
+
+            // Sender
+            $mail->setFrom('quartetbarber@gmail.com', 'Quartet Barbershop');
+            
+            // Recipient
+            $client_email = $order['Email'];
+            $client_name = $order['First_Name'] . ' ' . $order['Last_Name'];
+            $mail->addAddress($client_email, $client_name);
+
+            // Email content
+            $mail->isHTML(true);
+            $mail->Subject = "Your Order #$order_id is Ready for Pickup";
+            
+            // Build HTML email body
+            $mail->Body = "
+                <html>
+                <head>
+                    <title>Order Ready Notification</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; }
+                        .order-details { margin: 20px 0; }
+                        .product { margin-bottom: 10px; }
+                        .total { font-weight: bold; font-size: 1.2em; }
+                        .notes { margin-top: 20px; padding: 10px; background-color: #f5f5f5; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Hello {$order['First_Name']},</h2>
+                    <p>We're excited to let you know that your order is ready for pickup!</p>
+                    
+                    <div class='order-details'>
+                        <h3>Order #$order_id Details</h3>
+                        <p><strong>Pickup Date:</strong> " . date('F j, Y') . "</p>";
+            
+            // Add products list
+            foreach ($items as $item) {
+                $mail->Body .= "
+                        <div class='product'>
+                            <img src='{$item['Image']}' alt='{$item['Name']}' width='50' style='vertical-align:middle; margin-right:10px;'>
+                            {$item['Name']} - 
+                            Quantity: {$item['Quantity']} - 
+                            Price: $" . number_format($item['Price'], 2) . "
+                        </div>";
+            }
+            
+            $mail->Body .= "
+                        <p class='total'>Total: $" . number_format($order['Total_Price'], 2) . "</p>
+                    </div>";
+            
+            // Add barber comments if available
+            if (!empty($barber_comments)) {
+                $mail->Body .= "
+                    <div class='notes'>
+                        <h4>Barber Notes:</h4>
+                        <p>" . nl2br(htmlspecialchars($barber_comments)) . "</p>
+                    </div>";
+            }
+            
+            $mail->Body .= "
+                    <p>Please visit us at your earliest convenience to pick up your order.</p>
+                    <p>Thank you for choosing Quartet Barbershop!</p>
+                    <p><strong>Business Hours:</strong><br>
+                    Monday-Friday: 9am-7pm<br>
+                    Saturday: 9am-5pm<br>
+                    Sunday: Closed</p>
+                </body>
+                </html>
+            ";
+            
+            // Send the email
+            $mail->send();
+            $success = "Order status updated and notification email sent to customer!";
+        } catch (Exception $e) {
+            $error = "Order status updated but email could not be sent. Error: {$mail->ErrorInfo}";
+            // Log the error for debugging
+            error_log("Email send error for order #$order_id: " . $e->getMessage());
+        }
+    } else {
+        $success = "Order status updated successfully!";
+    }
+    
+    header("Location: manage_orders.php?Order_ID=$order_id");
+    exit();
+}
+
 $result = $stmt->get_result();
 $items = $result->fetch_all(MYSQLI_ASSOC);
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_change'])) {
