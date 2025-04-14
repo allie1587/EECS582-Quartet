@@ -18,6 +18,7 @@
         4/2/2025 - Brinley, refactoring; fix Sunday button bug
         4/5/2025 - Brinley, fix incorrect month display on week view
         4/10/2025 - Brinley, add minute
+        4/14/2025 - Brinley, update filtering
     Creation date:
     Other sources: ChatGPT
 -->
@@ -30,6 +31,38 @@ require 'db_connection.php';
 
 //get the common header
 include('header.php');
+
+$sql = "SELECT * FROM Barber_Information";
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    echo "Error preparing statement: " . $conn->error;
+    exit();
+}
+
+$stmt->execute();
+$result = $stmt->get_result();
+$barbers = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $barbers[] = $row;
+    }
+}
+
+$sql = "SELECT * FROM Services";
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    echo "Error preparing statement: " . $conn->error;
+    exit();
+}
+
+$stmt->execute();
+$result = $stmt->get_result();
+$services = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $services[] = $row;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -203,23 +236,20 @@ include('header.php');
     
     <!-- Search Feature -->
     <div class="search-container">
-        <input type="text" id="barberSelect" placeholder="Select Barber">
-
-        <select id="timeSelect">
-            <option value="">Select Time</option>
-            <option value="8">8:00 AM</option>
-            <option value="9">9:00 AM</option>
-            <option value="10">10:00 AM</option>
-            <option value="11">11:00 AM</option>
-            <option value="12">12:00 PM</option>
-            <option value="13">1:00 PM</option>
-            <option value="14">2:00 PM</option>
-            <option value="15">3:00 PM</option>
-            <option value="16">4:00 PM</option>
-            <option value="17">5:00 PM</option>
+        <label for="barber-filter">Barber:</label>
+        <select id="barberSelect" name="barberSelect" onchange="search()">
+            <option value="None">All</option>
+            <?php foreach ($barbers as $barber): ?>
+                <option value="<?php echo $barber['Barber_ID']?>"><?php echo $barber['First_Name'] . " " . $barber['Last_Name']?></option>
+            <?php endforeach; ?>
         </select>
-
-        <button onclick="search()">Search</button>
+        <label for="service-filter">Service:</label>
+        <select id="serviceSelect" name="serviceSelect" onchange="search()">
+            <option value="None">All</option>
+            <?php foreach ($services as $service): ?>
+                <option value="<?php echo $service['Service_ID']?>"><?php echo $service['Name']?></option>
+            <?php endforeach; ?>
+        </select>
     </div>
     <!-- End Search Feature -->
 
@@ -267,7 +297,7 @@ include('header.php');
         function search() {
             let barber = document.getElementById("barberSelect").value ? document.getElementById("barberSelect").value : null;
 
-            let time = document.getElementById("timeSelect").value ? document.getElementById("timeSelect").value : null;
+            let service = document.getElementById("serviceSelect").value ? document.getElementById("serviceSelect").value : null;
 
             fetch('set_filter.php', {
                 method: 'POST',
@@ -276,11 +306,11 @@ include('header.php');
                 },
                 body: JSON.stringify({ filter: true,
                                     barber: barber,
-                                    time: time
+                                    service: service
                 })
             }).then(response => response.text())
             .then(data => {
-                renderCalendar();
+                renderCalendar(selectedDate.getDate(), selectedDate.getDay());
             }).catch(error => {
                 console.error('Error:', error);
             });
@@ -585,6 +615,7 @@ include('header.php');
         });
 
         // Initial render
+        search();
         renderCalendar();
         //ChatGPT end
     </script>
