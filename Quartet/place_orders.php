@@ -10,7 +10,12 @@ Purpose: Allow customers to place orders from their shopping cart
 
 <?php
 session_start();
-
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require 'config.php';
+require 'PHPMailerMaster/src/Exception.php';
+require 'PHPMailerMaster/src/PHPMailer.php';
+require 'PHPMailerMaster/src/SMTP.php';
 
 // Enable error reporting
 error_reporting(E_ALL);  // Report all PHP errors
@@ -91,11 +96,95 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute();
     }
 
+// After the order is successfully placed (right before the header redirect)
+$order_id = $stmt->insert_id;
+
+    // Send order confirmation email
+    try {
+        $mail = new PHPMailer(true);
+
+        // Server settings
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = SMTP_USERNAME;
+        $mail->Password = SMTP_PASSWORD; 
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = 587;
+
+        // Sender
+        $mail->setFrom('quartetbarber@gmail.com', 'Quartet Barbershop');
+        
+        // Recipient
+        $mail->addAddress($email, $first_name . ' ' . $last_name);
+
+        // Email content
+        $mail->isHTML(true);
+        $mail->Subject = "Your Order #$order_id Has Been Received";
+        
+        // Build HTML email body
+        $mail->Body = "
+            <html>
+            <head>
+                <title>Order Confirmation</title>
+                <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; }
+                    .order-details { margin: 20px 0; }
+                    .product { margin-bottom: 10px; }
+                    .total { font-weight: bold; font-size: 1.2em; }
+                    .notes { margin-top: 20px; padding: 10px; background-color: #f5f5f5; }
+                </style>
+            </head>
+            <body>
+                <h2>Hello $first_name,</h2>
+                <p>Thank you for your order at Quartet Barbershop! We've received your order #$order_id and will process it shortly.</p>
+                
+                <div class='order-details'>
+                    <h3>Order Summary</h3>";
+        
+        foreach ($cart_items as $item) {
+            $mail->Body .= "
+                    <div class='product'>
+                        <img src='{$item['Image']}' alt='{$item['Name']}' width='50' style='vertical-align:middle; margin-right:10px;'>
+                        {$item['Name']} - 
+                        Quantity: {$item['Quantity']} - 
+                        Price: $" . number_format($item['Price'] * $item['Quantity'], 2) . "
+                    </div>";
+        }
+        
+        $mail->Body .= "
+                    <p class='total'>Order Total: $" . number_format($total_price, 2) . "</p>
+                </div>";
+        
+        if (!empty($comments)) {
+            $mail->Body .= "
+                <div class='notes'>
+                    <h4>Your Comments:</h4>
+                    <p>" . nl2br(htmlspecialchars($comments)) . "</p>
+                </div>";
+        }
+        
+        $mail->Body .= "
+                <p>We'll notify you when your order is ready for pickup.</p>
+                <p>If you have any questions, please contact us at quartetbarber@gmail.com</p>
+                <p>Thank you for choosing Quartet Barbershop!</p>
+            </body>
+            </html>
+        ";
+        
+        $mail->send();
+        $success = "Order placed successfully! Confirmation email sent.";
+    } catch (Exception $e) {
+        $error = "Order placed but confirmation email failed: " . $e->getMessage();
+        error_log("Order confirmation email error for order #$order_id: " . $e->getMessage());
+    }
+
     // Clear the cart for the current session
     $clear_cart_query = "DELETE FROM Cart WHERE Session_ID = ?";
     $stmt = $conn->prepare($clear_cart_query);
     $stmt->bind_param("s", $session_id);
     $stmt->execute();
+
     header("Location: order_confirmation.php?order_id=" . $order_id);
     exit();
 
