@@ -17,6 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
     $confirm_password = trim($_POST['confirm_password']);
+    
     //Validate input
     if (empty($fname) || empty($lname) || empty($username) || empty($password) || empty($confirm_password)) {
         $error_message = "All fields are required.";
@@ -33,16 +34,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         //Attempt to secure password
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        //Prepare SQL statement to insert data into the User table
-        $sql = "INSERT INTO Barber_Information (First_Name, Last_name, Barber_ID, Password) VALUES (?, ?, ?, ?)";
+        
+        // Set default role to 'Manager'
+        $role = 'Manager';
+        
+        //Prepare SQL statement to insert data into the Barber_Information table
+        $sql = "INSERT INTO Barber_Information (First_Name, Last_name, Barber_ID, Password, Role) VALUES (?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
+        
         if ($stmt) {
             //Bind parameters to the prepared statement
-            $stmt->bind_param("ssss", $fname, $lname, $username, $hashed_password);
+            $stmt->bind_param("sssss", $fname, $lname, $username, $hashed_password, $role);
+            
             //run the statement
             if ($stmt->execute()) {
-                //Set session username
+                //Set session username and role
                 $_SESSION["username"] = $username;
+                $_SESSION["Role"] = $role;
+                
                 //Redirect to the dashboard page
                 header("Location: dashboard.php");
                 exit();
