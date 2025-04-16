@@ -233,6 +233,15 @@ while ($row = mysqli_fetch_assoc($result)) {
         .search-container button:hover {
             background-color: rgb(143, 48, 55);
         }
+        #timeSlotSelect {
+            width: 200px;
+            height: 150px;
+        }
+
+        #timeSlotSelect option.selected {
+            background-color: #c4454d;
+            color: white;
+        }
 
     </style>
 </head>
@@ -241,22 +250,108 @@ while ($row = mysqli_fetch_assoc($result)) {
     <h1>Schedule</h1>
     
     <!-- Search Feature -->
+    <!-- Search Feature -->
     <div class="search-container">
+        <!-- Barber Filter -->
         <label for="barber-filter">Barber:</label>
-        <select id="barberSelect" name="barberSelect" onchange="search()">
+        <select id="barberSelect" name="barberSelect">
             <option value="None">All</option>
             <?php foreach ($barbers as $barber): ?>
                 <option value="<?php echo $barber['Barber_ID']?>"><?php echo $barber['First_Name'] . " " . $barber['Last_Name']?></option>
             <?php endforeach; ?>
         </select>
+
+        <!-- Service Filter -->
         <label for="service-filter">Service:</label>
-        <select id="serviceSelect" name="serviceSelect" onchange="search()">
+        <select id="serviceSelect" name="serviceSelect">
             <option value="None">All</option>
             <?php foreach ($services as $service): ?>
                 <option value="<?php echo $service['Service_ID']?>"><?php echo $service['Name']?></option>
             <?php endforeach; ?>
         </select>
+
+        <!-- Time Filter (Custom Multi-Select Behavior) -->
+        <label for="time-slot-filter">Filter by Time:</label>
+        <select id="timeSlotSelect" name="timeSlotSelect[]" multiple>
+            <option value="all">All</option>
+            <?php 
+            $start = new DateTime('06:00');
+            $end = new DateTime('20:00');
+            $interval = new DateInterval('PT15M');
+            while ($start <= $end): 
+                $time = $start->format('H:i');
+            ?>
+                <option value="<?= $time ?>"><?= date("g:i A", strtotime($time)) ?></option>
+            <?php 
+                $start->add($interval);
+            endwhile; 
+            ?>
+        </select>
+
+        <!-- Apply Filters Button -->
+        <button type="button" onclick="search()">Apply Filters</button>
     </div>
+
+<script>
+    // JavaScript function to handle search and filter
+    document.addEventListener("DOMContentLoaded", function () {
+        const select = document.getElementById('timeSlotSelect');
+
+        // Custom toggle for multi-select
+        for (let option of select.options) {
+            option.addEventListener('mousedown', function (e) {
+                e.preventDefault(); // Prevent default select behavior
+
+                if (option.value === "all") {
+                    // Clear other selections if "All" is clicked
+                    for (let opt of select.options) {
+                        opt.selected = false;
+                        opt.classList.remove('selected');
+                    }
+                    option.selected = true;
+                    option.classList.add('selected');
+                } else {
+                    // Toggle this option
+                    option.selected = !option.selected;
+                    option.classList.toggle('selected');
+
+                    // If "All" was selected, unselect it
+                    const allOpt = select.querySelector('option[value="all"]');
+                    if (allOpt && allOpt.selected) {
+                        allOpt.selected = false;
+                        allOpt.classList.remove('selected');
+                    }
+                }
+            });
+        }
+    });
+    function search() {
+        const barberSelect = document.getElementById('barberSelect').value;
+        const serviceSelect = document.getElementById('serviceSelect').value;
+        const timeOptions = document.getElementById('timeSlotSelect').selectedOptions;
+        const selectedTimes = Array.from(timeOptions).map(option => option.value);
+
+        let query = '?';
+
+        if (barberSelect !== 'None') {
+            query += 'barberSelect=' + encodeURIComponent(barberSelect) + '&';
+        }
+
+        if (serviceSelect !== 'None') {
+            query += 'serviceSelect=' + encodeURIComponent(serviceSelect) + '&';
+        }
+
+        if (selectedTimes.length > 0 && !selectedTimes.includes('all')) {
+            query += 'timeSlotSelect=' + encodeURIComponent(selectedTimes.join(',')) + '&';
+        }
+
+        // Remove trailing '&' or '?' if no filters were added
+        query = query.endsWith('&') || query.endsWith('?') ? query.slice(0, -1) : query;
+
+        // Navigate to filtered URL
+        window.location.href = window.location.pathname + query;
+    }
+</script>
     <!-- End Search Feature -->
 
     <div class="calendar-container">
