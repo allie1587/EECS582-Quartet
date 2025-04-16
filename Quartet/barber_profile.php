@@ -91,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Update'])) {
     $instagram = isset($_POST['Instagram']) ? $conn->real_escape_string($_POST['Instagram']) : '';
     $facebook = isset($_POST['Facebook']) ? $conn->real_escape_string($_POST['Facebook']) : '';
     $tiktok = isset($_POST['TikTok']) ? $conn->real_escape_string($_POST['TikTok']) : '';
+    $color = isset($_POST['Color']) ? $conn->real_escape_string($_POST['Color']) : '';
     // Barber's Photo
     if (isset($_FILES['Photo']) && $_FILES['Photo']['error'] == UPLOAD_ERR_OK) {
         $image_dir = 'images/';
@@ -116,10 +117,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Update'])) {
             exit();
         }
     }
-    $sql = "UPDATE Barber_Information SET First_Name = ?, Last_Name = ?, Email = ?, Phone_Number = ?, Instagram = ?, Facebook = ?, TikTok = ?, Photo = ?
+    $sql = "UPDATE Barber_Information SET First_Name = ?, Last_Name = ?, Email = ?, Phone_Number = ?, Instagram = ?, Facebook = ?, TikTok = ?, Photo = ?, Color = ?
             WHERE Barber_ID = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssssssss", $first_name, $last_name, $email, $phone, $instagram, $facebook, $tiktok, $photo, $barber_id);
+    $stmt->bind_param("ssssssssss", $first_name, $last_name, $email, $phone, $instagram, $facebook, $tiktok, $photo, $color, $barber_id);
+
+
     $stmt->execute();
     $stmt->close();
     // Barber's Portfolio 
@@ -294,7 +297,23 @@ else {
                     <button type="button" id="add-image">Add Image</button>
                     <div id="new-images-container"></div>
                 </div>
-
+                <!-- Favorite Color -->
+                <div class="form-section">
+                    <h3>Profile Color</h3>
+                    <div class="form-group">
+                        <label for="Color">Choose your profile color:</label>
+                        <select name="Color" id="Color">
+                            <?php
+                            $color_options = ['LightCoral', 'LightSalmon', 'LightPink', 'Moccasin', 'Lavendar', 'Plum', 'PaleGreen', 'MediumAquamarine', 'LightSeaGreen'];
+                            $selected_color = isset($barber['Color']) ? $barber['Color'] : '';
+                            foreach ($color_options as $color) {
+                                $selected = ($selected_color === $color) ? 'selected' : '';
+                                echo "<option value=\"$color\" $selected>$color</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+                </div>            
                 <button type="submit" name="Update" class="update-btn">Update Profile</button>
             </form>
         </div>

@@ -63,6 +63,12 @@ if ($result->num_rows > 0) {
         $services[] = $row;
     }
 }
+$barberColors = [];
+$query = "SELECT Barber_ID, Color FROM Barber_Information";
+$result = mysqli_query($conn, $query);
+while ($row = mysqli_fetch_assoc($result)) {
+    $barberColors[$row['Barber_ID']] = $row['Color'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -291,7 +297,7 @@ if ($result->num_rows > 0) {
     <br>
 
 <script>
-
+    const barberColors = <?php echo json_encode($barberColors); ?>;
     let monthView = true;
 
         function search() {
@@ -478,14 +484,11 @@ if ($result->num_rows > 0) {
                                     item.textContent = time + ":" + appointment.Minute + period;
                                     
                                     // Change button color based on barber
-                                    if (appointment.Barber_ID === "JL") {
-                                        item.style.backgroundColor = "lightblue";
-                                    } else if (appointment.Barber_ID === "kyle5") {
-                                        item.style.backgroundColor = "lightgreen";
-                                    } else if (appointment.Barber_ID === "kyle4") {
-                                        item.style.backgroundColor = "lightcoral";
+                                    const barberColor = barberColors[appointment.Barber_ID];
+                                    if (barberColor) {
+                                        item.style.backgroundColor = barberColor;
                                     } else {
-                                        item.style.backgroundColor = "gray";
+                                        item.style.backgroundColor = "gray"; // fallback
                                     }
                                     //only make appointment clickable if time is after current time
                                     if (appointment.Time <= currentTime && appointment.Day == currentDay) {
