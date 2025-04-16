@@ -400,6 +400,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
             let service = document.getElementById("serviceSelect").value ? document.getElementById("serviceSelect").value : null;
 
+            let time = document.getElementById("timeSlotSelect").value ? document.getElementById("timeSlotSelect").value : null;
             fetch('set_filter.php', {
                 method: 'POST',
                 headers: {
@@ -407,7 +408,8 @@ while ($row = mysqli_fetch_assoc($result)) {
                 },
                 body: JSON.stringify({ filter: true,
                                     barber: barber,
-                                    service: service
+                                    service: service,
+                                    time: time
                 })
             }).then(response => response.text())
             .then(data => {
