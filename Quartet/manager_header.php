@@ -150,6 +150,7 @@ body {
             <a href="#">Employee Services</a>
             <a href="set_hours_manager.php">Employee Hours</a> 
         </div>
+        <a href="register.php">Create New Account</a> 
         <a href="logout.php"><i class="fa fa-sign-out"></i> Log Out</a>
     </div>
 </div>

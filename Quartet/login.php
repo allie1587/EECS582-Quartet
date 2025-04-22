@@ -108,11 +108,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <p id="error-message" class="error-message"><?php echo $error_message; ?></p>
         </form>
 
-        <!--Link to registration page for new users-->
-        <p class="login-switch">
-            Don't have an account?
-            <a href="register.php" class="login-register">Create Account</a>
-        </p>
     </div>
 </body>
 </html>
