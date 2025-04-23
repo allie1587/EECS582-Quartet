@@ -272,20 +272,18 @@ while ($row = mysqli_fetch_assoc($result)) {
 
         <!-- Time Filter (Custom Multi-Select Behavior) -->
         <label for="time-slot-filter">Filter by Time:</label>
-        <select id="timeSlotSelect" name="timeSlotSelect[]" multiple>
-            <option value="all">All</option>
-            <?php 
-            $start = new DateTime('06:00');
-            $end = new DateTime('20:00');
-            $interval = new DateInterval('PT15M');
-            while ($start <= $end): 
-                $time = $start->format('H:i');
-            ?>
-                <option value="<?= $time ?>"><?= date("g:i A", strtotime($time)) ?></option>
-            <?php 
-                $start->add($interval);
-            endwhile; 
-            ?>
+        <select id="timeSelect">
+            <option value="">Select Time</option>
+            <option value="8">8:00 AM</option>
+            <option value="9">9:00 AM</option>
+            <option value="10">10:00 AM</option>
+            <option value="11">11:00 AM</option>
+            <option value="12">12:00 PM</option>
+            <option value="13">1:00 PM</option>
+            <option value="14">2:00 PM</option>
+            <option value="15">3:00 PM</option>
+            <option value="16">4:00 PM</option>
+            <option value="17">5:00 PM</option>
         </select>
 
         <!-- Apply Filters Button -->
@@ -398,9 +396,10 @@ while ($row = mysqli_fetch_assoc($result)) {
         function search() {
             let barber = document.getElementById("barberSelect").value ? document.getElementById("barberSelect").value : null;
 
+            let time = document.getElementById("timeSelect").value ? document.getElementById("timeSelect").value : null;
             let service = document.getElementById("serviceSelect").value ? document.getElementById("serviceSelect").value : null;
 
-            let time = document.getElementById("timeSlotSelect").value ? document.getElementById("timeSlotSelect").value : null;
+            // let time = document.getElementById("timeSlotSelect").value ? document.getElementById("timeSlotSelect").value : null;
             fetch('set_filter.php', {
                 method: 'POST',
                 headers: {

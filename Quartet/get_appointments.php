@@ -28,6 +28,7 @@ $day = isset($_GET['day']) ? (int)$_GET['day'] : -1;
 $weekday = isset($_GET['weekday']) ? $_GET['weekday'] : date('w', strtotime("$year-$month-$day"));
 $barberID = $_SESSION['barberFilter'];
 $service = $_SESSION['serviceFilter'];
+$time = isset($_SESSION['timeFilter']) ? ($_SESSION['timeFilter'] == "" ? null : $_SESSION['timeFilter']) : null;
 
 $validBarbers = [];
 if ($service !== "None") {
@@ -101,6 +102,12 @@ if ($filterByBarber && !$filterByService) {
         // Barber doesn't offer this service, so make query return nothing
         $query .= " AND 1=0";
     }
+}
+
+if ($time !== null) {
+    $query .= " AND Time=?";
+    $params[] = $time;
+    $paramTypes .= "i";
 }
 
 $query .= " ORDER BY Time, Minute";

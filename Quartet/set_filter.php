@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($data['filter'])) {
         $_SESSION["barberFilter"] = $data['barber'];
         $_SESSION['serviceFilter'] = $data['service'];
+        $_SESSION['timeFilter'] = $data['time'];
         echo json_encode(["status" => "success"]);
     }
 } else {
