@@ -55,6 +55,29 @@ $stmt->bind_param("siii", $barber_id, $today_day, $today_month, $today_year);
 $stmt->execute();
 $result = $stmt->get_result();
 $appointments = $result->fetch_all(MYSQLI_ASSOC);
+
+$sql = "SELECT * FROM Store";
+$result = $conn->query($sql);
+$store = [];
+if ($result->num_rows > 0) {
+    $store = $result->fetch_assoc();
+}
+$store_id = isset($store['Store_ID']) ? $store['Store_ID'] : null;
+$store_hours = [];
+if ($store_id) {
+    $sql = "SELECT *
+            FROM Store_Hours
+            WHERE Store_ID = ? ORDER BY FIELD(Day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $store_id);
+    $stmt->execute();
+    $hours_result = $stmt->get_result();
+    if ($hours_result->num_rows > 0) {
+        while ($row = $hours_result->fetch_assoc()) {
+            $store_hours[$row['Day']] = $row;
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -65,6 +88,30 @@ $appointments = $result->fetch_all(MYSQLI_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Barber Dashboard</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        .content-wrapper {
+            transition: margin-left 0.3s ease;
+            margin-left: 0;
+        }
+
+        .sidebar-active .content-wrapper {
+            margin-left: 200px; /* or match sidebar width */
+        }
+        h2 {
+            color: black;
+        }
+    </style>
   </head>
   <body>
     <div class="content-wrapper">
@@ -110,6 +157,99 @@ $appointments = $result->fetch_all(MYSQLI_ASSOC);
                     </tbody>
                 </table>
             <?php endif; ?>
+        <div class="container">
+            <div>
+                <h2>Store Info</h2>
+                <?php if ($store): ?>
+                    <p>
+                        <strong>Store Name: </strong> 
+                        <?php echo htmlspecialchars($store['Name']); ?> 
+                    </p>
+                    <p>
+                        <strong>Location: </strong> <br>
+                        <?php echo htmlspecialchars($store['Address']); ?> <br>
+                        <?php echo htmlspecialchars($store['City'] . ', ' . $store['State'] . ' ' . $store['Zip_Code']); ?>
+
+                    </p>
+                    <p>
+                        <strong>Phone: </strong>
+                        <?php echo htmlspecialchars($store['Phone']); ?>
+                    </p>
+                    <p>
+                        <strong>Email: </strong>
+                        <?php echo htmlspecialchars($store['Email']); ?>
+                    </p>
+                    <p>
+                        <?php if(!empty($store['Facebook'])): ?>
+                            <strong>Facebook: </strong>
+                            <?php echo htmlspecialchars($store['Facebook']); ?>
+                        <?php endif; ?>
+                    </p>
+                    <p>
+                        <?php if(!empty($store['Facebook'])): ?>
+                            <strong>Facebook: </strong>
+                            <?php echo htmlspecialchars($store['Facebook']); ?>
+                            <a href="https://www.facebook.com/<?php echo htmlspecialchars($store['Facebook']); ?>" target="_blank">Link</a>
+                        <?php endif; ?>
+                    </p>
+                    <p>
+                        <?php if(!empty($store['Instagram'])): ?>
+                            <strong>Instagram: </strong> 
+                            <?php echo htmlspecialchars($store['Instagram']); ?>
+                            <a href="https://www.instagram.com/<?php echo htmlspecialchars($store['Instagram']); ?>" target="_blank">Link</a>
+                        <?php endif; ?>
+                    </p>
+                    <p>
+                        <?php if(!empty($store['TikTok'])): ?>
+                            <strong>TikTok: </strong> 
+                            <?php echo htmlspecialchars($store['TikTok']); ?>
+                            <a href="https://www.tiktok.com/@<?php echo htmlspecialchars($store['TikTok']); ?>" target="_blank">Link</a>
+                        <?php endif; ?>
+                    </p>
+                <?php else: ?>
+                    <p>No store information available</p>
+                <?php endif; ?>
+            </div>
+            <div>
+                <h2>Store Hours</h2>
+                <?php if (!empty($store_hours)): ?>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Hours</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php 
+                            $daysOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                            foreach ($daysOrder as $day): 
+                                $hours = isset($store_hours[$day]) ? $store_hours[$day] : null;
+                            ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($day); ?></td>
+                                    <td>
+                                        <?php if ($hours && !$hours['Is_Closed']): ?>
+                                            <?php 
+                                                $openTime = date("g:i a", strtotime($hours['Open_Time']));
+                                                $closeTime = date("g:i a", strtotime($hours['Close_Time']));
+                                                echo htmlspecialchars("$openTime - $closeTime");
+                                            ?>
+                                        <?php else: ?>
+                                            <span class="closed-day">Closed</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <p>No store hours available</p>
+                <?php endif; ?>
+                
+            </div>
+            <a href="store_info.php" class="change-btn">Change</a>
+        </div>
     </div>
   </body>
 </html>
