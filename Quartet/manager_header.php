@@ -147,7 +147,7 @@ body {
         </button>
         <div class="dropdown-container">
             <a href="employees.php">Employee List</a>
-            <a href="#">Employee Services</a>
+            <a href="services_manager.php">Employee Services</a>
             <a href="set_hours_manager.php">Employee Hours</a> 
         </div>
         <a href="register.php">Create New Account</a> 

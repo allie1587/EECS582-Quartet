@@ -4,6 +4,7 @@ Purpose: Allow barbers to add the services offered
 Authors: Alexandra Stratton, Jose Leyba, Brinley Hull, Ben Renner, Kyle Moore
 Date: 4/10/2025
 Revisions:
+    4/18/2025 - Brinley Hull, make sure the redirect is to the correct page
 Other Sources: ChatGPT
 -->
 <?php
@@ -44,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($stmt->execute()) {
         echo "Service added successfully!";
         // Redirect to the service page after inserting infor into database
-        header('Location: services.php');
+        header('Location: services_manager.php');
         exit();
     } else {
         // Display an error message if execution fails
@@ -176,7 +177,7 @@ else {
         </div>
         <!-- Redirects to service.php page (Barber's side) -->
         <div class="back-btn">
-            <a href="services.php" class="back-btn"><button class="back-btn">Back to Service List</button></a>
+            <a href="services_manager.php" class="back-btn"><button class="back-btn">Back to Service List</button></a>
         </div>
         <script>
             // Validate service name

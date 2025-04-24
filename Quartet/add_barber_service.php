@@ -4,6 +4,7 @@ Purpose: Allow barbers to add services to their personal list
 Authors: Alexandra Stratton, Jose Leyba, Brinley Hull, Ben Renner, Kyle Moore
 Date: 4/10/2025
 Revisions:
+    4/18/2025 - Brinley Hull, change to where the barber whose service is added can be someone other than who logged in
 Other Sources: ChatGPT
 -->
 <?php
@@ -24,12 +25,14 @@ if (!$stmt) {
     exit();
 }
 
-$stmt->bind_param("sisi", $_SESSION['username'], $service_id, $_SESSION['username'], $service_id);
+$barber = isset($_GET['barber']) ? $_GET['barber'] : $_SESSION['username'];
+
+$stmt->bind_param("sisi", $barber, $service_id, $barber, $service_id);
 // Execute the statement and check if the insertion was successful
 if ($stmt->execute()) {
     echo "Service added successfully!";
     // Redirect to the service page after inserting infor into database
-    header('Location: services.php');
+    header('Location: services_manager.php?barber=' . $barber);
     exit();
 } else {
     // Display an error message if execution fails

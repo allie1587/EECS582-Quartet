@@ -33,7 +33,7 @@ if (isset($_GET['Service_ID'])) {
         $stmt->bind_param("ssss", $service_name, $service_price, $service_duration, $service_id);
         // Execute the statement and check if the update was successful
         if ($stmt->execute()) {
-            header('Location: services.php');
+            header('Location: services_manager.php?barber=' . $barber);
             exit();
         } else {
             echo "Error: " . $stmt->error;
@@ -222,7 +222,7 @@ include('barber_header.php');
     </div>
     <!-- Redirects to service.php page (Barber's side) -->
     <div class="back-btn">
-        <a href="services.php" class="back-btn"><button class="back-btn">Back to Service List</button></a>
+        <a href="services_manager.php" class="back-btn"><button class="back-btn">Back to Service List</button></a>
     </div>
     <script>
         // Validate service name

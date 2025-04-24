@@ -17,7 +17,7 @@ if (isset($_GET['Service_ID'])) {
     $sql_delete_cart = "DELETE FROM Services WHERE Service_ID = ?";
     $stmt_delete_cart = $conn->prepare($sql_delete_cart);
     $stmt_delete_cart->bind_param("i", $service_id);
-    header('Location: services.php');
+    header('Location: services_manager.php?barber=' . $barber);
     exit();
 }
 ?>
