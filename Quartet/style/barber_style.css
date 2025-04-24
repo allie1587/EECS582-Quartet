@@ -68,7 +68,14 @@ h1 {
 .order-details {
     flex: 2;
 }
-
+/* Files: dashboard.php */
+.store-info {
+    flex: 1;
+}
+/* Files: dashboard.php */
+.hour-info {
+    flex: 2;
+}
 /* ===== Forms ===== */
 /* Files: barber_profile.php */
 .form-section {
