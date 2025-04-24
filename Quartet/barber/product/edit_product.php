@@ -91,6 +91,7 @@ if (isset($_GET['Product_ID'])) {
 <head>
     <!-- Title for Page -->
     <title>Edit Product</title>
+    <link rel="stylesheet" href="style/barber_style.css">
     <!-- Internal CSS for styling the page -->
     <style>
         body {
@@ -231,19 +232,6 @@ if (isset($_GET['Product_ID'])) {
 
         .back-btn:hover {
             background: rgb(143, 48, 55);
-        }
-
-        .content-wrapper {
-            transition: margin-left 0.3s ease;
-            margin-left: 10px;
-        }
-
-        .sidebar-active .content-wrapper {
-            margin-left: 300px; 
-        }
-
-        .sidebar-deactive .content-wrapper {
-            margin-left: 10px; 
         }
     </style>
 </head>

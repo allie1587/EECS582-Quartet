@@ -66,29 +66,6 @@ foreach ($cart_items as $item) {
         .empty-btn:hover, .checkout-btn:hover, .continue-btn:hover {
             background: rgb(143, 48, 55);
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background: #c4454d;
-            color: white;
-        }
-        td {
-            color: black;
-        }
-        tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-        tr:hover {
-            background: #f1f1f1;
-        }
         .total-price {
             font-size: 18px;
             font-weight: bold;

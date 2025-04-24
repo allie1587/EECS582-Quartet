@@ -50,6 +50,7 @@ if ($result->num_rows > 0) {
 <head>
     <!-- Title for Page -->
     <title>Service List</title>
+    <link rel="stylesheet" href="style/barber_style.css">
     <!-- Internal CSS for styling the page -->
     <style>
         body {
@@ -85,29 +86,6 @@ if ($result->num_rows > 0) {
         }
         .add-btn:hover {
             background: rgb(143, 48, 55);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background: #c4454d;
-            color: white;
-        }
-        td {
-            color: black;
-        }
-        tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-        tr:hover {
-            background: #f1f1f1;
         }
         img {
             max-width: 80px;
@@ -166,19 +144,6 @@ if ($result->num_rows > 0) {
             color: black;
             cursor: pointer;
         }
-        .content-wrapper {
-            transition: margin-left 0.3s ease;
-            margin-left: 10px;
-        }
-
-        .sidebar-active .content-wrapper {
-            margin-left: 300px; 
-        }
-
-        .sidebar-deactive .content-wrapper {
-            margin-left: 10px; 
-        }
-
     </style>
 </head>
 <body>

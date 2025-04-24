@@ -137,6 +137,13 @@ th {
 td {
     color: black;
 }
+table, th, td {
+    border: 1px solid black;
+}
+th, td {
+    padding: 8px;
+    text-align: left;
+}
 /* Files: client.php, manage_orders.php, orders.php, employees.php */
 tr:nth-child(even) {
     background: #f9f9f9;

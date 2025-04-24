@@ -97,6 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 <head>
 <!-- Title for Page --> 
+    <link rel="stylesheet" href="style/barber_style.css">
     <title>Add Product</title>
     <!-- Internal/External CSS for styling the page -->
     <style>
@@ -198,19 +199,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         .back-btn:hover {
             background: rgb(143, 48, 55);
         }
-        .content-wrapper {
-            transition: margin-left 0.3s ease;
-            margin-left: 10px;
-        }
-
-        .sidebar-active .content-wrapper {
-            margin-left: 300px; 
-        }
-
-        .sidebar-deactive .content-wrapper {
-            margin-left: 10px; 
-        }
-
     </style>
 </head>
 <body>

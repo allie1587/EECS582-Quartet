@@ -47,6 +47,7 @@ while ($row = $testimoniesResult->fetch_assoc()) {
 
 ?>
 <head>
+    <link rel="stylesheet" href="style/barber_style.css">
     <style>
         .reviews {
             padding: 20px;
@@ -73,18 +74,6 @@ while ($row = $testimoniesResult->fetch_assoc()) {
         }
         button {
             margin-right: 10px;
-        }
-        .content-wrapper {
-            transition: margin-left 0.3s ease;
-            margin-left: 10px;
-        }
-
-        .sidebar-active .content-wrapper {
-            margin-left: 300px; 
-        }
-
-        .sidebar-deactive .content-wrapper {
-            margin-left: 10px; 
         }
     </style>
 </head>
