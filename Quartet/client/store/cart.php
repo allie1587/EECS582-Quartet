@@ -105,10 +105,13 @@ foreach ($cart_items as $item) {
             height: auto;
             border-radius: 5px;
         }
+        #black-text {
+            color: black;
+        }
     </style>
 </head>
 <body>
-    <h1>Shopping Cart</h1>
+    <h1 id="black-text">Shopping Cart</h1>
     <div class="cart-container">
         <div class="empty-btn-container">
             <a href="empty_cart.php" class="empty-btn">Empty Cart</a>
