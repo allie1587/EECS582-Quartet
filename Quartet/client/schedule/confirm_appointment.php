@@ -46,7 +46,18 @@ if (!$stmt) {
     echo "Error preparing statement: " . $conn->error;
     exit();
 }
-
+$barberName = "";
+$barberQuery = "SELECT First_Name, Last_Name FROM Barber_Information WHERE Barber_ID = ?";
+$barberStmt = $conn->prepare($barberQuery);
+if ($barberStmt) {
+    $barberStmt->bind_param("s", $_SESSION['appointment']["Barber_ID"]);
+    $barberStmt->execute();
+    $barberResult = $barberStmt->get_result();
+    if ($barberRow = $barberResult->fetch_assoc()) {
+        $barberName = $barberRow['First_Name'] . " " . $barberRow['Last_Name'];
+    }
+    $barberStmt->close();
+}
 $stmt->bind_param("s", $_SESSION['appointment']["Barber_ID"]);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -104,13 +115,15 @@ if ($result->num_rows > 0) {
         .error-msg {
             margin-top: 5px;
         }
-
+        #black-text {
+            color: black;
+        }
 
     </style>
 </head>
 <body>
     <!--let's user know the current page they are on-->
-    <h1>Confirm Appointment</h1>
+    <h1 id="black-text">Confirm Appointment</h1>
     
     <!-- Form for user to put in their information  -->
    <div class="info_form">
@@ -135,7 +148,7 @@ if ($result->num_rows > 0) {
             <input type="text" id="appointment_time" name="appointment_time" value="<?php echo $_SESSION['time'] . ":" . $_SESSION['minute']?>" readonly><br><br>
             
             <label for="appointment_barber">Barber:</label><br>
-            <input type="text" id="appointment_barber" name="appointment_barber" value="<?php echo $_SESSION['appointment']["Barber_ID"]?>" readonly><br><br>
+            <input type="text" id="appointment_barber" name="appointment_barber" value="<?php echo htmlspecialchars($barberName); ?>" readonly><br><br>
             
             <label for="service">Select Service:</label>
             <select id="service" name="service">
