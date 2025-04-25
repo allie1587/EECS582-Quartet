@@ -44,7 +44,16 @@ if ($barber_result->num_rows > 0) {
         $stmt->execute();
         $services_result = $stmt->get_result();
         while ($service = $services_result->fetch_assoc()) {
-            $services[] = $service['Service_ID'];
+            $service_id = $service['Service_ID'];
+            // Lookup the name of the service in the Services table
+            $name_stmt = $conn->prepare("SELECT Name FROM Services WHERE Service_ID = ?");
+            $name_stmt->bind_param("i", $service_id);
+            $name_stmt->execute();
+            $name_result = $name_stmt->get_result();
+            if ($name_row = $name_result->fetch_assoc()) {
+                $services[] = $name_row['Name']; // Append the actual name instead of ID
+            }
+            $name_stmt->close();
         }
         $barber['services'] = $services;
 
