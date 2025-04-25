@@ -363,6 +363,9 @@ if ($barber_result->num_rows > 0) {
             color: red;
             margin-right: 5px;
         }
+        #black-text {
+            color: black;
+        }
     </style>
 
     <!-- JavaScript for handling barber image gallery -->
@@ -403,6 +406,7 @@ if ($barber_result->num_rows > 0) {
 </head>
 
 <body>
+    <h1 id="black-text"> About Our Barbers </h1>
     <div class="barbers">
         <!-- Loop through PHP array to display each barber's profile dynamically -->
         <?php foreach ($barbers as $index => $barber): ?>

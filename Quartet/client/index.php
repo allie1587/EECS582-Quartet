@@ -80,6 +80,7 @@ include('header.php');
             background: #c4454d;
             padding: 10px;
             border-radius: 5px;
+            color: white;
         }
         .review-container {
             max-width: 600px;
@@ -130,7 +131,11 @@ include('header.php');
             color: black;
             transition: color 0.3s;
         }
+        #black-text {
+            color: black;
+        }
 
+        
 
     </style>
     <script>
@@ -193,7 +198,7 @@ include('header.php');
 </head>
 <body>
     <!--let's user know the current page they are on-->
-    <h1>Home</h1>
+    <h1 id="black-text">Home</h1>
        <!--Section that holds image of barbershop, followed by the Sotre Information-->
     <div class="store-info">
         <img src="images/store.jpg" alt="Store Image">
@@ -207,14 +212,14 @@ include('header.php');
 
     <!--Added section to work on the future for the reviews of the page-->
     <div class="reviews">
-        <h2>Some Client Testimonies!</h2>
+        <h2 id="black-text">Some Client Testimonies!</h2>
             <!--Shows the average rating to the users-->
             <div class="average-rating">
                 Average Rating: <?php echo $averageRating; ?>
             </div>
             
             <div class="review-container">
-                <h2>Reviews</h2>
+                <h2 id="black-text">Reviews</h2>
                 <!--Shows the reviews already stored in the database, if there is not then Print it to the screen-->
                 <?php
                 if ($reviewsResult->num_rows > 0) {

@@ -97,6 +97,9 @@ session_start();
             color: black;
             transition: color 0.3s;
         }
+        #black-text {
+            color: black;
+        }
     </style>
     </style>
     <script>
@@ -133,7 +136,7 @@ session_start();
 </head>
 <body>
     <!--let's user know the current page they are on-->
-    <h1>Contact Us!</h1>
+    <h1 id="black-text">Contact Us!</h1>
     <br><br>
     <div class="container">
         <div class="section">
@@ -151,8 +154,8 @@ session_start();
         </form>
     </div>
     <p>Do you have any feedback for us? We love to hear your opinion in our services!<p>
+    <h1 id="black-text">Reviews</h1>
     <div class="reviews">
-        <h2>Reviews</h2>
         <form action="submit_review.php" method="POST">
             <div class="form-group">
                 <label for="Name">Name:</label>

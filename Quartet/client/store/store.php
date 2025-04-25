@@ -165,6 +165,9 @@ include('header.php');
         button:hover {
             background-color: rgb(143, 48, 55);
         }
+        #black-text {
+            color: black;
+        }
     </style>
     <!-- Functions needed-->
     <script>
@@ -194,7 +197,7 @@ include('header.php');
 </head>
 <body>
     <!--let's user know the current page they are on-->
-    <h1>Store</h1>
+    <h1 id="black-text">Store</h1>
     <!--Styled grid 3x3 That shows in each space a different product available with a picture and it's name-->
     <input type="text" id="search" onkeyup="filterProducts()" placeholder="Search products...">
     <div class="store-grid">

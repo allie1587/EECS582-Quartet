@@ -242,12 +242,15 @@ while ($row = mysqli_fetch_assoc($result)) {
             background-color: #c4454d;
             color: white;
         }
+        #black-text {
+            color: black;
+        }
 
     </style>
 </head>
 <body>
     <!-- Page title -->
-    <h1>Schedule</h1>
+    <h1 id="black-text">Schedule</h1>
     
     <!-- Search Feature -->
     <!-- Search Feature -->
@@ -675,6 +678,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             // Currently the title, but has all appointment information populated from sent in appointment. e.g. appointment.Time, appointment.BarberID, appointment.[columnName from database]
             // BarberID needs to be changed in database to actually be the ID and reference the barber information table to get the name.
             appointmentDay.textContent = `Selected Appointment`;
+            appointmentDay.id = "black-text";
             let appointmentInfoPara = document.createElement('p');
             appointmentInfoPara.innerHTML = `Date: ${dayNames[new Date(year, month, day).getDay()]}, ${monthNames[month]} ${day}, ${year}
                                     \nTime: ${(time <= 12 ? time : time-12) + ":" + minute + (time < 12 ? "AM" : "PM")}
