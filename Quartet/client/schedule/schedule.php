@@ -374,11 +374,11 @@ while ($row = mysqli_fetch_assoc($result)) {
         </div>
 
         <div class="calendar-nav">
-            <button id="prevButton" onclick="changeMonth(-1)">Previous Month</button>
-            <button id="nextButton" onclick="changeMonth(1)">Next Month</button>
+            <button id="prevButton" onclick="changeMonth(-1)" style="margin-bottom: 5px;">Previous Month</button>
+            <button id="nextButton" onclick="changeMonth(1)" style="margin-bottom: 5px;">Next Month</button>
             <!-- Week navigation buttons -->
-            <button id="prevWeekButton" onclick="changeWeek(-1)" style="display: none;">Previous Week</button>
-            <button id="nextWeekButton" onclick="changeWeek(1)" style="display: none;">Next Week</button>
+            <button id="prevWeekButton" onclick="changeWeek(-1)" style="display: none; margin-bottom: 5px;">Previous Week</button>
+            <button id="nextWeekButton" onclick="changeWeek(1)" style="display: none; margin-bottom: 5px;">Next Week</button>
             <!-- back to month view from week view -->
             <button id="backToMonthButton" onclick="goToCurrentMonth()" style="display: none;">Back to Current Month</button>
         </div>
