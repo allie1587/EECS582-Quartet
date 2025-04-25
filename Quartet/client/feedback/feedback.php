@@ -178,7 +178,6 @@ session_start();
             <button type="submit">Send your Review!</button>
         </form>
     </div>
-    <p>Also Feel Free to Contact us at: 111-111-1111 During Business Hours!<p>
     <br><br><br><br><br><br><br><br><br>
     <br><br><br><br><br><br><br><br><br>
 
