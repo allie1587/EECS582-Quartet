@@ -482,7 +482,9 @@ while ($row = mysqli_fetch_assoc($result)) {
                 dayNumber.textContent = day;
 
                 // Gray out days before current date
-                if ((day < currentDay && currentMonth <= new Date().getMonth()) || currentMonth < new Date().getMonth()) {
+                if (currentYear < new Date().getFullYear() || 
+                (currentYear === new Date().getFullYear() && currentMonth < new Date().getMonth()) || 
+                (currentYear === new Date().getFullYear() && currentMonth === new Date().getMonth() && day < new Date().getDate())) {
                     dayDiv.style.background = 'rgb(70, 70, 70)';
                     dayNumber.style.color = 'darkgray';
                 } else {
