@@ -132,24 +132,6 @@ session_start();
     </script>
 </head>
 <body>
-    <!--The green Bar at the top that has the name and button that takes you to the login page-->
-    <div class="top-bar">
-        <h1>Quartet's Barbershop</h1>
-        <div class="menu">
-            <button onclick="location.href='index.php'">Home</button>
-            <button onclick="location.href='schedule.php'">Schedule</button>
-            <button onclick="location.href='store.php'">Store</button>
-            <button onclick="location.href='barbers.php'">Barbers</button>
-            <button onclick="location.href='about.php'">About us</button>
-            <button onclick="location.href='feedback.php'">Contact us</button>
-        </div>
-
-        <!--Stylized Button to be circular, when clicked takes you to login.html-->
-        <div class="login-container">
-            <span>Login</span>
-            <button class="login-button" onclick="location.href='login.php'">&#10132;</button>
-        </div>
-    </div>
     <!--let's user know the current page they are on-->
     <h1>Contact Us!</h1>
     <br><br>

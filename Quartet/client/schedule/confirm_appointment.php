@@ -100,6 +100,11 @@ if ($result->num_rows > 0) {
         button[type="submit"]:hover {
             background-color:rgb(143, 48, 55);
         }
+        /*error message*/
+        .error-msg {
+            margin-top: 5px;
+        }
+
 
     </style>
 </head>
@@ -144,5 +149,89 @@ if ($result->num_rows > 0) {
             <button type="submit">Confirm Appointment</button>
         </form>
    </div>
+   <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fname = document.getElementById('fname');
+            const lname = document.getElementById('lname');
+            const email = document.getElementById('email');
+            const phone = document.getElementById('phone');
+            const submitBtn = document.querySelector('button[type="submit"]');
+
+            const inputs = [fname, lname, email, phone];
+
+            const errorMessages = {
+                fname: "First name must only contain letters.",
+                lname: "Last name must only contain letters.",
+                email: "Email must contain an '@' symbol.",
+                phone: "Phone number must be exactly 10 digits (numbers only)."
+            };
+
+            function showError(input, message) {
+                input.style.border = '2px solid red';
+                let error = input.nextElementSibling;
+                if (!error || !error.classList.contains('error-msg')) {
+                    error = document.createElement('div');
+                    error.classList.add('error-msg');
+                    error.style.color = 'red';
+                    error.style.fontSize = '0.9em';
+                    input.parentNode.insertBefore(error, input.nextSibling);
+                }
+                error.innerText = message;
+            }
+
+            function showSuccess(input) {
+                input.style.border = '2px solid green';
+                let error = input.nextElementSibling;
+                if (error && error.classList.contains('error-msg')) {
+                    error.remove();
+                }
+            }
+
+            function validate() {
+                let valid = true;
+
+                const nameRegex = /^[A-Za-z\s'-]+$/;
+                const phoneRegex = /^\d{10}$/;
+
+                if (!nameRegex.test(fname.value.trim())) {
+                    showError(fname, errorMessages.fname);
+                    valid = false;
+                } else {
+                    showSuccess(fname);
+                }
+
+                if (!nameRegex.test(lname.value.trim())) {
+                    showError(lname, errorMessages.lname);
+                    valid = false;
+                } else {
+                    showSuccess(lname);
+                }
+
+                if (!email.value.includes('@')) {
+                    showError(email, errorMessages.email);
+                    valid = false;
+                } else {
+                    showSuccess(email);
+                }
+
+                if (!phoneRegex.test(phone.value.trim())) {
+                    showError(phone, errorMessages.phone);
+                    valid = false;
+                } else {
+                    showSuccess(phone);
+                }
+
+                submitBtn.disabled = !valid;
+            }
+
+            inputs.forEach(input => {
+                input.addEventListener('input', validate);
+            });
+
+            // Initial disable
+            submitBtn.disabled = true;
+        });
+    </script>
+
 </body>
 </html>
