@@ -376,6 +376,8 @@ while ($row = mysqli_fetch_assoc($result)) {
             <!-- Week navigation buttons -->
             <button id="prevWeekButton" onclick="changeWeek(-1)" style="display: none;">Previous Week</button>
             <button id="nextWeekButton" onclick="changeWeek(1)" style="display: none;">Next Week</button>
+            <!-- back to month view from week view -->
+            <button id="backToMonthButton" onclick="goToCurrentMonth()" style="display: none;">Back to Current Month</button>
         </div>
 
                 <!-- Popup Modal -->
@@ -425,6 +427,8 @@ while ($row = mysqli_fetch_assoc($result)) {
         let currentWeekday = new Date().getDate();
         let currentTime = new Date().getHours();
         let selectedDate = new Date(); // Defaults to today
+        let savedMonth = currentMonth;
+        let savedYear = currentYear;
         let monthNames = [
             'January', 'February', 'March', 'April', 'May', 'June', 
             'July', 'August', 'September', 'October', 'November', 'December'
@@ -440,6 +444,7 @@ while ($row = mysqli_fetch_assoc($result)) {
         let nextButton = document.getElementById('nextButton'); //identifies button for switching months
         let prevWeekButton = document.getElementById('prevWeekButton'); //identifies button for switching weeks
         let nextWeekButton = document.getElementById('nextWeekButton'); //identifies button for switching weeks
+        document.getElementById('backToMonthButton').style.display = 'none'; // hide the back button
 
         // Get the first day of the month and the total number of days in the month
         let firstDay = new Date(currentYear, currentMonth, 1).getDay(); // First day of the month
@@ -501,11 +506,16 @@ while ($row = mysqli_fetch_assoc($result)) {
                             button.textContent = "Error";
                         });
 
-                    button.addEventListener('click', () => {
-                        selectedDate = new Date(currentYear, currentMonth, day);
-                        monthView = false;
-                        renderCalendar(day, weekday);
-                    });
+                        button.addEventListener('click', () => {
+                            // Save the month/year before switching to week view
+                            savedMonth = currentMonth;
+                            savedYear = currentYear;
+
+                            selectedDate = new Date(currentYear, currentMonth, day);
+                            monthView = false;
+                            document.getElementById('backToMonthButton').style.display = 'inline-block';
+                            renderCalendar(day, weekday);
+                        });
                     button.classList.add('day-button');
 
                     // Append elements
@@ -524,6 +534,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             nextButton.style.display = 'none';
             prevWeekButton.style.display = 'inline-block';
             nextWeekButton.style.display = 'inline-block';
+            document.getElementById('backToMonthButton').style.display = 'inline-block'; // show the back button
             
 
             // Add actual days of the WEEK
@@ -717,6 +728,13 @@ while ($row = mysqli_fetch_assoc($result)) {
         search();
         renderCalendar();
         //ChatGPT end
+
+        function goToCurrentMonth() {
+            currentMonth = savedMonth;
+            currentYear = savedYear;
+            monthView = true;
+            renderCalendar();
+        }
     </script>
 </body>
 </html>
