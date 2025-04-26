@@ -15,6 +15,7 @@ Any known faults: None
 
 session_start();
 require 'db_connection.php';
+require 'login_check.php';
 $barber_id = $_SESSION['username'];
 $sql = "SELECT Barber_Information.Role FROM Barber_Information WHERE Barber_ID = ?";
 $stmt = $conn->prepare($sql);

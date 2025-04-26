@@ -43,7 +43,7 @@ $year = $_GET['year'];
 $barber = isset($_GET['barber']) ?  $_GET['barber'] : -1;
 
 // Check role
-if ($user['Role'] != "Manager" or $user['Role'] == "Barber" and $barber != $barber_id) {
+if ($user['Role'] != "Manager" && $barber != $barber_id) {
     header("Location: login.php");
     exit();
 }

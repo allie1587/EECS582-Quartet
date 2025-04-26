@@ -45,7 +45,6 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
 
 require 'db_connection.php';
 require 'login_check.php';
-require 'role_check.php';
 
 $barber_id = $_SESSION['username'];
 $sql = "SELECT Role FROM Barber_Information WHERE Barber_ID = ?";
@@ -59,6 +58,8 @@ if ($user['Role'] != "Manager") {
     header("Location: set_hours.php");
     exit();
 }
+
+require 'role_check.php';
 
 $barber = isset($_GET['barber']) ? $_GET['barber'] : $_SESSION['username'];
 ?>

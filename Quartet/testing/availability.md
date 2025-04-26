@@ -83,3 +83,14 @@ Status: Passed
 | 4 | Repeat steps 2-6 from Test Scenario 4. | See above. |
 
 ****************************************
+
+****************************************
+# Test Scenario 7: Input an invalid date
+Status: Passed
+
+| # | Steps | Expected result |
+| --- | --- | --- |
+| 1 | Repeat steps 1-5 from Test Scenario 1. | See above. |
+| 2 | Input a invalid character (symbols, letters, etc.) or single number into the "Week of" textbox at the top of the page and hit enter. | An alert box will popup indicating an invalid input. |
+
+****************************************
