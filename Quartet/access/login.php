@@ -96,7 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <!--Input field for password-->
             <div class="login-input">
                 <input type="password" id="password" name="password" placeholder="Password" required>
-                <a href="#" class="login-forgot">Forgot password?</a>
+                <a href="forgot_password.php" class="login-forgot">Forgot password?</a>
             </div>
             <div class="remember-me">
                 <input type="checkbox" id="rememberMe">
