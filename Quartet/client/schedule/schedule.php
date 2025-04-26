@@ -257,100 +257,142 @@ while ($row = mysqli_fetch_assoc($result)) {
     <div class="search-container">
         <!-- Barber Filter -->
         <label for="barber-filter">Barber:</label>
-        <select id="barberSelect" name="barberSelect">
-            <option value="None">All</option>
+        <select id="barberSelect" name="barberSelect[]" multiple size="5">
+            <option value="None" selected>All</option> <!-- Add selected here -->
             <?php foreach ($barbers as $barber): ?>
                 <option value="<?php echo $barber['Barber_ID']?>"><?php echo $barber['First_Name'] . " " . $barber['Last_Name']?></option>
             <?php endforeach; ?>
         </select>
 
-        <!-- Service Filter -->
+        <!-- Service Filter (already handled single-select) -->
         <label for="service-filter">Service:</label>
         <select id="serviceSelect" name="serviceSelect">
-            <option value="None">All</option>
+            <option value="None" selected>All</option> <!-- Add selected here -->
             <?php foreach ($services as $service): ?>
                 <option value="<?php echo $service['Service_ID']?>"><?php echo $service['Name']?></option>
             <?php endforeach; ?>
         </select>
 
-        <!-- Time Filter (Custom Multi-Select Behavior) -->
-        <label for="time-slot-filter">Filter by Time:</label>
-        <select id="timeSelect">
-            <option value="">Select Time</option>
-            <option value="8">8:00 AM</option>
-            <option value="9">9:00 AM</option>
-            <option value="10">10:00 AM</option>
-            <option value="11">11:00 AM</option>
-            <option value="12">12:00 PM</option>
-            <option value="13">1:00 PM</option>
-            <option value="14">2:00 PM</option>
-            <option value="15">3:00 PM</option>
-            <option value="16">4:00 PM</option>
-            <option value="17">5:00 PM</option>
+        <!-- Time Filter -->
+        <label for="time-filter">Time:</label>
+        <select id="timeSelect" name="timeSelect[]" multiple size="10">
+            <option value="None" selected>All</option> <!-- Add selected here -->
+            <?php
+            for ($h = 6; $h <= 20; $h++) {
+                foreach ([0] as $m) {
+                    $timeFormatted = sprintf('%02d:%02d', $h, $m);
+                    echo "<option value=\"$timeFormatted\">$timeFormatted</option>";
+                }
+            }
+            ?>
         </select>
-
+        
         <!-- Apply Filters Button -->
         <button type="button" onclick="search()">Apply Filters</button>
     </div>
 
 <script>
-    // JavaScript function to handle search and filter
-    document.addEventListener("DOMContentLoaded", function () {
-        const select = document.getElementById('timeSlotSelect');
+    // Custom multi-select behavior for barber filter
+    const barberSelect = document.getElementById('barberSelect');
+    barberSelect.addEventListener('mousedown', function(e) {
+        e.preventDefault(); // Prevent default select behavior
 
-        // Custom toggle for multi-select
-        for (let option of select.options) {
-            option.addEventListener('mousedown', function (e) {
-                e.preventDefault(); // Prevent default select behavior
+        const option = e.target;
+        if (option.tagName === 'OPTION') {
+            if (option.value === 'None') {
+                // If 'All' is clicked, deselect all others and select 'All'
+                Array.from(barberSelect.options).forEach(opt => opt.selected = false);
+                option.selected = true;
+            } else {
+                // Toggle the selected state
+                option.selected = !option.selected;
 
-                if (option.value === "all") {
-                    // Clear other selections if "All" is clicked
-                    for (let opt of select.options) {
-                        opt.selected = false;
-                        opt.classList.remove('selected');
-                    }
-                    option.selected = true;
-                    option.classList.add('selected');
-                } else {
-                    // Toggle this option
-                    option.selected = !option.selected;
-                    option.classList.toggle('selected');
-
-                    // If "All" was selected, unselect it
-                    const allOpt = select.querySelector('option[value="all"]');
-                    if (allOpt && allOpt.selected) {
-                        allOpt.selected = false;
-                        allOpt.classList.remove('selected');
-                    }
-                }
-            });
+                // If anything else is selected, unselect 'All'
+                const allOption = barberSelect.querySelector('option[value=\"None\"]');
+                if (allOption) allOption.selected = false;
+            }
         }
     });
-    function search() {
-        const barberSelect = document.getElementById('barberSelect').value;
-        const serviceSelect = document.getElementById('serviceSelect').value;
-        const timeOptions = document.getElementById('timeSlotSelect').selectedOptions;
-        const selectedTimes = Array.from(timeOptions).map(option => option.value);
 
+    // Custom multi-select behavior for time filter
+    const timeSelect = document.getElementById('timeSelect');
+    timeSelect.addEventListener('mousedown', function(e) {
+        e.preventDefault(); // Prevent default select behavior
+
+        const option = e.target;
+        if (option.tagName === 'OPTION') {
+            if (option.value === 'None') {
+                // If 'All' is clicked, deselect all others and select 'All'
+                Array.from(timeSelect.options).forEach(opt => opt.selected = false);
+                option.selected = true;
+            } else {
+                // Toggle the selected state
+                option.selected = !option.selected;
+
+                // If anything else is selected, unselect 'All'
+                const allOption = timeSelect.querySelector('option[value=\"None\"]');
+                if (allOption) allOption.selected = false;
+            }
+        }
+    });
+    // Ensure "All" is selected on page load if nothing else is
+    window.addEventListener('load', function() {
+        // Barber Select
+        const barberOptions = Array.from(barberSelect.options);
+        if (!barberOptions.some(opt => opt.selected && opt.value !== 'None')) {
+            // No other barber selected, ensure "All" is selected
+            const allOption = barberSelect.querySelector('option[value="None"]');
+            if (allOption) allOption.selected = true;
+        }
+
+        // Time Select
+        const timeOptions = Array.from(timeSelect.options);
+        if (!timeOptions.some(opt => opt.selected && opt.value !== 'None')) {
+            // No other time selected, ensure "All" is selected
+            const allOption = timeSelect.querySelector('option[value="None"]');
+            if (allOption) allOption.selected = true;
+        }
+    });
+
+    function search() {
+        // Barber Filter
+        let barberSelect = document.getElementById("barberSelect");
+        let selectedBarbers = Array.from(barberSelect.selectedOptions).map(option => option.value);
+
+        // Time Filter
+        let timeSelect = document.getElementById("timeSelect");
+        let selectedTimes = Array.from(timeSelect.selectedOptions).map(option => option.value);
+
+        // Service Filter
+        let service = document.getElementById("serviceSelect").value || null;
+
+        const errorDetails = document.getElementById('errorDetails');
+        errorDetails.textContent = `
+            Selected Barbers: ${JSON.stringify(selectedBarbers, null, 2)}
+            Selected Times: ${JSON.stringify(selectedTimes, null, 2)}
+            Selected Services: ${JSON.stringify(services, null, 2)}
+        `;
+
+        // Create query for the selected filters
         let query = '?';
 
-        if (barberSelect !== 'None') {
-            query += 'barberSelect=' + encodeURIComponent(barberSelect) + '&';
+        if (selectedBarbers.length > 0 && !selectedBarbers.includes('None')) {
+            query += 'barberSelect=' + encodeURIComponent(selectedBarbers.join(',')) + '&';
         }
 
-        if (serviceSelect !== 'None') {
-            query += 'serviceSelect=' + encodeURIComponent(serviceSelect) + '&';
+        if (service && service !== 'None') {
+            query += 'serviceSelect=' + encodeURIComponent(service) + '&';
         }
 
-        if (selectedTimes.length > 0 && !selectedTimes.includes('all')) {
-            query += 'timeSlotSelect=' + encodeURIComponent(selectedTimes.join(',')) + '&';
+        if (selectedTimes.length > 0 && !selectedTimes.includes('None')) {
+            query += 'timeSelect=' + encodeURIComponent(selectedTimes.join(',')) + '&';
         }
 
         // Remove trailing '&' or '?' if no filters were added
         query = query.endsWith('&') || query.endsWith('?') ? query.slice(0, -1) : query;
 
-        // Navigate to filtered URL
-        window.location.href = window.location.pathname + query;
+        // Send the filters to the server via fetch (or use your existing POST method)
+        window.location.href = window.location.pathname + query; // Example to apply the filters
     }
 </script>
     <!-- End Search Feature -->
@@ -392,36 +434,49 @@ while ($row = mysqli_fetch_assoc($result)) {
             </div>
         </div>
     </div>
+    <div id="errorCheckingBox" style="border: 1px solid red; padding: 10px; margin-top: 20px;">
+        <h3>Error Checking</h3>
+        <pre id="errorDetails"></pre>
+    </div>
     <br>
 
 <script>
     const barberColors = <?php echo json_encode($barberColors); ?>;
     let monthView = true;
 
-        function search() {
-            let barber = document.getElementById("barberSelect").value ? document.getElementById("barberSelect").value : null;
+    function search() {
+        let barberSelect = document.getElementById("barberSelect");
+        let selectedBarbers = Array.from(barberSelect.selectedOptions).map(option => option.value);
 
-            let time = document.getElementById("timeSelect").value ? document.getElementById("timeSelect").value : null;
-            let service = document.getElementById("serviceSelect").value ? document.getElementById("serviceSelect").value : null;
+        let timeSelect = document.getElementById("timeSelect");
+        let selectedTimes = Array.from(timeSelect.selectedOptions).map(option => option.value);
 
-            // let time = document.getElementById("timeSlotSelect").value ? document.getElementById("timeSlotSelect").value : null;
-            fetch('set_filter.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ filter: true,
-                                    barber: barber,
-                                    service: service,
-                                    time: time
-                })
-            }).then(response => response.text())
-            .then(data => {
-                renderCalendar(selectedDate.getDate(), selectedDate.getDay());
-            }).catch(error => {
-                console.error('Error:', error);
-            });
-        }
+        let service = document.getElementById("serviceSelect").value || null;
+
+        const errorDetails = document.getElementById('errorDetails');
+        errorDetails.textContent = `
+            Selected Barbers: ${JSON.stringify(selectedBarbers, null, 2)}
+            Selected Times: ${JSON.stringify(selectedTimes, null, 2)}
+            Selected Services: ${service ? service : 'None'}
+        `;
+        fetch('set_filter.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                filter: true,
+                barber: selectedBarbers,
+                service: service,
+                time: selectedTimes
+            })
+        }).then(response => response.text())
+        .then(data => {
+            renderCalendar(selectedDate.getDate(), selectedDate.getDay());
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    }
 
         // ChatGPT help start
         let currentMonth = new Date().getMonth(); // Current month (0-11)
@@ -438,7 +493,6 @@ while ($row = mysqli_fetch_assoc($result)) {
         ];
         let dayNames = ['Sunday', 'Monday', "Tuesday", 'Wednesday', 'Thursday', 'Friday', "Saturday"];
         let appointmentsData = [];
-
     // Function to render the calendar
     function renderCalendar(day=0, weekday=0) {
         currentTime = new Date().getHours();
@@ -508,7 +562,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                         })
                         .catch(error => {
                             console.error("Error fetching appointment count:", error);
-                            button.textContent = "Error";
+                            button.textContent = "Error fetching appointment count";
                         });
 
                         button.addEventListener('click', () => {
