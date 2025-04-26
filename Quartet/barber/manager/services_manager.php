@@ -83,26 +83,6 @@ if ($result->num_rows > 0) {
             text-align: right;
             margin-bottom: 20px;
         }
-        .add-btn {
-            background: #c4454d;
-            color: white;
-            font-size: 16px;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .add-btn:hover {
-            background: rgb(143, 48, 55);
-        }
-        img {
-            max-width: 80px;
-            height: auto;
-            border-radius: 5px;
-        }
         .btn {
             padding: 8px 15px;
             border: none;
@@ -110,20 +90,6 @@ if ($result->num_rows > 0) {
             border-radius: 5px;
             font-weight: bold;
             transition: 0.3s;
-        }
-        .edit-btn {
-            background: #007BFF;
-            color: white;
-        }
-        .edit-btn:hover {
-            background: #0056b3;
-        }
-        .delete-btn {
-            background: #FF6A13;
-            color: white;
-        }
-        .delete-btn:hover {
-            background: #FF8A3D;
         }
         .modal {
             display: none;
@@ -145,18 +111,6 @@ if ($result->num_rows > 0) {
             border-radius: 10px;
             color: black;
         }
-        .close {
-            color: black;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover {
-            color: black;
-            cursor: pointer;
-        }
-
-
     </style>
 </head>
 <body>

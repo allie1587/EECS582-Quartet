@@ -88,30 +88,6 @@ if ($store_id) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Barber Dashboard</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        .content-wrapper {
-            transition: margin-left 0.3s ease;
-            margin-left: 0;
-        }
-
-        .sidebar-active .content-wrapper {
-            margin-left: 200px; /* or match sidebar width */
-        }
-        h2 {
-            color: black;
-        }
-    </style>
   </head>
   <body>
     <div class="content-wrapper">

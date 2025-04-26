@@ -5,7 +5,6 @@ Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 04/08/2025
 Revisions:
     4/23/2025 - Brinley, refactoring
-
 --> 
 
 <?php
@@ -68,12 +67,6 @@ while ($row = $testimoniesResult->fetch_assoc()) {
         .review strong {
             display: block;
             font-size: 18px;
-        }
-        form {
-            margin-top: 10px;
-        }
-        button {
-            margin-right: 10px;
         }
     </style>
 </head>

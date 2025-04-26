@@ -221,7 +221,12 @@ tr:hover {
     gap: 10px;
 }
 
-
+form {
+    margin-top: 10px;
+}
+button {
+    margin-right: 10px;
+}
 #search-button:hover {
     background-color: #45a049;
 }
@@ -386,6 +391,14 @@ tr:hover {
 }
 .update-btn:hover {
     background-color: rgb(143, 48, 55);
+}
+
+.delete-btn {
+    background: #FF6A13;
+    color: white;
+}
+.delete-btn:hover {
+    background: #FF8A3D;
 }
 /* Files: employees.php */
 .add-btn {
