@@ -17,20 +17,16 @@ Status:
 | # | Steps | Expected result |
 | --- | --- | --- |
 | 1 | Log in as manager or barber user | Page should load successfully |
-| 2 | Verify table headers are present | Table should show "Client ID", "Client Name", "Email", and "Phone Number" columns |
-| 3 | Check if client data appears | Clients should appear same as in the database |
+| 2 | Verify table headers are present | Table should show "Order #", "Client Name", "Date", and "Total" "Status" "View" columns |
+| 3 | Check if prder data appears | Orders should appear same as in the database |
 
 ****************************************
 
-****************************************
-# Test Scenario 3: Test search functionality
+# Test Scenario 3: View Order Details
 Status: 
 
 | # | Steps | Expected result |
 | --- | --- | --- |
-| 1 | Log in as manager user | Page should load successfully |
-| 2 | Enter text in search box that matches a client name | Only matching clients should appear |
-| 3 | Enter text that matches a phone number | Only matching clients should appear |
-| 4 | Clear search box | All clients should reappear |
+| 1 | Click "View" button for an order | Should redirect to manage_orders.php with correct Order_ID |
 
 ****************************************
