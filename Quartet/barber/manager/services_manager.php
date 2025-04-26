@@ -14,6 +14,19 @@ require 'db_connection.php';
 require 'login_check.php';
 require 'role_check.php';
 
+$barber_id = $_SESSION['username'];
+$sql = "SELECT Role FROM Barber_Information WHERE Barber_ID = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $barber_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+
+if ($user['Role'] != "Manager") {
+    header("Location: services.php");
+    exit();
+}
+
 $sql = "SELECT * FROM Services";
 $result = $conn->query($sql);
 $services = [];

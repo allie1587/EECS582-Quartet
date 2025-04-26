@@ -15,22 +15,25 @@
         4/23/2025 - Brinley, refactoring
     Creation date: 2/27/2025
     Preconditions
-        Acceptable and unacceptable input values or types, and their meanings
+        Acceptable inputs: all
+        Unacceptable inputs: none
     Postconditions:
         None
     Error conditions:
-        FILL THIS
+        Database issues
     Side effects
         Session variables for year, week, month, and startDate are set.
-
-        Anything that the file affects outside of the file (i.e., database changes)
     Invariants
-        Any unconditional thing that must always be true for the file
+        None
     Known faults:
         None
 -->
 <?php
 session_start();
+include 'login_check.php';
+include 'role_check.php';
+
+// Get current date
 $dt = new DateTime;
 if (isset($_GET['year']) && isset($_GET['week'])) {
     $dt->setISODate($_GET['year'], $_GET['week']);
@@ -47,8 +50,6 @@ $_SESSION["month"] = $dt->format("m");
 $_SESSION["startDate"] = $dt->format("d");
 
 $monthYear = $dt->format('m/d/y'); // Get the numerical date
-
-include("barber_header.php");
 ?>
 
 <!DOCTYPE html>

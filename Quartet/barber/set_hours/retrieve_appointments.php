@@ -9,6 +9,13 @@
         4/2/2025 - Brinley, refactoring
         4/5/2025 - Brinley, fix weeks with mixed months
         4/7/2025 - Brinley, allow minute intervals
+        4/25/2025 - Brinley, validation
+    Preconditions: All
+    Postconditions: None
+    Error conditions: Database errors
+    Side effects: None
+    Invariants: None
+    Any known faults: None
 */
 session_start(); //start the session
 
@@ -19,11 +26,27 @@ header('Content-Type: application/json'); // Ensure JSON response
 
 //connect to the database
 require 'db_connection.php';
+require 'get_check.php';
+
+// Check role
+$barber_id = $_SESSION['username'];
+$sql = "SELECT Role FROM Barber_Information WHERE Barber_ID = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $barber_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
 
 // Validate input
 $week = $_GET['week'];
 $year = $_GET['year'];
 $barber = isset($_GET['barber']) ?  $_GET['barber'] : -1;
+
+// Check role
+if ($user['Role'] != "Manager" or $user['Role'] == "Barber" and $barber != $barber_id) {
+    header("Location: login.php");
+    exit();
+}
 
 // check whether barber exists
 $query = "SELECT COUNT(*) AS count FROM Barber_Information WHERE Barber_ID = ?";

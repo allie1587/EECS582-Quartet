@@ -11,19 +11,8 @@ Revisions:
 //Connects to the database
 session_start();
 require 'db_connection.php';
-if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit();
-}
-
-$barber_id = $_SESSION['username'];
-$sql = "SELECT * FROM Barber_Information WHERE Barber_ID = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $barber_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
-
+require 'login_check.php';
+require 'manager_check.php';
 
 $sql = "SELECT * FROM Barber_Information";
 $result = $conn->query($sql);
@@ -86,15 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_barber'])) {
     }
 }
 
-?>
-<?php 
-if ($user['Role'] == "Barber") {
-    header("Location: login.php");
-    exit();
-}
-else {
-    include("manager_header.php");
-}
 ?>
 
 <!DOCTYPE html>

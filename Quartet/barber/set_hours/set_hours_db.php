@@ -11,13 +11,12 @@
     Other sources of code: ChatGPT
     Creation date: 3/14/2025
     Preconditions:
-        Acceptable inputs: 
-        Unacceptable inputs:
-            Null values
+        Acceptable inputs: All
+        Unacceptable inputs: None
     Postconditions:
         None
-    Error/exceptions:
-    Side effects:
+    Error/exceptions: Database errors
+    Side effects: Changes the database
     Invariants: 
         None
     Known faults:
@@ -29,6 +28,8 @@ session_start();
 
 // connect to the database
 require 'db_connection.php';
+require 'login_check.php';
+require 'form_check.php';
 
 $daysOfWeek = range(0, 6); // initialize days of the week list
 
@@ -124,6 +125,6 @@ foreach ($times as $hour) { // create each row of times and checkboxees
 $conn->close();
 
 // redirect to the home page
-header("Location: set_hours.php");
+header("Location: set_hours_manager.php?barber=" . $barber);
 
 ?>

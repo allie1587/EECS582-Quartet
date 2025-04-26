@@ -13,10 +13,14 @@
         4/7/2025 - Brinley, allow minute intervals
         4/23/2025 - Brinley, refactoring
     Creation date: 2/27/2025
-    Preconditions: None
+    Preconditions: 
+        Acceptable inputs: All
+        Unacceptable inputs: None
     Postconditions: None
-    Error conditions: None
-    Side effects: None
+    Error conditions: 
+        Database issues
+    Side effects: 
+        Session variables for year, week, month, and startDate are set.
     Invariants: None
     Any known faults: None
 -->
@@ -41,6 +45,7 @@ $monthYear = $dt->format('m/d/y'); // Get the numerical date
 
 require 'db_connection.php';
 require 'login_check.php';
+require 'role_check.php';
 
 $barber_id = $_SESSION['username'];
 $sql = "SELECT Role FROM Barber_Information WHERE Barber_ID = ?";
@@ -50,13 +55,12 @@ $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 
-if ($user['Role'] == "Manager") {
-    include("manager_header.php");
-}
-else {
-    header("Location: login.php");
+if ($user['Role'] != "Manager") {
+    header("Location: set_hours.php");
     exit();
 }
+
+$barber = isset($_GET['barber']) ? $_GET['barber'] : $_SESSION['username'];
 ?>
 
 <!DOCTYPE html>
@@ -81,8 +85,8 @@ else {
         </div>
 
         <form method="POST" id="calendarForm">
-            <label>Enter barber's username to set or retrieve hours:</label>
-            <input type="text" value="<?php echo $_SESSION['username']?>" name="barber" id="barber_username">
+            <p>Enter barber's username to set or retrieve hours:</p>
+            <input type="text" value="<?php echo $barber?>" name="barber" id="barber_username">
             <button type="button" name="retrieve" onclick="retrieveAvailability()">Retrieve availability</button>
             <table class="calendar-table">
                 <tr>

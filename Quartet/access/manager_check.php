@@ -1,9 +1,9 @@
 <?php
 /*
-role_check.php
-A script to check a user's role.
+manager_check.php
+A script to check if a user is manager role.
 Authors: Brinley Hull, Allie Stratton, Jose Leyba, Ben Renner, Kyle Moore
-Creation date: 4/23/2025
+Creation date: 4/25/2025
 Revisions:
 Preconditions: None
 Postconditions: None
@@ -15,19 +15,19 @@ Any known faults: None
 
 session_start();
 require 'db_connection.php';
+
 $barber_id = $_SESSION['username'];
-$sql = "SELECT Barber_Information.Role FROM Barber_Information WHERE Barber_ID = ?";
+$sql = "SELECT Role FROM Barber_Information WHERE Barber_ID = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $barber_id);
 $stmt->execute();
-$stmt->bind_result($role);
-$stmt->fetch();
-$stmt->close();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
 
-if ($role == "Barber") {
-    include("barber_header.php");
-}
-else {
+if ($user['Role'] != "Manager") {
+    header("Location: login.php");
+    exit();
+} else {
     include("manager_header.php");
 }
 ?>
