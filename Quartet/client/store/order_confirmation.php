@@ -50,116 +50,161 @@ include("header.php");
 ?>
 <head>
     <!-- Title for Page --> 
-    <title>Order Confrimation</title>
+    <title>Order Confirmation</title>
     <link rel="stylesheet" href="style/style1.css">
     <style>
-        /* Style for page */
+        /* General page styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
 
-        .order-details {
+        .container {
             width: 80%;
-            max-width: 800px;
-            margin: 20px auto;
+            max-width: 1000px;
+            margin: 30px auto;
             padding: 20px;
             background: white;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        .order-details {
-            flex: 2;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 10px;
+
+        .order-conf{
+            text-align: center;
+            color: #333;
         }
+
+        .confirmation-info {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .confirmation-info h2 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .confirmation-info p {
+            margin: 5px 0;
+            font-size: 16px;
+            color: #555;
+        }
+
+        .order-details {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .order-details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .order-details th, .order-details td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .order-details th {
+            background-color: #f4f4f4;
+        }
+
+        .order-details img {
+            width: 50px;
+            height: auto;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
         .total-price {
             font-size: 18px;
             font-weight: bold;
             text-align: right;
-            margin-bottom: 20px;
+            margin-top: 20px;
         }
-        .btn-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
+
+        .contact-info p {
+            font-size: 16px;
+            color: #555;
         }
-        img {
-            max-width: 50px;
-            height: auto;
-            border-radius: 5px;
-        }
-        .confirmation-info {
-            margin-bottom: 20px;
-        }
-        .confirmation-info h2 {
-            margin-bottom: 10px;
-        }
-        .confirmation-info p {
-            margin: 5px 0;
+
+        .contact-info h2 {
+            margin-top: 20px;
+            color: #333;
         }
     </style>
 </head>
 <body>
-    <br>
-    <br>
-    <br>
-    <!-- Gives instructions to client about pick-up -->
-    <h1>Thank you for your order!</h1>
-    <div class="confirmation-info">
-        <h2><strong>Confirmation Number:</strong> #<?php echo $order['Order_ID']; ?></h2>
-        <p>We've received your order and are preparing it for pickup.</p>
-    </div>
-    <div class="confirmation-info">
+    <div class="container">
+        <h1 class="order-conf">Thank you for your order!</h1>
+        
+        <div class="confirmation-info">
+            <h2><strong>Confirmation Number:</strong> #<?php echo $order['Order_ID']; ?></h2>
+            <p>We've received your order and are preparing it for pickup.</p>
+        </div>
+
+        <div class="confirmation-info">
             <h2>Pickup Location:</h2>
             <p><strong>Store Name:</strong> <?php echo $store['Name']; ?></p>
             <p><strong>Address:</strong> <?php echo $store['Address']; ?>, <?php echo $store['City']; ?>, <?php echo $store['State']; ?> <?php echo $store['Zip_Code']; ?></p>
             <p><strong>Phone:</strong> <?php echo $store['Phone']; ?></p>
         </div>
-    <div class="confirmation-info">
-        <h2>Pickup Instructions:</h2>
-        <p>1. An email will be sent to <strong><?php echo $order['Email']; ?></strong> when your order is ready.</p>
-        <p>2. Bring your confirmation number (<strong><?php echo $order['Order_ID']; ?></strong>) and a valid ID when picking up your order.</p>
-        <p>3. Please do not come to the store until you receive confirmation that your order is ready.</p>
-    </div>
-    <!-- Displays the order -->
-    <div class="order-details">
-        <h2>Order Details</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($items as $item): ?>
+
+        <div class="confirmation-info">
+            <h2>Pickup Instructions:</h2>
+            <p>1. An email will be sent to <strong><?php echo $order['Email']; ?></strong> when your order is ready.</p>
+            <p>2. Bring your confirmation number (<strong><?php echo $order['Order_ID']; ?></strong>) and a valid ID when picking up your order.</p>
+            <p>3. Please do not come to the store until you receive confirmation that your order is ready.</p>
+        </div>
+
+        <div class="order-details">
+            <h2>Order Details</h2>
+            <table>
+                <thead>
                     <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($items as $item): ?>
+                        <tr>
+                            <td>
+                                <img src="<?php echo $item['Image']; ?>" alt="<?php echo $item['Name']; ?>">
+                                <?php echo $item['Name']; ?>
+                            </td>
+                            <td>
+                                x<?php echo $item['Quantity']; ?>    
+                            </td>
+                            <td>
+                                $<?php echo number_format($item['Price'], 2); ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    <tr>
+                        <td colspan="2" style="text-align: right; font-weight: bold;">Total:</td>
                         <td>
-                            <img src="<?php echo $item['Image']; ?>" alt="<?php echo $item['Name']; ?>">
-                            <?php echo $item['Name']; ?>
-                        </td>
-                        <td>
-                            x<?php echo $item['Quantity']; ?>    
-                        </td>
-                        <td>
-                            $<?php echo number_format($item['Price'], 2); ?>
+                            $<?php echo number_format($order['Total_Price'], 2); ?>
                         </td>
                     </tr>
-                <?php endforeach; ?>
-                <tr>
-                    <div class="total-price">
-                        Total: $<?php echo number_format($order['Total_Price'], 2); ?>
-                    </div>
-                </tr>
+                </tbody>
+            </table>
+        </div>
 
-            </tbody>
-        </table>
+        <div class="contact-info">
+            <h2>Contact Us</h2>
+            <p>If you have any questions, please contact us at:</p>
+            <p><strong>Email:</strong> <?php echo $store['Email']; ?></p>
+            <p><strong>Phone:</strong> <?php echo $store['Phone']; ?></p>
+        </div>
     </div>
-    <!-- Shows the user ways to contact the store -->
-    <div class="confirmation-info">
-        <h2>Contact Us</h2>
-        <p>If you have any questions, please contact us at:</p>
-        <p><strong>Email:</strong> <?php echo $store['Email']; ?></p>
-        <p><strong>Phone:</strong> <?php echo $store['Phone']; ?></p>
-    </div>
-    
 </body>
+</html>

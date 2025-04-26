@@ -134,8 +134,7 @@ input, textarea {
 
 button[type="submit"],
 .btn {
-    background-color: #007bff;
-    border-color: #007bff;
+    background-color: #c4454d;
     color: white;
     padding: 10px 20px;
     border-radius: 4px;
@@ -146,8 +145,7 @@ button[type="submit"],
 
 button[type="submit"]:hover,
 .btn:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
+    background: rgb(143, 48, 55);
 }
 
 .btn-danger {
@@ -156,7 +154,7 @@ button[type="submit"]:hover,
 }
 
 .btn-danger:hover {
-    background-color: #c82333;
+    background: rgb(143, 48, 55);
     border-color: #bd2130;
 }
 button {
@@ -261,8 +259,8 @@ button:hover {
     margin-bottom: 20px;
 }
 h2 {
-    color:white;
+    color:rgb(0, 0, 0);
 }
 h1{
-    color: white;
+    color: rgb(255, 255, 255);
 }

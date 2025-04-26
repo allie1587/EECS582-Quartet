@@ -120,11 +120,16 @@ include('header.php');
             top: 50%; 
             left: 50%; 
             transform: translate(-50%, -50%); 
-            background: #222; 
+            background: rgba(220, 217, 217, 0.97); /* white background with 90% opacity */
             padding: 20px; 
             border-radius: 10px; 
             text-align: center; 
             width: 300px; 
+            color: black; /* make text black */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* soft shadow */
+        }
+        .popup h2 {
+            color: black;
         }
         .popup img { 
             max-width: 100%; 
@@ -167,6 +172,37 @@ include('header.php');
         }
         #black-text {
             color: black;
+        }
+        .floating-cart-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: #c4454d;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+        .floating-cart-button:hover {
+            background-color: rgb(143, 48, 55);
+        }
+        #search {
+            width: 400px;
+            display: block;
+            margin: 20px auto;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
         }
     </style>
     <!-- Functions needed-->
@@ -222,6 +258,7 @@ include('header.php');
                     <button type="submit" class="btn add-to-cart-btn" onclick="event.stopPropagation();">Add to Cart</button>
                 </form>
             </div>
+
         <?php } ?>
     </div>
     <!--Popup that appears/dissapears when clicking a product-->
@@ -232,5 +269,8 @@ include('header.php');
         <p id="popup-description"></p>
         <button onclick="closePopup()">Close</button>
     </div>
+    <button class="floating-cart-button" onclick="location.href='cart.php'">
+        <i class="fa-solid fa-cart-shopping"></i>
+    </button>
 </body>
 </html>

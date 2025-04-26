@@ -39,8 +39,9 @@ session_start();
         }
         .reviews {
             padding: 20px;
-            margin: 20px;
+            margin: 20px 0;
             border-radius: 10px;
+
         }
         .average-rating {
             font-size: 20px;
@@ -154,29 +155,33 @@ session_start();
         </form>
     </div>
     <p>Do you have any feedback for us? We love to hear your opinion in our services!<p>
+    
     <h1 id="black-text">Reviews</h1>
-    <div class="reviews">
-        <form action="submit_review.php" method="POST">
-            <div class="form-group">
-                <label for="Name">Name:</label>
-                <input type="text" id="Name" name="Name">
-                <div class="rating-container">
-                    <label for="Rating">Rating:</label>
-                    <div class="stars">
-                        <span class="star" data-value="1">&#9733;</span>
-                        <span class="star" data-value="2">&#9733;</span>
-                        <span class="star" data-value="3">&#9733;</span>
-                        <span class="star" data-value="4">&#9733;</span>
-                        <span class="star" data-value="5">&#9733;</span>
+    <div class="container">
+        <div class="reviews">
+            <form action="submit_review.php" method="POST">
+            <form action="submit_review.php" method="POST">
+                <div class="form-group">
+                    <label for="Name">Name:</label>
+                    <input type="text" id="Name" name="Name">
+                    <div class="rating-container">
+                        <label for="Rating">Rating:</label>
+                        <div class="stars">
+                            <span class="star" data-value="1">&#9733;</span>
+                            <span class="star" data-value="2">&#9733;</span>
+                            <span class="star" data-value="3">&#9733;</span>
+                            <span class="star" data-value="4">&#9733;</span>
+                            <span class="star" data-value="5">&#9733;</span>
+                        </div>
+                        <input type="hidden" id="Rating" name="Rating" required>
                     </div>
-                    <input type="hidden" id="Rating" name="Rating" required>
                 </div>
-            </div>
-            <br>
-            <label for="Review">Add your Review Here!</label><br>
-            <textarea type="text" id="Review" name="Review" required></textarea><br><br>
-            <button type="submit">Send your Review!</button>
-        </form>
+                <br>
+                <label for="Review">Add your Review Here!</label><br>
+                <textarea type="text" id="Review" name="Review" required></textarea><br><br>
+                <button type="submit">Send your Review!</button>
+            </form>
+        </div>
     </div>
     <br><br><br><br><br><br><br><br><br>
     <br><br><br><br><br><br><br><br><br>

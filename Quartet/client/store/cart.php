@@ -37,6 +37,16 @@ foreach ($cart_items as $item) {
     <link rel="stylesheet" href="style/style1.css">
     <title>Shopping Cart</title>
     <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
 
         .cart-container {
             width: 90%;
@@ -77,17 +87,38 @@ foreach ($cart_items as $item) {
             justify-content: space-between;
             gap: 10px;
         }
+        .quantity-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
         .quantity-btn {
-            padding: 5px 10px;
-            background-color: #007BFF;
-            color: #fff;
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            font-size: 18px;
+            color: white;
+            background-color: #c4454d;
             border: none;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 50%; /* Make them circular */
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: 0.3s;
         }
+
         .quantity-btn:hover {
-            background-color: #0056b3;
+            background-color: rgb(143, 48, 55);
+        }
+
+        .quantity-number {
+            font-size: 18px;
+            min-width: 20px;
+            text-align: center;
+            color: black;
         }
         .remove-btn {
             background-color: #FF6A13;
@@ -136,17 +167,23 @@ foreach ($cart_items as $item) {
                         </td>
                         <td>$<?php echo number_format($item['Price'], 2); ?></td>
                         <td>
-                            <form action="update_quantity.php" method="POST" style="display:inline;">
-                                <input type="hidden" name="cart_id" value="<?php echo $item['Cart_ID']; ?>">
-                                <input type="hidden" name="action" value="decrease">
-                                <button type="submit" class="quantity-btn">-</button>
-                            </form>
-                            <?php echo $item['Quantity']; ?>
-                            <form action="update_quantity.php" method="POST" style="display:inline;">
-                                <input type="hidden" name="cart_id" value="<?php echo $item['Cart_ID']; ?>">
-                                <input type="hidden" name="action" value="increase">
-                                <button type="submit" class="quantity-btn">+</button>
-                            </form>
+                            <div class="quantity-wrapper">
+                                <form action="update_quantity.php" method="POST" style="display:inline;">
+                                    <input type="hidden" name="cart_id" value="<?php echo $item['Cart_ID']; ?>">
+                                    <input type="hidden" name="action" value="decrease">
+                                    <button type="submit" class="quantity-btn">-</button>
+                                </form>
+
+                                <div class="quantity-number">
+                                    <?php echo $item['Quantity']; ?>
+                                </div>
+
+                                <form action="update_quantity.php" method="POST" style="display:inline;">
+                                    <input type="hidden" name="cart_id" value="<?php echo $item['Cart_ID']; ?>">
+                                    <input type="hidden" name="action" value="increase">
+                                    <button type="submit" class="quantity-btn">+</button>
+                                </form>
+                            </div>
                         </td>
                         <td>$<?php echo number_format($item['Price'] * $item['Quantity'], 2); ?></td>
                         <td>

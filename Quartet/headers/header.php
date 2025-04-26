@@ -138,7 +138,6 @@ Revisions:
             <button onclick="location.href='store.php'">Store</button>
             <button onclick="location.href='barbers.php'">About Barbers</button>
             <button onclick="location.href='feedback.php'">Contact us</button>
-            <button onclick="location.href='cart.php'"><i class="fa-solid fa-cart-shopping"></i></button>
         </div>
         <!--Stylized Button to be circular, when clicked takes you to login.html-->
         <div class="login-container">

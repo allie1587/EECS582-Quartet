@@ -279,10 +279,13 @@ include("header.php");
         .confirm-btn:hover {
             background: rgb(143, 48, 55);
         }
+        .order-title {
+            color: black;
+        }
     </style>
 </head>
 <body>
-<h1>Place Your Order</h1>
+<h1 class="order-title">Place Your Order</h1>
 <!-- Form for client information -->
 <div class="cart-container">
     <div class="order-details">
