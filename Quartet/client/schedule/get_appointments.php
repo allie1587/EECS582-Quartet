@@ -1,4 +1,19 @@
 <?php
+/*  
+    get_appointments.php
+    A program to connect to the database and return the count of the appointments for a certain date.
+    Authors: Brinley Hull
+    Creation date: 2/27/2025
+    Revisions:
+        3/16/2025 - Brinley, add filtering
+        3/28/2025 - Brinley, remove confirmed appointments
+        4/2/2025 - Brinley, refactoring
+        4/10/2025 - Brinley, hide overlapping appointment times
+        4/12/2025 - Brinley, fix get appointment logic
+        4/14/2025 - Brinley, updated filtering
+        4/26/2025 - Brinley, updated filtering
+*/
+
 session_start(); // Start the session
 
 require 'db_connection.php';
@@ -51,29 +66,29 @@ $query = "SELECT * FROM Appointment_Availability a
                 AND c.Day = ?
                 AND c.Year = ?)";
 
-$params = [];
-$paramTypes = "";
+$params = [$weekday, $month, $day, $year, $month, $day, $year, $weekday, $month, $day, $year];
+$paramTypes = "iiiiiiiiiii";
 
 // Add barbers filter (multiple or single)
-$barberID = isset($_SESSION['barberFilter']) ? $_SESSION['barberFilter'] : [];
+$barberID = isset($_SESSION['barberFilter']) ? $_SESSION['barberFilter'] : ["None"];
 if (!is_array($barberID)) {
     $barberID = [$barberID];
 }
-$filterByBarber = !empty($barberID) && $barberID !== ["None"];
+$filterByBarber = !empty($barberID) && !in_array("None", $barberID);
 if ($filterByBarber) {
     $placeholders = implode(',', array_fill(0, count($barberID), '?'));
     $query .= " AND a.Barber_ID IN ($placeholders)";
     foreach ($barberID as $id) {
         $params[] = $id;
-        $paramTypes .= "i"; // Barber ID is an integer
+        $paramTypes .= "s"; // Barber ID is an integer
     }
 }
 
 // Handle service filter (adjust valid barbers for the service)
 $filterByService = $service !== "None";
-if ($filterByService && empty($barberID)) {
+if ($filterByService) {
     // Fetch valid barbers for the selected service
-    $validBarbersQuery = "SELECT Barber_ID FROM Service_Barber WHERE Service_ID = ?";
+    $validBarbersQuery = "SELECT Barber_ID FROM Barber_Services WHERE Service_ID = ?";
     $validBarbersStmt = $conn->prepare($validBarbersQuery);
     $validBarbersStmt->bind_param('i', $service); // assuming $service is an integer
     $validBarbersStmt->execute();
@@ -91,13 +106,13 @@ if ($filterByService && empty($barberID)) {
         $query .= " AND a.Barber_ID IN ($placeholders)";
         foreach ($validBarbers as $id) {
             $params[] = $id;
-            $paramTypes .= "i"; // Barber ID is an integer
+            $paramTypes .= "s"; 
         }
     }
 }
 
 // Handle time filter (multiple or single)
-if (!empty($time)) {
+if (!empty($time) && !in_array("None", $time)) {
     $placeholders = implode(',', array_fill(0, count($time), '?'));
     $query .= " AND a.Time IN ($placeholders)";
     foreach ($time as $t) {
@@ -105,10 +120,6 @@ if (!empty($time)) {
         $paramTypes .= "i"; // Time is an integer
     }
 }
-
-// Add the rest of the date and filter parameters
-$params = array_merge($params, [$weekday, $month, $day, $year, $month, $day, $year]);
-$paramTypes .= "iiiiiii";
 
 // Finalize and execute query
 $stmt = $conn->prepare($query);
@@ -125,14 +136,7 @@ while ($row = $result->fetch_assoc()) {
     $appointments[] = $row;
 }
 
-// Add the filter settings and appointments to the response
-$response = [
-    "barberID" => $barberID,
-    "service" => $service,
-    "time" => $time,
-    "appointments" => $appointments
-];
-echo json_encode($response, JSON_PRETTY_PRINT);
+echo json_encode($appointments, JSON_PRETTY_PRINT);
 $stmt->close();
 $conn->close();
 ?>
