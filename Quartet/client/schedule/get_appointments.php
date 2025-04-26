@@ -1,18 +1,5 @@
 <?php
-/*  
-    get_appointments.php
-    A program to connect to the database and return the count of the appointments for a certain date.
-    Authors: Brinley Hull
-    Creation date: 2/27/2025
-    Revisions:
-        3/16/2025 - Brinley, add filtering
-        3/28/2025 - Brinley, remove confirmed appointments
-        4/2/2025 - Brinley, refactoring
-        4/10/2025 - Brinley, hide overlapping appointment times
-        4/12/2025 - Brinley, fix get appointment logic
-        4/14/2025 - Brinley, updated filtering
-*/
-session_start(); //start the session
+session_start(); // Start the session
 
 require 'db_connection.php';
 
@@ -26,23 +13,21 @@ $year = isset($_GET['year']) ? (int)$_GET['year'] : -1;
 $month = isset($_GET['month']) ? (int)$_GET['month'] : -1;
 $day = isset($_GET['day']) ? (int)$_GET['day'] : -1;
 $weekday = isset($_GET['weekday']) ? $_GET['weekday'] : date('w', strtotime("$year-$month-$day"));
-$barberID = $_SESSION['barberFilter'];
-$service = $_SESSION['serviceFilter'];
-$time = isset($_SESSION['timeFilter']) ? ($_SESSION['timeFilter'] == "" ? null : $_SESSION['timeFilter']) : null;
-
-$validBarbers = [];
-if ($service !== "None") {
-    $stmt = $conn->prepare("SELECT Barber_ID FROM Barber_Services WHERE Service_ID = ?");
-    $stmt->bind_param("i", $service);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    while ($row = $result->fetch_assoc()) {
-        $validBarbers[] = $row['Barber_ID'];
-    }
-    $stmt->close();
+$barberID = isset($_SESSION['barberFilter']) ? $_SESSION['barberFilter'] : [];
+$service = isset($_SESSION['serviceFilter']) ? $_SESSION['serviceFilter'] : "None";
+// Ensure timeFilter is treated as an array
+$time = isset($_SESSION['timeFilter']) ? $_SESSION['timeFilter'] : null;
+if (!is_array($time)) {
+    $time = [$time]; // Ensure it's an array
 }
 
-// Prepare SQL query
+// Return the current filter settings for error checking
+$response = [
+    "barberID" => $barberID,
+    "service" => $service,
+    "time" => $time,
+];
+
 $query = "SELECT * FROM Appointment_Availability a 
           WHERE Available='Y' 
           AND ((Weekday=? AND NOT EXISTS (SELECT 1 FROM Appointment_Availability b
@@ -64,78 +49,90 @@ $query = "SELECT * FROM Appointment_Availability a
                 AND (c.Time*60 + c.Minute + s.Duration > a.Time*60 + a.Minute AND c.Time*60 + c.Minute <= a.Time*60 + a.Minute)
                 AND c.Month = ?
                 AND c.Day = ?
-                AND c.Year = ?)"; // AND NOT EXISTS statement removes confirmed or nonavailble appointments from list
+                AND c.Year = ?)";
 
-// Filter by one barber
-$params = [$weekday, $month, $day, $year, $month, $day, $year, $weekday, $month, $day, $year];
-$paramTypes = "iiiiiiiiiii";
+$params = [];
+$paramTypes = "";
 
-$filterByBarber = $barberID !== "None";
+// Add barbers filter (multiple or single)
+$barberID = isset($_SESSION['barberFilter']) ? $_SESSION['barberFilter'] : [];
+if (!is_array($barberID)) {
+    $barberID = [$barberID];
+}
+$filterByBarber = !empty($barberID) && $barberID !== ["None"];
+if ($filterByBarber) {
+    $placeholders = implode(',', array_fill(0, count($barberID), '?'));
+    $query .= " AND a.Barber_ID IN ($placeholders)";
+    foreach ($barberID as $id) {
+        $params[] = $id;
+        $paramTypes .= "i"; // Barber ID is an integer
+    }
+}
+
+// Handle service filter (adjust valid barbers for the service)
 $filterByService = $service !== "None";
+if ($filterByService && empty($barberID)) {
+    // Fetch valid barbers for the selected service
+    $validBarbersQuery = "SELECT Barber_ID FROM Service_Barber WHERE Service_ID = ?";
+    $validBarbersStmt = $conn->prepare($validBarbersQuery);
+    $validBarbersStmt->bind_param('i', $service); // assuming $service is an integer
+    $validBarbersStmt->execute();
+    $validBarbersResult = $validBarbersStmt->get_result();
 
-// CASE 1: Filter by a specific barber only
-if ($filterByBarber && !$filterByService) {
-    $query .= " AND a.Barber_ID = ?";
-    $params[] = $barberID;
-    $paramTypes .= "s";
+    $validBarbers = [];
+    while ($row = $validBarbersResult->fetch_assoc()) {
+        $validBarbers[] = $row['Barber_ID'];
+    }
 
-// CASE 2: Filter by barbers who offer the selected service
-} elseif (!$filterByBarber && $filterByService) {
     if (empty($validBarbers)) {
-        $query .= " AND 1=0";
+        $query .= " AND 1=0"; // No barbers available for this service
     } else {
         $placeholders = implode(',', array_fill(0, count($validBarbers), '?'));
         $query .= " AND a.Barber_ID IN ($placeholders)";
         foreach ($validBarbers as $id) {
             $params[] = $id;
-            $paramTypes .= "s";
+            $paramTypes .= "i"; // Barber ID is an integer
         }
     }
+}
 
-// CASE 3: Filter by both barber and service (make sure this barber offers the service)
-} elseif ($filterByBarber && $filterByService) {
-    if (in_array($barberID, $validBarbers) && !empty($validBarbers)) {
-        $query .= " AND a.Barber_ID = ?";
-        $params[] = $barberID;
-        $paramTypes .= "s";
-    } else {
-        // Barber doesn't offer this service, so make query return nothing
-        $query .= " AND 1=0";
+// Handle time filter (multiple or single)
+if (!empty($time)) {
+    $placeholders = implode(',', array_fill(0, count($time), '?'));
+    $query .= " AND a.Time IN ($placeholders)";
+    foreach ($time as $t) {
+        $params[] = $t;
+        $paramTypes .= "i"; // Time is an integer
     }
 }
 
-if ($time !== null) {
-    $query .= " AND Time=?";
-    $params[] = $time;
-    $paramTypes .= "i";
-}
+// Add the rest of the date and filter parameters
+$params = array_merge($params, [$weekday, $month, $day, $year, $month, $day, $year]);
+$paramTypes .= "iiiiiii";
 
-$query .= " ORDER BY Time, Minute";
-
-// Prepare and bind
+// Finalize and execute query
 $stmt = $conn->prepare($query);
 if (!$stmt) {
     die(json_encode(["error" => "SQL prepare failed: " . $conn->error]));
 }
 
-// Bind dynamically
 $stmt->bind_param($paramTypes, ...$params);
-
 $stmt->execute();
 $result = $stmt->get_result();
-if (!$result) {
-    die(json_encode(["error" => "SQL execution failed: " . $stmt->error]));
-}
 
-// Fetch all rows
 $appointments = [];
 while ($row = $result->fetch_assoc()) {
     $appointments[] = $row;
 }
 
-// Return JSON response
-echo json_encode($appointments, JSON_PRETTY_PRINT);
-
+// Add the filter settings and appointments to the response
+$response = [
+    "barberID" => $barberID,
+    "service" => $service,
+    "time" => $time,
+    "appointments" => $appointments
+];
+echo json_encode($response, JSON_PRETTY_PRINT);
 $stmt->close();
 $conn->close();
 ?>
