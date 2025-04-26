@@ -10,6 +10,7 @@ Revisions:
     03/15/2025 -- Alexandra Stratton -- Added error messaging 
     04/11/2025 -- Alexandra Stratton -- Implement heading and fix structure
     4/23/2025 - Brinley, refactoring
+    4/26/2025 - Brinley, refactoring and fix redirect
 Other Sources: ChatGPT
 -->
 <?php
@@ -17,7 +18,10 @@ Other Sources: ChatGPT
 session_start();
 require 'db_connection.php';
 require 'login_check.php';
-require 'role_check.php';
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 
 $barber_id = $_SESSION['username'];
 $sql = "SELECT * FROM Barber_Information WHERE Barber_ID = ?";
@@ -85,8 +89,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bind_param("sssds", $product_id, $product_name, $product_description, $product_price, $product_image);
     // Execute the statement and check if the insertion was successful
     if ($stmt->execute()) {
-        echo "Product added successfully!";
-        // Redirect to the product page after inserting infor into database
         header('Location: product.php');
         exit();
     } else {
@@ -99,6 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!-- Title for Page --> 
     <link rel="stylesheet" href="style/barber_style.css">
     <title>Add Product</title>
+    <script src="validate.js"></script>
     <!-- Internal/External CSS for styling the page -->
     <style>
         body {
@@ -211,14 +214,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <form action="add_product.php" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
                 <label for="product_name">Product Name:</label>
                 <input type="text" name="product_name" id="product_name" required onchange="validateName()">
-                <span id="name-error" style="color: red; display: none;"></span>
+                <span id="product_name-error" style="color: red; display: none;"></span>
                 <br>
                 <label for="product_description">Product Description:</label>
                 <textarea name="product_description" required></textarea>
                 <br>
                 <label for="product_price">Product Price:</label>
                 <input type="number" name="product_price" id="product_price" step="0.01" required onchange="validatePrice()">
-                <span id="price-error" style="color: red; display: none;"></span>
+                <span id="product_price-error" style="color: red; display: none;"></span>
                 <br>
                 <label for="product_image">Product Image:</label>
                 <div class="file-input-container">
@@ -236,6 +239,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <a href="product.php" class="back-btn"><button class="back-btn">Back to Product List</button></a>
         </div>
         <script>
+            // Validate the entire form
+            function validateForm(event) {
+                const isNameValid = validateName.call(document.getElementById('product_name'));
+                const isPriceValid = validatePrice.call(document.getElementById('product_price'));
+                const isImageValid = validateImage();
+
+                if (!isNameValid || !isPriceValid || !isImageValid) {
+                    event.preventDefault(); // Prevent form submission
+                    return false;
+                }
+                return true; // Allow form submission
+            }
             // Function to display the selected file name
             function displayFileName() {
                 const fileInput = document.getElementById('file-input');
@@ -247,76 +262,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     fileNameDisplay.textContent = '';
                 }
             }
-
-            // Validate product name
-            function validateName() {
-                const nameInput = document.getElementById('product_name');
-                const nameError = document.getElementById('name-error');
-                if (nameInput.value.length > 70) {
-                    nameError.textContent = "Maximum 70 characters allowed";
-                    nameError.style.display = 'inline';
-                    return false;
-                } else {
-                    nameError.style.display = 'none';
-                    return true;
-                }
-            }
-
-            // Validate product price
-            function validatePrice() {
-                const priceInput = document.getElementById('product_price');
-                const priceError = document.getElementById('price-error');
-                if (priceInput.value <= 0 || isNaN(priceInput.value)) {
-                    priceError.textContent = "Price must be a positive number";
-                    priceError.style.display = 'inline';
-                    return false;
-                } else {
-                    priceError.style.display = 'none';
-                    return true;
-                }
-            }
-            // Validate product image
-            function validateImage() {
-                const imageInput = document.getElementById('file-input');
-                const imageError = document.getElementById('image-error');
-                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-                const maxSize = 10 * 1024 * 1024; // 10MB
-
-                if (imageInput.files.length > 0) {
-                    const file = imageInput.files[0];
-                    if (!allowedTypes.includes(file.type)) {
-                        imageError.textContent = "Only JPEG, PNG, and GIF images are allowed.";
-                        imageError.style.display = 'inline';
-                        return false;
-                    } else if (file.size > maxSize) {
-                        imageError.textContent = "File size must be less than 10MB.";
-                        imageError.style.display = 'inline';
-                        return false;
-                    } else {
-                        imageError.style.display = 'none';
-                        displayFileName();
-                        return true;
-                    }
-                } else {
-                    imageError.textContent = "Please upload an image.";
-                    imageError.style.display = 'inline';
-                    return false;
-                }
-            }
-
-            // Validate the entire form
-            function validateForm(event) {
-                const isNameValid = validateName();
-                const isPriceValid = validatePrice();
-                const isImageValid = validateImage();
-
-                if (!isNameValid || !isPriceValid || !isImageValid) {
-                    event.preventDefault(); // Prevent form submission
-                    return false;
-                }
-                return true; // Allow form submission
-            }
-
             // Attach the validateForm function to the form's submit event
             document.querySelector('form').addEventListener('submit', validateForm);
         </script>

@@ -8,8 +8,28 @@ Revisions:
 -->
 <?php
 //Connects to the database
-require 'db_connection.php';
 session_start();
+// Connects to the database
+require 'db_connection.php';
+require 'login_check.php';
+require 'get_check.php';
+
+// Check role
+$barber_id = $_SESSION['username'];
+$sql = "SELECT Role FROM Barber_Information WHERE Barber_ID = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $barber_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+
+$barber = isset($_GET['barber']) ?  $_GET['barber'] : $_SESSION['username'];
+
+// Check role
+if ($user['Role'] != "Manager" && $barber != $barber_id) {
+    header("Location: login.php");
+    exit();
+}
 
 if (isset($_GET['Service_ID'])) {
     //Gets the service_id

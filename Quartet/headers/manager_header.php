@@ -3,6 +3,7 @@ Authors: Alexandra, Jose, Brinley, Ben, Kyle
 Date: 03/28/2025
 Revisions:
      03/38/2025 -- Alexandra Stratton -- created manager_header.php
+     4/26/2025 - Brinley, fix bug with null content id
  Purpose: the header for the manager side.
 
  -->
@@ -171,14 +172,16 @@ for (let i = 0; i < dropdown.length; i++) {
 
 function openNav() {
   document.getElementById("sideNav").style.width = "250px";
-  document.getElementById("content").style.marginLeft = "250px";
-  
-
+  if (document.getElementById("content")) {
+    document.getElementById("content").style.marginLeft = "250px";
+  }
 }
 
 function closeNav() {
   document.getElementById("sideNav").style.width = "0";
-  document.getElementById("content").style.marginLeft = "0";
+  if (document.getElementById("content")) {
+    document.getElementById("content").style.marginLeft = "0";
+  }
 }
 document.addEventListener("DOMContentLoaded", function () {
     const toggleBtn = document.getElementById("sidebarToggle");

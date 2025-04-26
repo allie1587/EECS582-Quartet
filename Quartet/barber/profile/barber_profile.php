@@ -7,6 +7,7 @@ Revisions:
     04/10/2025 -- Alexandra Stratton -- Reduced the complexity
     4/7/2025 - Brinley, update styling
     4/23/2025 - Brinley, refactoring
+    4/26/2025 - Brinley, refactoring
 Purpose: Allows a barber to update their profile
 -->
 <?php
@@ -189,6 +190,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Update'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="style/barber_style.css">
+    <script src="validate.js"></script>
 </head>
 
 <body>
@@ -215,17 +217,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Update'])) {
                     </div>
                     <div class="form-group">
                         <label for="Email">Email:</label>
-                        <input type="email" name="Email" id="Email"
+                        <input type="email" name="Email" id="email"
                             value="<?= htmlspecialchars($barber['Email'] ?? '') ?>"
                             onchange="validateEmail()">
-                        <span class="error" id="Email-error"></span>
+                        <span class="error" id="email-error"></span>
                     </div>
                     <div class="form-group">
                         <label for="Phone">Phone:</label>
-                        <input type="tel" name="Phone" id="Phone"
+                        <input type="tel" name="Phone" id="phone"
                             value="<?= htmlspecialchars($barber['Phone_Number'] ?? '') ?>"
                             onchange="validatePhone()">
-                        <span class="error" id="Phone-error"></span>
+                        <span class="error" id="phone-error"></span>
                     </div>
                 </div>
 
@@ -300,103 +302,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Update'])) {
         </div>
 
         <script>
-            // Validate name fields (First and Last)
-            function validateName() {
-                const nameInput = document.getElementById(this.id);
-                const nameError = document.getElementById(this.id + '-error');
-                const nameValue = nameInput.value.trim();
-
-                if (!nameValue) {
-                    nameError.textContent = "This field is required";
-                    nameError.style.display = 'block';
-                    nameInput.classList.add('invalid');
-                    return false;
-                } else if (!/^[A-Za-z\s'-]+$/.test(nameValue)) {
-                    nameError.textContent = "Only letters and basic punctuation allowed";
-                    nameError.style.display = 'block';
-                    nameInput.classList.add('invalid');
-                    return false;
-                } else if (nameValue.length > 50) {
-                    nameError.textContent = "Maximum 50 characters allowed";
-                    nameError.style.display = 'block';
-                    nameInput.classList.add('invalid');
-                    return false;
-                } else {
-                    nameError.style.display = 'none';
-                    nameInput.classList.remove('invalid');
-                    return true;
-                }
-            }
-
-            // Validate email
-            function validateEmail() {
-                const emailInput = document.getElementById('Email');
-                const emailError = document.getElementById('Email-error');
-                const emailValue = emailInput.value.trim();
-
-                if (emailValue && !/^\S+@\S+\.\S+$/.test(emailValue)) {
-                    emailError.textContent = "Invalid email format";
-                    emailError.style.display = 'block';
-                    emailInput.classList.add('invalid');
-                    return false;
-                } else {
-                    emailError.style.display = 'none';
-                    emailInput.classList.remove('invalid');
-                    return true;
-                }
-            }
-
-            // Validate phone
-            function validatePhone() {
-                const phoneInput = document.getElementById('Phone');
-                const phoneError = document.getElementById('Phone-error');
-                const phoneValue = phoneInput.value.trim();
-                const digits = phoneValue.replace(/\D/g, '');
-
-                if (phoneValue && digits.length !== 10) {
-                    phoneError.textContent = "Phone must be 10 digits";
-                    phoneError.style.display = 'block';
-                    phoneInput.classList.add('invalid');
-                    return false;
-                } else {
-                    phoneError.style.display = 'none';
-                    phoneInput.classList.remove('invalid');
-                    return true;
-                }
-            }
-
-            // Validate photo upload
-            function validatePhoto() {
-                const photoInput = document.getElementById('Photo');
-                const photoError = document.getElementById('Photo-error');
-                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-                const maxSize = 10 * 1024 * 1024; // 10MB
-
-                if (photoInput.files.length > 0) {
-                    const file = photoInput.files[0];
-                    if (!allowedTypes.includes(file.type)) {
-                        photoError.textContent = "Only JPEG, PNG, and GIF images are allowed";
-                        photoError.style.display = 'block';
-                        return false;
-                    } else if (file.size > maxSize) {
-                        photoError.textContent = "File size must be less than 10MB";
-                        photoError.style.display = 'block';
-                        return false;
-                    } else {
-                        photoError.style.display = 'none';
-                        return true;
-                    }
-                }
-                return true; 
-            }
-
             // Form submission validation
             function validateForm(event) {
                 const isFirstNameValid = validateName.call(document.getElementById('First_Name'));
                 const isLastNameValid = validateName.call(document.getElementById('Last_Name'));
                 const isEmailValid = validateEmail();
                 const isPhoneValid = validatePhone();
-                const isPhotoValid = validatePhoto();
+                const isPhotoValid = validateImage("Photo");
 
                 if (!isFirstNameValid || !isLastNameValid || !isEmailValid || !isPhoneValid || !isPhotoValid) {
                     event.preventDefault();
@@ -412,14 +324,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Update'])) {
             document.getElementById('Last_Name').addEventListener('blur', function() {
                 validateName.call(this);
             });
-            document.getElementById('Email').addEventListener('blur', validateEmail);
-            document.getElementById('Phone').addEventListener('blur', validatePhone);
-            document.getElementById('Photo').addEventListener('change', validatePhoto);
+            document.getElementById('email').addEventListener('blur', validateEmail);
+            document.getElementById('phone').addEventListener('blur', validatePhone);
+            document.getElementById('Photo').addEventListener('change', function() {
+                validateImage("Photo");
+            });
             document.getElementById('barber-profile').addEventListener('submit', validateForm);
-        </script>
 
-        <!-- Gallery and Image Preview Script -->
-        <script>
             // Profile Photo Preview
             document.getElementById('Photo').addEventListener('change', function(e) {
                 const preview = document.getElementById('preview-image');

@@ -8,8 +8,9 @@ Other Sources: ChatGPT
 -->
 <?php
 //Connects to the database
-require 'db_connection.php';
 session_start();
+require 'db_connection.php';
+require 'login_check.php';
 
 if (isset($_GET['Service_ID'])) {
     //Gets the service id
@@ -43,14 +44,12 @@ if (isset($_GET['Service_ID'])) {
     echo "Service not found.";
     exit();
 }
-
-//Adds the header to the page reducing redunacny
-include('barber_header.php');
 ?>
 
 <head>
     <!-- Title for Page -->
     <title>Edit Service</title>
+    <script src="validate.js"></script>
     <!-- Internal CSS for styling the page -->
     <style>
         body {
@@ -202,16 +201,16 @@ include('barber_header.php');
     <div class="edit-container">
         <form action="edit_service.php?Service_ID=<?php echo $service['Service_ID']; ?>" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
             <label for="service_name">Service Name:</label>
-            <input type="text" name="service_name" id="service_name" value="<?php echo $service['Name']; ?>" required onchange="validateName()">
-            <span id="name-error" style="color: red; display: none;"></span>
+            <input type="text" name="service_name" id="service_name" value="<?php echo $service['Name']; ?>" required onchange="validateName.call(this)">
+            <span id="service_name-error" style="color: red; display: none;"></span>
             <br>
             <label for="service_price">Service Price:</label>
-            <input type="number" name="service_price" id="service_price" step="0.01" value="<?php echo $service['Price']; ?>" required onchange="validatePrice()">
-            <span id="price-error" style="color: red; display: none;"></span>
+            <input type="number" name="service_price" id="service_price" step="0.01" value="<?php echo $service['Price']; ?>" required onchange="validatePrice.call(this)">
+            <span id="service_price-error" style="color: red; display: none;"></span>
             <br>
             <label for="service_duration">Service Duration:</label>
-            <input type="number" name="service_duration" id="service_duration" step="1" value="<?php echo $service['Duration']; ?>" required onchange="validateDuration()">
-            <span id="duration-error" style="color: red; display: none;"></span>
+            <input type="number" name="service_duration" id="service_duration" step="1" value="<?php echo $service['Duration']; ?>" required onchange="validateDuration.call(this)">
+            <span id="service_duration-error" style="color: red; display: none;"></span>
             <br>
 
             <br>
@@ -225,53 +224,11 @@ include('barber_header.php');
         <a href="services_manager.php" class="back-btn"><button class="back-btn">Back to Service List</button></a>
     </div>
     <script>
-        // Validate service name
-        function validateName() {
-            const nameInput = document.getElementById('service_name');
-            const nameError = document.getElementById('name-error');
-            if (nameInput.value.length > 70) {
-                nameError.textContent = "Maximum 70 characters allowed";
-                nameError.style.display = 'inline';
-                return false;
-            } else {
-                nameError.style.display = 'none';
-                return true;
-            }
-        }
-
-        // Validate service price
-        function validatePrice() {
-            const priceInput = document.getElementById('service_price');
-            const priceError = document.getElementById('price-error');
-            if (priceInput.value <= 0 || isNaN(priceInput.value)) {
-                priceError.textContent = "Price must be a positive number";
-                priceError.style.display = 'inline';
-                return false;
-            } else {
-                priceError.style.display = 'none';
-                return true;
-            }
-        }
-
-        // Validate service duration
-        function validateDuration() {
-            const durationInput = document.getElementById('service_duration');
-            const durationError = document.getElementById('duration-error');
-            if (durationInput.value <= 0 || isNaN(durationInput.value)) {
-                durationError.textContent = "Duration must be a positive number";
-                durationError.style.display = 'inline';
-                return false;
-            } else {
-                durationError.style.display = 'none';
-                return true;
-            }
-        }
-
         // Validate the entire form
         function validateForm(event) {
-            const isNameValid = validateName();
-            const isPriceValid = validatePrice();
-            const isDurationValid = validateDuration();
+            const isNameValid = validateName.call(document.getElementById('service_name'));
+            const isPriceValid = validatePrice.call(document.getElementById('service_price'));
+            const isDurationValid = validateDuration.call(document.getElementById('service_duration'));
 
             if (!isNameValid || !isPriceValid || !isDurationValid) {
                 event.preventDefault(); // Prevent form submission

@@ -6,11 +6,44 @@ Date: 4/10/2025
 Revisions:
     4/18/2025 - Brinley Hull, change to where the barber whose service is added can be someone other than who logged in
 Other Sources: ChatGPT
+Preconditions
+        Acceptable inputs: all
+        Unacceptable inputs: none
+    Postconditions:
+        None
+    Error conditions:
+        Database issues
+    Side effects
+        Session variables for year, week, month, and startDate are set.
+    Invariants
+        None
+    Known faults:
+        None
 -->
 <?php
+session_start();
 // Connects to the database
 require 'db_connection.php';
-session_start();
+require 'login_check.php';
+require 'get_check.php';
+
+// Check role
+$barber_id = $_SESSION['username'];
+$sql = "SELECT Role FROM Barber_Information WHERE Barber_ID = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $barber_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+
+$barber = isset($_GET['barber']) ?  $_GET['barber'] : $_SESSION['username'];
+
+// Check role
+if ($user['Role'] != "Manager" && $barber != $barber_id) {
+    header("Location: login.php");
+    exit();
+}
+
 $service_id = $_GET['Service_ID'];
 // Prepares the SQL for inserting the new service into the database
 $sql = "INSERT INTO Barber_Services (Barber_ID, Service_ID)
@@ -24,8 +57,6 @@ if (!$stmt) {
     echo "Error preparing statement: " . $conn->error;
     exit();
 }
-
-$barber = isset($_GET['barber']) ? $_GET['barber'] : $_SESSION['username'];
 
 $stmt->bind_param("sisi", $barber, $service_id, $barber, $service_id);
 // Execute the statement and check if the insertion was successful

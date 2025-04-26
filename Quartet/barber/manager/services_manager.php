@@ -5,6 +5,7 @@ Authors: Brinley Hull, Alexandra Stratton, Jose Leyba, Ben Renner, Kyle Moore
 Creation date: 04/18/2025
 Revisions:
     4/23/2025 - Brinley, refactoring
+    4/26/2025 - Brinley, fix redirect
  -->
 
  <?php
@@ -12,7 +13,6 @@ Revisions:
 // Connects to the database
 require 'db_connection.php';
 require 'login_check.php';
-require 'role_check.php';
 
 $barber_id = $_SESSION['username'];
 $sql = "SELECT Role FROM Barber_Information WHERE Barber_ID = ?";
@@ -26,6 +26,8 @@ if ($user['Role'] != "Manager") {
     header("Location: services.php");
     exit();
 }
+
+require 'role_check.php';
 
 $sql = "SELECT * FROM Services";
 $result = $conn->query($sql);

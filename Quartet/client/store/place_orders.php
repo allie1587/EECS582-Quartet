@@ -199,6 +199,7 @@ include("header.php");
     <!-- Title for Page --> 
     <title>Place Order</title>
     <link rel="stylesheet" href="style/style1.css">
+    <script src="validate.js"></script>
     <style>
         /* Style for the page */
 
@@ -289,12 +290,12 @@ include("header.php");
         <form action="place_orders.php" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
             
             <label for="first_name"><strong>First Name:</strong></label>
-            <input type="text" name="first_name" id="first_name" required onchange="validatefName()">
-            <span id="fname-error" style="color: red; display: none;"></span>
+            <input type="text" name="first_name" id="first_name" required onchange="validateName.call(this)">
+            <span id="first_name-error" style="color: red; display: none;"></span>
             <br>
             <label for="last_name"><strong>Last Name:</strong></label>
-            <input type="text" name="last_name" id="last_name" required onchange="validatelName()">
-            <span id="lname-error" style="color: red; display: none;"></span>
+            <input type="text" name="last_name" id="last_name" required onchange="validateName.call(this)">
+            <span id="last_name-error" style="color: red; display: none;"></span>
             <br>
             <label for="email"><strong>Email:</strong></label>
             <input type="email" name="email" id="email" required onchange="validateEmail()">
@@ -343,103 +344,11 @@ include("header.php");
     </div>
 </div>
 
-<script>
-    /* Validates First Name */
-    function validatefName() {
-        const nameInput = document.getElementById('first_name');
-        const nameError = document.getElementById('fname-error');
-        const nameRegex = /^[A-Za-z\s'-]+$/;
-        if (!nameRegex.test(nameInput.value)) {
-            nameError.textContent = "First name can only contain letters, spaces, hyphens, or apostrophes.";
-            nameError.style.display = 'inline';
-            return false;
-        } else if (nameInput.value.length > 50 || nameInput.value.length < 2) {
-            nameError.textContent = "First Name must be between 2 and 50 characters";
-            nameError.style.display = 'inline';
-            return false;
-        } else {
-            nameError.style.display = 'none';
-            return true;
-        }
-    }
-    /* Validates Last Name */
-    function validatelName() {
-        const nameInput = document.getElementById('last_name');
-        const nameError = document.getElementById('lname-error');
-        const nameRegex = /^[A-Za-z\s'-]+$/;
-        if (!nameRegex.test(nameInput.value)) {
-            nameError.textContent = "Last name can only contain letters, spaces, hyphens, or apostrophes.";
-            nameError.style.display = 'inline';
-            return false;
-        }
-        if (nameInput.value.length > 50 || nameInput.value.length < 2) {
-            nameError.textContent = "Last Name must be between 2 and 50 characters";
-            nameError.style.display = 'inline';
-            return false;
-        } else {
-            nameError.style.display = 'none';
-            return true;
-        }
-    }
-    /* Validates Email */
-    function validateEmail() {
-        const emailInput = document.getElementById('email');
-        const emailError = document.getElementById('email-error');
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (emailInput.value.trim() === "") {
-            emailError.textContent = "Email cannot be empty.";
-            emailError.style.display = 'inline';
-            return false;
-        }
-        if (!emailRegex.test(emailInput.value)) {
-            emailError.textContent = "Please enter a valid email address (e.g., user@example.com).";
-            emailError.style.display = 'inline';
-            return false;
-        }
-        emailError.style.display = 'none';
-        return true;
-    }
-    /* Validates Phone Number */
-    function validatePhone() {
-        const phoneInput = document.getElementById('phone');
-        const phoneError = document.getElementById('phone-error');
-        let phoneNumber = phoneInput.value.trim();
-
-        if (phoneNumber === "") {
-            phoneError.textContent = "Phone number cannot be empty.";
-            phoneError.style.display = 'inline';
-            return false;
-        }
-
-        // Remove all non-numeric characters
-        phoneNumber = phoneNumber.replace(/\D/g, '');
-
-        // Remove country code if it starts with "1" (U.S. numbers)
-        if (phoneNumber.length === 11 && phoneNumber.startsWith('1')) {
-            phoneNumber = phoneNumber.substring(1);
-        }
-
-        // Ensure it's a valid 10-digit U.S. number
-        if (phoneNumber.length !== 10) {
-            phoneError.textContent = "Please enter a valid phone number";
-            phoneError.style.display = 'inline';
-            return false;
-        }
-
-        // Hide error message if valid
-        phoneError.style.display = 'none';
-
-        // Format phone number as ##########
-        phoneInput.value = phoneNumber;
-
-        return true;
-    }
-    
+<script>    
     // Validate the entire form
     function validateForm(event) {
-        const isfNameValid = validatefName();
-        const islNameValid = validatelName();
+        const isfNameValid = validateName.call(document.getElementById("first_name"));
+        const islNameValid = validateName.call(document.getElementById("last_name"));
         const isEmailValid = validateEmail();
         const isPhoneValid = validatePhone();
 

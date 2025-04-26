@@ -8,6 +8,7 @@ Revisions:
     03/15/2025 -- Alexandra Stratton -- Added error messaging 
     04/11/2025 -- Alexandra Stratton -- Implement heading and fix structure
     4/23/2025 - Brinley, refactoring
+    4/26/2025 - Brinley, refactoring and fix redirect
 Other Sources: ChatGTP
 Purpose: Allow barbers to edit the products seen in the store
 
@@ -17,7 +18,6 @@ Purpose: Allow barbers to edit the products seen in the store
 session_start();
 require 'db_connection.php';
 require 'login_check.php';
-require 'role_check.php';
 
 if (isset($_GET['Product_ID'])) {
     //Gets the product id
@@ -92,6 +92,7 @@ if (isset($_GET['Product_ID'])) {
     <!-- Title for Page -->
     <title>Edit Product</title>
     <link rel="stylesheet" href="style/barber_style.css">
+    <script src="validate.js"></script>
     <!-- Internal CSS for styling the page -->
     <style>
         body {
@@ -245,15 +246,15 @@ if (isset($_GET['Product_ID'])) {
         <div class="container">
             <form action="edit_product.php?Product_ID=<?php echo $product['Product_ID']; ?>" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
                 <label for="product_name">Product Name:</label>
-                <input type="text" name="product_name" id="product_name" value="<?php echo $product['Name']; ?>" required onchange="validateName()">
-                <span id="name-error" style="color: red; display: none;"></span>
+                <input type="text" name="product_name" id="product_name" value="<?php echo $product['Name']; ?>" required onchange="validateName(this)">
+                <span id="product_name-error" style="color: red; display: none;"></span>
                 <br>
                 <label for="product_description">Product Description:</label>
                 <textarea name="product_description" required><?php echo $product['Description']; ?></textarea>
                 <br>
                 <label for="product_price">Product Price:</label>
                 <input type="number" name="product_price" id="product_price" step="0.01" value="<?php echo $product['Price']; ?>" required onchange="validatePrice()">
-                <span id="price-error" style="color: red; display: none;"></span>
+                <span id="product_price-error" style="color: red; display: none;"></span>
                 <br>
                 <!-- Image preview section -->
                 <div class="image-preview-wrapper">
@@ -290,6 +291,18 @@ if (isset($_GET['Product_ID'])) {
             <a href="product.php" class="back-btn"><button class="back-btn">Back to Product List</button></a>
         </div>
         <script>
+            // Validate the entire form
+            function validateForm(event) {
+                const isNameValid = validateName.call(document.getElementById('product_name'));
+                const isPriceValid = validatePrice.call(document.getElementById('product_price'));
+                const isImageValid = validateImage();
+
+                if (!isNameValid || !isPriceValid || !isImageValid) {
+                    event.preventDefault(); // Prevent form submission
+                    return false;
+                }
+                return true; // Allow form submission
+            }
             // Function to preview the selected image
             function previewSelectedImage(event) {
                 const fileInput = event.target;
@@ -322,79 +335,6 @@ if (isset($_GET['Product_ID'])) {
                 } else {
                     fileNameDisplay.textContent = '';
                 }
-            }
-
-            // Validate product name
-            function validateName() {
-                const nameInput = document.getElementById('product_name');
-                const nameError = document.getElementById('name-error');
-                if (nameInput.value.length > 70) {
-                    nameError.textContent = "Maximum 70 characters allowed";
-                    nameError.style.display = 'inline';
-                    return false;
-                } else {
-                    nameError.style.display = 'none';
-                    return true;
-                }
-            }
-
-            // Validate product price
-            function validatePrice() {
-                const priceInput = document.getElementById('product_price');
-                const priceError = document.getElementById('price-error');
-                if (priceInput.value <= 0 || isNaN(priceInput.value)) {
-                    priceError.textContent = "Price must be a positive number";
-                    priceError.style.display = 'inline';
-                    return false;
-                } else {
-                    priceError.style.display = 'none';
-                    return true;
-                }
-            }
-            // Validate product image
-            function validateImage() {
-                const imageInput = document.getElementById('file-input');
-                const imageError = document.getElementById('image-error');
-                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-                const maxSize = 10 * 1024 * 1024; // 10MB
-
-                if (imageInput.files.length > 0) {
-                    const file = imageInput.files[0];
-                    if (!allowedTypes.includes(file.type)) {
-                        imageError.textContent = "Only JPEG, PNG, and GIF images are allowed.";
-                        imageError.style.display = 'inline';
-                        return false;
-                    } else if (file.size > maxSize) {
-                        imageError.textContent = "File size must be less than 10MB.";
-                        imageError.style.display = 'inline';
-                        return false;
-                    } else {
-                        imageError.style.display = 'none';
-                        displayFileName();
-                        previewSelectedImage({
-                            target: imageInput
-                        });
-                        return true;
-                    }
-                } else {
-                    imageError.style.display = 'none';
-                    displayFileName();
-                    document.getElementById('new-image-preview').style.display = 'none';
-                    document.getElementById('new-image-label').style.display = 'none';
-                    return true;
-                }
-            }
-            // Validate the entire form
-            function validateForm(event) {
-                const isNameValid = validateName();
-                const isPriceValid = validatePrice();
-                const isImageValid = validateImage();
-
-                if (!isNameValid || !isPriceValid || !isImageValid) {
-                    event.preventDefault(); // Prevent form submission
-                    return false;
-                }
-                return true; // Allow form submission
             }
             // Initialize event listeners
             document.addEventListener('DOMContentLoaded', function() {
