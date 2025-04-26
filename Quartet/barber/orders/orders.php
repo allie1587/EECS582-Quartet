@@ -4,6 +4,7 @@ Date: 03/32/2025
 Revisions:
     03/31/2025 -- Alexandra Stratton -- created orders.php
     4/11/2025 -- Alexandra Stratton -- Fixed bug
+    04/26/2025 -- Alexandra Stratton -- Refactoring
  Purpose: Allow the manager/barber to see all the orders
 
  -->
@@ -11,18 +12,9 @@ Revisions:
 //Connects to the database
 session_start();
 require 'db_connection.php';
-if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit();
-}
+require 'login_check.php';
+require 'role_check.php';
 
-$barber_id = $_SESSION['username'];
-$sql = "SELECT Role FROM Barber_Information WHERE Barber_ID = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $barber_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
 
 
 $sql = "SELECT * FROM Orders";
@@ -47,13 +39,7 @@ if ($result->num_rows > 0) {
     }
 }
 ?>
-<?php
-if ($user['Role'] == "Barber") {
-    include("barber_header.php");
-} else {
-    include("manager_header.php");
-}
-?>
+
 
 <!DOCTYPE html>
 <html lang="en">
