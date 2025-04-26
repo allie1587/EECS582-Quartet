@@ -17,13 +17,50 @@ Date: 02/12/2025
 // Start the session to remember user info
 session_start();
 
-// check to see if the user is logged in and give them a cute little welcome messagef
+// check to see if the user is logged in and give them a cute little welcome message
 if (isset($_SESSION["user"]) && !empty($_SESSION["user"])) {
     echo "<p class='welcome-message'>Welcome back, " . htmlspecialchars($_SESSION["user"], ENT_QUOTES, 'UTF-8') . "!</p>";
 }
 
-//Connects to database to get the Reviews table information
+// Connect to the database
 require 'db_connection.php';
+
+// Query to get the store's location from the Store database
+$storeQuery = "SELECT Address, City, State, Zip_Code FROM Store LIMIT 1";  
+$storeResult = $conn->query($storeQuery);
+
+// Fetch the store location
+if ($storeResult->num_rows > 0) {
+    $storeRow = $storeResult->fetch_assoc();
+    $storeLocation = $storeRow['Address'] . ', ' . $storeRow['City'] . ', ' . $storeRow['State'] . ' ' . $storeRow['Zip_Code'];
+} else {
+    $storeLocation = "Location not available";  // Default message if no store info is found
+}
+
+// Function to convert 24-hour time to 12-hour AM/PM format
+function convertTo12HourFormat($time) {
+    $dateTime = DateTime::createFromFormat('H:i:s', $time);
+    return $dateTime->format('g:i A'); // 'g:i A' gives 12-hour format with AM/PM
+}
+
+// Query to get store hours from Store_Hours table, excluding closed days
+$hoursQuery = "SELECT Day, Open_Time, Close_Time FROM Store_Hours WHERE Is_Closed = 0 ORDER BY FIELD(Day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')";
+$hoursResult = $conn->query($hoursQuery);
+
+$storeHours = "<div class='store-hours'>";
+
+if ($hoursResult->num_rows > 0) {
+    while ($row = $hoursResult->fetch_assoc()) {
+        $day = $row['Day'];
+        $open = date("g:i A", strtotime($row['Open_Time']));
+        $close = date("g:i A", strtotime($row['Close_Time']));
+
+        $storeHours .= "<div class='store-hour-row'><strong>$day:</strong><span>$open - $close</span></div>";
+    }
+} else {
+    $storeHours .= "<div>No hours available.</div>";
+}
+$storeHours .= "</div>";
 
 // Get the reviews from the table
 $reviewsQuery = "SELECT Name, Rating, Review FROM Testimonies ORDER BY Testimony_ID DESC";
@@ -40,6 +77,8 @@ $conn->close();
 
 include('header.php');
 ?>
+
+
 <head>
     <!--Name of Page-->
     <title>Home Page</title>
@@ -134,8 +173,23 @@ include('header.php');
         #black-text {
             color: black;
         }
+        .store-hours {
+            font-size: 16px;
+            margin-top: 10px;
+        }
 
-        
+        .store-hour-row {
+            display: flex;
+            justify-content: space-between;
+            width: 300px;
+            font-family: monospace;
+        }
+
+        .store-hour-row strong {
+            width: 120px;
+            display: inline-block;
+        }
+
 
     </style>
     <script>
@@ -203,9 +257,9 @@ include('header.php');
     <div class="store-info">
         <img src="images/store.jpg" alt="Store Image">
         <div class="store-text">
-            <p><strong>Location:</strong> 123 Main St, Cityville</p>
-            <p><strong>Hours:</strong> Mon-Sat: 9 AM - 8 PM, Sun: Closed</p>
-            <p><strong>Information:</strong> Our store offers top-notch haircuts and grooming services.</p>
+            <p><strong>Location:</strong> <?php echo $storeLocation; ?></p>
+            <p><strong>Hours:</strong></p>
+            <?php echo $storeHours; ?>
         </div>
     </div>
     
