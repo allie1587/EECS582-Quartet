@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $error_message = "Password must be at least 6 characters.";
                 }
                 elseif (strlen($new_password) > 75) {
-                    $error_message = "Password must be at less than 75 characters.";
+                    $error_message = "Password must be less than 75 characters.";
                 } elseif ($new_password !== $confirm_password) {
                     $error_message = "Passwords do not match.";
                 } else {
