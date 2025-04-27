@@ -159,28 +159,27 @@ session_start();
     <h1 id="black-text">Reviews</h1>
     <div class="container">
         <div class="reviews">
-            <form action="submit_review.php" method="POST">
-            <form action="submit_review.php" method="POST">
-                <div class="form-group">
-                    <label for="Name">Name:</label>
-                    <input type="text" id="Name" name="Name">
-                    <div class="rating-container">
-                        <label for="Rating">Rating:</label>
-                        <div class="stars">
-                            <span class="star" data-value="1">&#9733;</span>
-                            <span class="star" data-value="2">&#9733;</span>
-                            <span class="star" data-value="3">&#9733;</span>
-                            <span class="star" data-value="4">&#9733;</span>
-                            <span class="star" data-value="5">&#9733;</span>
-                        </div>
-                        <input type="hidden" id="Rating" name="Rating" required>
+        <form action="submit_review.php" method="POST">
+            <div class="form-group">
+                <label for="Name">Name:</label>
+                <input type="text" id="Name" name="Name">
+                <div class="rating-container">
+                    <label for="Rating">Rating:</label>
+                    <div class="stars">
+                        <span class="star" data-value="1">&#9733;</span>
+                        <span class="star" data-value="2">&#9733;</span>
+                        <span class="star" data-value="3">&#9733;</span>
+                        <span class="star" data-value="4">&#9733;</span>
+                        <span class="star" data-value="5">&#9733;</span>
                     </div>
+                    <input type="hidden" id="Rating" name="Rating" required>
                 </div>
-                <br>
-                <label for="Review">Add your Review Here!</label><br>
-                <textarea type="text" id="Review" name="Review" required></textarea><br><br>
-                <button type="submit">Send your Review!</button>
-            </form>
+            </div>
+            <br>
+            <label for="Review">Add your Review Here!</label><br>
+            <textarea type="text" id="Review" name="Review" required></textarea><br><br>
+            <button type="submit">Send your Review!</button>
+        </form>
         </div>
     </div>
     <br><br><br><br><br><br><br><br><br>
