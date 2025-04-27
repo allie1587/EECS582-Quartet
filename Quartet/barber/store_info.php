@@ -1,25 +1,45 @@
 <!--
+store_info.php
+Page to allow barbers/managers to update information about the store and its operating hours
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
-Date: 04/22/2025
+Date: 03/30/2025
 Revisions:
-    04/22/2025 -- Alexandra Stratton -- created store_info.php
-    04/26/2025 -- Alexandra Stratton -- Finish validation
-    04/26/2025 -- Alexandra Stratton -- Fix bugs
-Purpose: Allow the manager to to update the information about the store
-Source:
+    04/10/2025 -- Alexandra Stratton -- created store_info.php
+    04/10/2025 -- Alexandra Stratton -- Fix the errors
+    04/26/2025 -- Alexandra Stratton -- Error Checking
+Sources:
     -- ChatGPT
- -->
+Preconditions
+    Acceptable inputs: Valid Store and Store_Hours data 
+    Unacceptable inputs: Invalid store data
+    Required Access: User must be logged in and have appropriate role permissions
+Postconditions:
+    Updates the Store and Store_Hours database tables
+Error conditions:
+    Database issues
+Side effects
+    None
+Invariants
+    None
+Known faults:
+    None
+-->
+
  
 <?php
 //Connects to the database
 require 'db_connection.php';
 require 'login_check.php';
 require 'role_check.php';
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
+if (!isset($conn)) {
+    die("No database connection");
+}
 $sql = "SELECT * FROM Store LIMIT 1";
 $result = $conn->query($sql);
+if (!$result) {
+    die("Failed to load store information");
+}
 $store = [];
 if ($result && $result->num_rows > 0) {
     $store = $result->fetch_assoc();
@@ -33,8 +53,17 @@ if (!empty($store)) {
             FROM Store_Hours
             WHERE Store_ID = ? ORDER BY FIELD(Day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $store_id);
-    $stmt->execute();
+    if (!$stmt) {
+        die("Failed to prepare store hours query");
+    }
+    
+    if (!$stmt->bind_param("i", $store_id)) {
+        die("Failed to bind store ID parameter");
+    }
+    
+    if (!$stmt->execute()) {
+        die("Failed to execute store hours query");
+    }
     $hours_result = $stmt->get_result();
     if ($hours_result->num_rows > 0) {
         while ($row = $hours_result->fetch_assoc()) {
@@ -132,14 +161,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-<?php if (isset($_SESSION['message'])): ?>
-    <div class="alert alert-success"><?php echo $_SESSION['message']; unset($_SESSION['message']); ?></div>
-<?php endif; ?>
-<?php if (isset($_SESSION['error'])): ?>
-    <div class="alert alert-danger"><?php echo $_SESSION['error']; unset($_SESSION['error']); ?></div>
-<?php endif; ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -153,10 +174,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 font-size: 0.875em;
                 margin-top: 0.25rem;
                 display: block;
-            }
-
-            .invalid {
-                border-color: #dc3545 !important;
             }
 
             #hours-errors p {
@@ -356,7 +373,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 const input = document.getElementById('email');
                 const error = document.getElementById('email_error');
                 const value = input.value.trim();
-
+                if (!value) {
+                    error.textContent = "Email number is required";
+                    input.classList.add('invalid');
+                    return false;
+                }
                 if (value && !/^\S+@\S+\.\S+$/.test(value)) {
                     error.textContent = "Invalid email format";
                     input.classList.add('invalid');
