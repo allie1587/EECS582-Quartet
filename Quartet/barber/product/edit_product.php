@@ -102,7 +102,6 @@ if (isset($_GET['Product_ID'])) {
             padding: 0;
         }
 
-        /* Style for the form box */
         form {
             max-width: 600px;
             margin: 0 auto;
@@ -111,16 +110,15 @@ if (isset($_GET['Product_ID'])) {
             border-radius: 10px;
             background-color: #f9f9f9;
             color: black;
+            display: block; 
         }
 
-        /* Style for the labels */
         label {
             display: block;
             margin-top: 10px;
             font-weight: bold;
         }
 
-        /* Style for input boxes */
         input[type="text"],
         input[type="number"],
         textarea {
@@ -137,7 +135,6 @@ if (isset($_GET['Product_ID'])) {
             resize: vertical;
         }
 
-        /* Style for inputing a file */
         .file-input-container {
             position: relative;
             margin-top: 10px;
@@ -167,56 +164,24 @@ if (isset($_GET['Product_ID'])) {
             background-color: rgba(36, 35, 35);
         }
 
-        /* Image preview container */
-        .image-preview-wrapper {
-            display: flex;
-            justify-content: space-between;
-            margin: 15px 0;
-        }
-
-        /* Individual image preview styling */
-        .image-preview-box {
-            width: 48%;
-            text-align: center;
-        }
-
-        .image-preview {
-            max-width: 100%;
-            max-height: 200px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 5px;
-        }
-
-        .current-image-label {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .new-image-label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: none;
-            /* Hidden by default */
-        }
-
-        /* Update the product button style */
         .update-btn {
             color: white;
             background: #c4454d;
-            padding: 5px 100px;
+            padding: 15px 50px;
             font-size: 18px;
             font-family: 'Georgia', serif;
             border: none;
             cursor: pointer;
             transition: 0.3s;
+            margin-top: 20px; 
+            display: block; 
+            width: 100%; 
         }
 
         .update-btn:hover {
             background: rgb(143, 48, 55);
         }
 
-        /* Back button style */
         .back-btn {
             color: white;
             background: #c4454d;
