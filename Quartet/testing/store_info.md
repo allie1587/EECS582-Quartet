@@ -1,9 +1,7 @@
-# Store Information Management - Test Documentation
-
-## Test Scenarios
-
 ****************************************
 # Test Scenario 1: Access Control
+Status: Passed
+
 | # | Steps | Expected Result |
 | --- | --- | --- |
 | 1 | Access page without login | Redirect to login page |
@@ -15,22 +13,22 @@
 
 ****************************************
 # Test Scenario 2: Store Information Validation
-Status: 
+Status: Passed
 
 | # | Steps | Expected Result |
 | --- | --- | --- |
 | 1 | Submit empty store name | Show validation error |
-| 2 | Enter invalid store name (include special characters) | Show validation error |
+| 2 | Enter invalid store name | Show validation error |
 | 3 | Enter valid store name | Accept input |
-| 4 | Submit invalid phone (any character besides numbers) | Show validation error |
-| 5 | Enter  phone number | Show validation error |
+| 4 | Submit invalid phone | Show validation error |
+| 5 | Enter no phone number | Show validation error |
 | 6 | Enter valid phone number | Accept and format input |
 | 7 | Submit invalid email format | Show validation error |
 | 8 | Enter valid email | Accept input |
 | 9 | Submit empty address | Show validation error |
 | 10 | Enter valid address | Accept input |
 | 11 | Submit empty city | Show validation error |
-| 12 | Enter invalid city (numbers) | Show validation error |
+| 12 | Enter invalid city | Show validation error |
 | 13 | Enter valid city | Accept input |
 | 14 | Submit invalid zip format | Show validation error |
 | 15 | Enter valid zip | Accept input |
@@ -38,8 +36,8 @@ Status:
 ****************************************
 
 ****************************************
-# Test Scenario 3: Store Information Submission
-Status: 
+# Test Scenario 3: Store Information Save
+Status: Passed 
 
 | # | Steps | Expected Result |
 | --- | --- | --- |
@@ -51,8 +49,8 @@ Status:
 ****************************************
 
 ****************************************
-# Test Scenario 4: Store Hours Management
-Status: 
+# Test Scenario 4: Store Hours 
+Status: Passed
 
 | # | Steps | Expected Result |
 | --- | --- | --- |
@@ -60,7 +58,7 @@ Status:
 | 2 | Unmark closed day | Enables time inputs |
 | 3 | Submit with missing open/close times | Shows validation errors |
 | 4 | Submit with close < open time | Shows validation error |
-| 5 | Submit valid hours | Success message appears |
+| 5 | Submit valid hours | Updates database |
 | 6 | Check database after submit | Hours match form input |
 | 7 | Test all days of week | All days save correctly |
 
