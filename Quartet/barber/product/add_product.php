@@ -11,6 +11,20 @@ Revisions:
     04/11/2025 -- Alexandra Stratton -- Implement heading and fix structure
     4/23/2025 - Brinley, refactoring
     4/26/2025 - Brinley, refactoring and fix redirect
+
+    Preconditions
+        Acceptable inputs: Product Name, Product Description, Price, Image
+        Unacceptable inputs: None or less than 4 fields
+    Postconditions:
+        Item gets added to the database
+    Error conditions:
+        DB Issues
+    Side effects
+        None
+    Invariants
+        None
+    Known faults:
+        None
 Other Sources: ChatGPT
 -->
 <?php

@@ -4,7 +4,19 @@ Description: Allows users to recover their account if they have forgotten their 
 Authors: Jose Leyba
 Date: 04/26/2025
 Revisions: 
-
+    Preconditions
+        Acceptable inputs: Email of the Barber
+        Unacceptable inputs: None
+    Postconditions:
+        Barber gets an email with a token for password recovery
+    Error conditions:
+        DB Issues, PHPmailer issues
+    Side effects
+        None
+    Invariants
+        None
+    Known faults:
+        None
 -->
 <?php
 error_reporting(E_ALL); 
@@ -100,13 +112,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <!--Login form-->
         <form id="loginForm" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
             <!--Title for the form-->
-            <h2 class="login-title">Login</h2>
+            <h2 class="login-title">Forgot Password?</h2>
             <!--Input field for username-->
             <div class="login-input">
                 <input type="email" id="email" name="email" placeholder="Enter your Email Address" required>
             </div>
             <!--Login button-->
-            <button type="submit">Send Mail</button>
+            <button type="submit">Send Mail for Resetting Password</button>
             <!--Display error message if any-->
             <p id="error-message" class="error-message"><?php echo htmlspecialchars($error_message); ?></p>
 

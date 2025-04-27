@@ -6,6 +6,19 @@ Revisions:
     03/15/2025  -- Alexandra Stratton  -- Commenting
     03/15/2025  -- Alexandra Strattoon -- When a product is deleted it also deletes those products from everyones cart
 Purpose: Allow barbers to remove a product from the store
+    Preconditions
+        Acceptable inputs: Product ID
+        Unacceptable inputs: None
+    Postconditions:
+        Item gets deleted from database
+    Error conditions:
+        DB Issues
+    Side effects
+        None
+    Invariants
+        None
+    Known faults:
+        None
 -->
 <?php
 //Connects to the database
