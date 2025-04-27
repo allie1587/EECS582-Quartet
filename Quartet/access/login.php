@@ -6,6 +6,20 @@ Date: 02/12/2025
 Revisions: 
     02/16/2024 -- Brinley, adding session information
     02/28/25 -- Kyle using database to validate user and pass
+    04/27/2025 -- Jose, Testing
+    Preconditions
+        Acceptable inputs: Username and Password of Barber
+        Unacceptable inputs: None or Just one Field
+    Postconditions:
+        Barbewr is logged into the account. Can change the DB and store information
+    Error conditions:
+        DB Issues
+    Side effects
+        None
+    Invariants
+        None
+    Known faults:
+        None
 -->
 <?php
 error_reporting(E_ALL); 
