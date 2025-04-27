@@ -282,6 +282,9 @@ include("header.php");
         .order-title {
             color: black;
         }
+        .black-text {
+            color: black;
+        }
     </style>
 </head>
 <body>
@@ -289,7 +292,7 @@ include("header.php");
 <!-- Form for client information -->
 <div class="cart-container">
     <div class="order-details">
-        <h2>Basic Details</h2>
+        <h2 class="black-text">Basic Details</h2>
         <form action="place_orders.php" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
             
             <label for="first_name"><strong>First Name:</strong></label>
@@ -317,7 +320,7 @@ include("header.php");
     </div>
     <!-- Displays cart seen in shopping cart -->
     <div class="order-details">
-        <h2>Order Details</h2>
+        <h2 class="black-text">Order Details</h2>
         <table>
             <tbody>
                 <?php foreach ($cart_items as $item): ?>
