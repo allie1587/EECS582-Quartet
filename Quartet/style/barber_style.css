@@ -2,7 +2,7 @@
 body {
     margin: 0;
     padding: 20px;
-    font-family: Arial, sans-serif;
+    font-family: Arial, sans-serif, Tahoma, Geneva, Verdana;
     background-color: #f4f4f4;
     color: black;
 }
@@ -431,6 +431,39 @@ button {
 .delete-btn:hover {
     background: #FF8A3D;
 }
+
+form {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+form button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+form button[name="add"] {
+    background-color: #28a745;
+    color: white;
+}
+form button[name="add"]:disabled {
+    background-color: #a5d6a7;
+    cursor: not-allowed;
+}
+form button[name="remove"] {
+    background-color: #dc3545;
+    color: white;
+}
+form button[name="remove"]:disabled {
+    background-color: #f5b7b1;
+    cursor: not-allowed;
+}
+
+
 /* Files: employees.php */
 .add-btn {
     padding: 10px 20px;

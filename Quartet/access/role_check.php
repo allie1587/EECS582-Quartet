@@ -13,7 +13,6 @@ Invariants: None
 Any known faults: None
 */
 
-session_start();
 require 'db_connection.php';
 require 'login_check.php';
 $barber_id = $_SESSION['username'];

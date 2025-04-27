@@ -525,7 +525,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             for (let i = 0; i < firstDay; i++) {
                 let emptyDay = document.createElement('div');
                 emptyDay.classList.add('day');
-                emptyDay.style.background = 'rgb(70, 70, 70)';
+                emptyDay.style.background = 'rgb(155, 155, 155)';
                 calendar.appendChild(emptyDay);
             }
 
@@ -542,7 +542,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                 if (currentYear < new Date().getFullYear() || 
                 (currentYear === new Date().getFullYear() && currentMonth < new Date().getMonth()) || 
                 (currentYear === new Date().getFullYear() && currentMonth === new Date().getMonth() && day < new Date().getDate())) {
-                    dayDiv.style.background = 'rgb(70, 70, 70)';
+                    dayDiv.style.background = 'rgb(205, 202, 202)';
                     dayNumber.style.color = 'darkgray';
                 } else {
                     // Show appointment buttons

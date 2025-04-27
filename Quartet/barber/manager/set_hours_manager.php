@@ -71,11 +71,117 @@ $barber = isset($_GET['barber']) ? $_GET['barber'] : $_SESSION['username'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style/barber_style.css">
     <title>Barber Availability</title>
+    <style>
+        .calendar-navigation {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* optional: center them horizontally */
+        gap: 10px; /* optional: add some space between them */
+        }
+        #calendarForm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px; /* space between each block */
+        }
+
+        .top-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .calendar-table-wrapper {
+            width: 100%;
+            overflow-x: auto; /* optional: scroll on small screens */
+        }
+
+        .bottom-controls {
+            display: flex;
+            gap: 10px;
+        }
+        .time-slot {
+            width: 100px;
+            height: 50px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .time-slot:hover {
+            background-color:rgb(197, 117, 123); 
+        }
+
+        .time-slot.selected {
+            background-color:rgb(183, 61, 69); 
+        }
+        .calendar-table td.selected {
+            background-color: rgb(183, 61, 69);
+        }
+        .calendar-table {
+            width: 100%;
+            table-layout: fixed; /* Fix column widths */
+        }
+        .calendar-table th, .calendar-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .time-label {
+            width: 80px; /* Fix width of time column */
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        .quarter-hour {
+            background-color: #fafafa;
+        }
+        input[type="checkbox"] {
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-color: #fff;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            transition: all 0.2s;
+            display: inline-block;
+            position: relative;
+        }
+
+        input[type="checkbox"]:checked {
+            background-color: rgb(183, 61, 69);
+            border-color: rgb(183, 61, 69);
+        }
+
+        input[type="checkbox"]::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 8px;
+            width: 6px;
+            height: 12px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        input[type="checkbox"]:checked::after {
+            opacity: 1;
+        }
+    </style>
+
 </head>
 <body>
     <div class="content-wrapper">
         <!-- calendar navigation with back and forward arrows, week of calendar date select. on edit/click, they reload the page with the new set date/week -->
-        <div class="calendar-navigation">
+            <div class="calendar-navigation">
             <a href="<?php echo $_SERVER['PHP_SELF'].'?week='.($week-1).'&year='.$year; ?>">&#9664;</a>
             
             <!-- Week of --- clickable/editable date showing current week we're looking at on the calendar-->
@@ -86,50 +192,57 @@ $barber = isset($_GET['barber']) ? $_GET['barber'] : $_SESSION['username'];
         </div>
 
         <form method="POST" id="calendarForm">
-            <p>Enter barber's username to set or retrieve hours:</p>
-            <input type="text" value="<?php echo $barber?>" name="barber" id="barber_username">
-            <button type="button" name="retrieve" onclick="retrieveAvailability()">Retrieve availability</button>
-            <table class="calendar-table">
-                <tr>
+            <div class="top-controls">
+                <p>Enter barber's username to set or retrieve hours:</p>
+                <input type="text" value="<?php echo $barber?>" name="barber" id="barber_username">
+                <button type="button" name="retrieve" onclick="retrieveAvailability()">Retrieve availability</button>
+            </div>
+            <div class="calendar-table-wrapper">
+                <table class="calendar-table">
+                    <tr>
+                        <th></th>
+                        <?php
+                        $daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; // initialize days of the week list
+                        $startDayOfWeek = $dt->format('N'); 
+                        $startDate = clone $dt; 
+
+                        foreach ($daysOfWeek as $day) { //show the date on the head of each calendar week
+                            echo '<th>' . $day . ', ' . $startDate->format('n/j') . '</th>';
+                            $startDate->modify('+1 day');
+                        }
+                        ?>
+                    </tr>
                     <?php
-                    $daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; // initialize days of the week list
-                    $startDayOfWeek = $dt->format('N'); 
-                    $startDate = clone $dt; 
-
-                    foreach ($daysOfWeek as $day) { //show the date on the head of each calendar week
-                        echo '<th>' . $day . ', ' . $startDate->format('n/j') . '</th>';
-                        $startDate->modify('+1 day');
-                    }
-                    ?>
-                </tr>
-                <?php
-                /* Checkbox time grid */
-                $times = range(8, 17); // make range of valid times
-                $minutes = ['00', '15', '30', '45']; // make range of valid 15-minute intervals
-                foreach ($times as $hour) { // create each row of times and checkboxees
-                    $timeLabel = ($hour < 12) ? $hour . ' AM' : (($hour === 12) ? '12 PM' : ($hour - 12) . ' PM'); 
-                    echo '<tr class="main-hour"><td class="time-label"><strong>' . $timeLabel . '</strong></td>'; // show the time
-                    foreach (range(0, 6) as $day) { //create 7 checkboxes in line with the name of the day and hour for ease of database manipulation
-                        $id = $day . '-' . $hour;
-                        echo '<td><input type="checkbox" class="hour-checkbox" hour="'. $hour .'" day="'.$day.'" name="' . $id . '" id="' . $id . '"></td>';
-                    }
-                    echo '</tr>';
-
-                    // Sub-rows for each 15-minute increment
-                    foreach ($minutes as $minute) {
-                        $timeLabel = ($hour < 12) ? $hour . ':' . $minute . ' AM' : (($hour === 12) ? '12' . ':' . $minute . ' PM' : ($hour - 12) . ':' . $minute . ' PM'); 
-                        echo '<tr class="quarter-hour"><td class="time-label">' . $timeLabel . '</td>';
-                        foreach (range(0, 6) as $day) {
-                            $id = $day . '-' . $hour . '-' . $minute;
-                            echo '<td><input type="checkbox" name="' . $id . '" hour="'. $hour .'" day="'.$day.'" id="' . $id . '" class="minute-checkbox"></td>';
+                    /* Checkbox time grid */
+                    $times = range(8, 17); // make range of valid times
+                    $minutes = ['00', '15', '30', '45']; // make range of valid 15-minute intervals
+                    foreach ($times as $hour) { // create each row of times and checkboxees
+                        $timeLabel = ($hour < 12) ? $hour . ' AM' : (($hour === 12) ? '12 PM' : ($hour - 12) . ' PM'); 
+                        echo '<tr class="main-hour"><td class="time-label"><strong>' . $timeLabel . '</strong></td>'; // show the time
+                        foreach (range(0, 6) as $day) { //create 7 checkboxes in line with the name of the day and hour for ease of database manipulation
+                            $id = $day . '-' . $hour;
+                            echo '<td><input type="checkbox" class="hour-checkbox" hour="'. $hour .'" day="'.$day.'" name="' . $id . '" id="' . $id . '"></td>';
                         }
                         echo '</tr>';
+    
+                        // Sub-rows for each 15-minute increment
+                        foreach ($minutes as $minute) {
+                            $timeLabel = ($hour < 12) ? $hour . ':' . $minute . ' AM' : (($hour === 12) ? '12' . ':' . $minute . ' PM' : ($hour - 12) . ':' . $minute . ' PM'); 
+                            echo '<tr class="quarter-hour"><td class="time-label">' . $timeLabel . '</td>';
+                            foreach (range(0, 6) as $day) {
+                                $id = $day . '-' . $hour . '-' . $minute;
+                                echo '<td><input type="checkbox" name="' . $id . '" hour="'. $hour .'" day="'.$day.'" id="' . $id . '" class="minute-checkbox"></td>';
+                            }
+                            echo '</tr>';
+                        }
                     }
-                }
                 ?>
-            </table>
-            <button type="submit" name="update" onclick="setFormAction('set_hours_db.php')">Update</button>
-            <button type="submit" name="updateall" onclick="setFormAction('set_hours_db_all.php')">Update Reccurring</button>
+                </table>
+            </div>
+            <div class="bottom-controls">
+                <button type="submit" name="update" onclick="setFormAction('set_hours_db.php')">Update</button>
+                <button type="submit" name="updateall" onclick="setFormAction('set_hours_db_all.php')">Update Reccurring</button>
+            </div>
         </form>
     </div>
 </body>
@@ -226,9 +339,39 @@ $barber = isset($_GET['barber']) ? $_GET['barber'] : $_SESSION['username'];
                             minuteCheckbox.checked = true;
                         }
                     });
+                }); 
+            });
+        });
+        function updateCheckboxColors() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
+                const td = checkbox.closest('td');
+                if (checkbox.checked) {
+                    td.classList.add('selected');
+                } else {
+                    td.classList.remove('selected');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCheckboxColors();
+
+            document.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
+                checkbox.addEventListener('change', function() {
+                    if (checkbox.classList.contains('hour')) {
+                        // If you click an "hour" checkbox, select/unselect all checkboxes in the same row
+                        const row = checkbox.closest('tr');
+                        const checkboxesInRow = row.querySelectorAll('input[type="checkbox"]');
+
+                        checkboxesInRow.forEach(function(cb) {
+                            cb.checked = checkbox.checked;
+                        });
+                    }
+                    updateCheckboxColors();
                 });
             });
         });
+
 
     </script>
 </html>

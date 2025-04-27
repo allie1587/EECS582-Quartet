@@ -45,29 +45,52 @@ while ($row = $testimoniesResult->fetch_assoc()) {
 }
 
 ?>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <title>Manage Reviews</title>
     <link rel="stylesheet" href="style/barber_style.css">
     <style>
         .reviews {
-            padding: 20px;
-            margin: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        .review-container {
-            max-width: 600px;
-            margin: 50px auto;
-        }
-        .review {
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-        }
-        .review strong {
-            display: block;
-            font-size: 18px;
-        }
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+    }
+    .reviews h2 {
+        margin-bottom: 20px;
+        font-size: 28px;
+        color: #333;
+        text-align: center;
+    }
+    .review-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .review {
+        background: #fafafa;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+    .review strong {
+        font-size: 20px;
+        color: #222;
+    }
+    .rating {
+        display: block;
+        margin-top: 8px;
+        font-weight: bold;
+        color: #888;
+    }
+    .review p {
+        margin-top: 10px;
+        line-height: 1.5;
+        color: #555;
+    }
+
     </style>
 </head>
 <body>
