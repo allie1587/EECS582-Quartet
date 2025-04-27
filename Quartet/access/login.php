@@ -11,7 +11,7 @@ Revisions:
         Acceptable inputs: Username and Password of Barber
         Unacceptable inputs: None or Just one Field
     Postconditions:
-        Barbewr is logged into the account. Can change the DB and store information
+        Barber is logged into the account. Can change the DB and store information
     Error conditions:
         DB Issues
     Side effects

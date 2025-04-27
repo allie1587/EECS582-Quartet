@@ -8,7 +8,21 @@ Revisions:
      03/16/2025 -- Alexandra Stratton -- Got rid of the testing add to cart functionality
      03/16/2025 -- Alexandra Stratton -- Confirmation prior to deleting
      4/23/2025 - Brinley, refactoring
+    Preconditions
+        Acceptable inputs: None
+        Unacceptable inputs: None
+    Postconditions:
+        None
+    Error conditions:
+        DB Issues
+    Side effects
+        None
+    Invariants
+        None
+    Known faults:
+        None
  Purpose: Allow barbers to see the products seen in the store
+
 
  -->
 <?php

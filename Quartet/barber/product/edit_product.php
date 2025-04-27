@@ -9,6 +9,19 @@ Revisions:
     04/11/2025 -- Alexandra Stratton -- Implement heading and fix structure
     4/23/2025 - Brinley, refactoring
     4/26/2025 - Brinley, refactoring and fix redirect
+    Preconditions
+        Acceptable inputs: Product Name, Product Description, Price, Image
+        Unacceptable inputs: None or less than 4 fields
+    Postconditions:
+        Item on the database gets updated information
+    Error conditions:
+        DB Issues
+    Side effects
+        None
+    Invariants
+        None
+    Known faults:
+        None
 Other Sources: ChatGTP
 Purpose: Allow barbers to edit the products seen in the store
 

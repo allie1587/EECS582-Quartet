@@ -1,3 +1,24 @@
+<!--
+reset_password.php
+Description: Allows users to recover their account if they have forgotten their password using a token
+Authors: Jose Leyba
+Date: 04/26/2025
+Revisions: 
+    Preconditions
+        Acceptable inputs: Token recieved in email, password, confirm password
+        Unacceptable inputs: None or less than 3 fields
+    Postconditions:
+        Barber passwords gets changed
+    Error conditions:
+        DB Issues
+    Side effects
+        None
+    Invariants
+        None
+    Known faults:
+        None
+-->
+
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
