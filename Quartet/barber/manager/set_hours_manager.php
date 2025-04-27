@@ -72,17 +72,17 @@ $barber = isset($_GET['barber']) ? $_GET['barber'] : $_SESSION['username'];
     <link rel="stylesheet" href="style/barber_style.css">
     <title>Barber Availability</title>
     <style>
-        .calendar-navigation {
+    .calendar-navigation {
         display: flex;
         flex-direction: column;
-        align-items: center; /* optional: center them horizontally */
-        gap: 10px; /* optional: add some space between them */
+        align-items: center;
+        gap: 10px;
         }
         #calendarForm {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px; /* space between each block */
+            gap: 20px; 
         }
 
         .top-controls {
@@ -94,7 +94,7 @@ $barber = isset($_GET['barber']) ? $_GET['barber'] : $_SESSION['username'];
 
         .calendar-table-wrapper {
             width: 100%;
-            overflow-x: auto; /* optional: scroll on small screens */
+            overflow-x: auto; 
         }
 
         .bottom-controls {
@@ -122,7 +122,7 @@ $barber = isset($_GET['barber']) ? $_GET['barber'] : $_SESSION['username'];
         }
         .calendar-table {
             width: 100%;
-            table-layout: fixed; /* Fix column widths */
+            table-layout: fixed; 
         }
         .calendar-table th, .calendar-table td {
             border: 1px solid #ddd;
@@ -131,7 +131,7 @@ $barber = isset($_GET['barber']) ? $_GET['barber'] : $_SESSION['username'];
             vertical-align: middle;
         }
         .time-label {
-            width: 80px; /* Fix width of time column */
+            width: 80px; 
             background-color: #f4f4f4;
             font-weight: bold;
         }
@@ -176,6 +176,7 @@ $barber = isset($_GET['barber']) ? $_GET['barber'] : $_SESSION['username'];
             opacity: 1;
         }
     </style>
+        
 
 </head>
 <body>
@@ -342,6 +343,7 @@ $barber = isset($_GET['barber']) ? $_GET['barber'] : $_SESSION['username'];
                 }); 
             });
         });
+        //Updates all of the Color Boxes everytime we select a new one
         function updateCheckboxColors() {
             document.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
                 const td = checkbox.closest('td');
@@ -352,10 +354,10 @@ $barber = isset($_GET['barber']) ? $_GET['barber'] : $_SESSION['username'];
                 }
             });
         }
-
+        //When loading the page update the colors
         document.addEventListener('DOMContentLoaded', function() {
             updateCheckboxColors();
-
+            //When selecting an hour block be sure to also color all the 15 minute intervals
             document.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
                 checkbox.addEventListener('change', function() {
                     if (checkbox.classList.contains('hour')) {
