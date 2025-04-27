@@ -1,11 +1,28 @@
 <!--
+client.php
+Page displays a list of all clients with search functionality
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
-Date: 03/32/2025
+Date: 03/30/2025
 Revisions:
     03/31/2025 -- Alexandra Stratton -- created employee_list.php
     04/10/2025 -- Alexandra Stratton -- removed the styling, added
- Purpose: Allow the manager to see all the employees
--->
+    04/26/2025 -- Alexandra Stratton -- Error Checking
+Preconditions
+    Acceptable inputs: All
+    Unacceptable inputs: None
+    Required Access: User must be logged in and have appropriate role permissions
+Postconditions:
+    None
+Error conditions:
+    Database issues
+Side effects
+    None
+Invariants
+    None
+Known faults:
+    None
+ -->
+
 <?php
 //Connects to the database
 session_start();
@@ -13,8 +30,14 @@ require 'db_connection.php';
 require 'login_check.php';
 require 'role_check.php';
 
+if (!isset($conn)) {
+    die("No database connection");
+}
 $sql = "SELECT * FROM Client";
 $result = $conn->query($sql);
+if (!$result) {
+    die("Database error");
+}
 $clients = [];
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
