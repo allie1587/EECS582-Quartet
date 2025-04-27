@@ -8,9 +8,8 @@ Status: Passed
 | 3 | Input a valid username and password and click the login button. | The site will redirect to the barber-side dashboard page. |
 | 4 | Select the button on the top left corner of the page. | A menu will appear. |
 | 5 | Click the "Create New Account" button on the menu. | A register page will appear to fill the information of the new barber. |
-| 6 | Fill the fields with a valid first name, last name, username, and password |
-| 7 | Click on the 'Sign Up' button on the bottom of the page |
-Barber should be succesfully added to the database and should be able to log into their account. |
+| 6 | Fill the fields with a valid first name, last name, username, and password | The page should have filled fields
+| 7 | Click on the 'Sign Up' button on the bottom of the page | Barber should be succesfully added to the database and should be able to log into their account. |
 
 ****************************************
 
