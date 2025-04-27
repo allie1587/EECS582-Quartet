@@ -5,6 +5,19 @@ Authors: Brinley Hull
 Creation date: 04/06/2025
 Revisions:
     4/23/2025 - Brinley, refactoring
+Preconditions
+    Acceptable inputs: all
+    Unacceptable inputs: none
+Postconditions:
+    None
+Error conditions:
+    Database issues
+Side effects
+    None
+Invariants
+    None
+Known faults:
+    None
  -->
 
 <?php

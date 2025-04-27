@@ -8,6 +8,19 @@ Revisions:
     4/23/2025 - Brinley, refactoring
     4/26/2025 - Brinley, refactoring and fix redirect
 Other Sources: ChatGPT
+Preconditions
+    Acceptable inputs: all
+    Unacceptable inputs: none
+Postconditions:
+    None
+Error conditions:
+    Database issues
+Side effects
+    New entries are added to tables in the database.
+Invariants
+    None
+Known faults:
+    None
 -->
 <?php
 session_start();

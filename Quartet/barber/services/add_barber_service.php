@@ -6,7 +6,7 @@ Date: 4/10/2025
 Revisions:
     4/18/2025 - Brinley Hull, change to where the barber whose service is added can be someone other than who logged in
 Other Sources: ChatGPT
-Preconditions
+    Preconditions
         Acceptable inputs: all
         Unacceptable inputs: none
     Postconditions:
@@ -14,7 +14,7 @@ Preconditions
     Error conditions:
         Database issues
     Side effects
-        Session variables for year, week, month, and startDate are set.
+        New entries are added to tables in the database.
     Invariants
         None
     Known faults:

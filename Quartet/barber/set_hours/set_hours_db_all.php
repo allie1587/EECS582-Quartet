@@ -14,8 +14,8 @@
         Unacceptable inputs: None
     Postconditions:
         None
-    Error/exceptions: None
-    Side effects: None
+    Error/exceptions: Database errors
+    Side effects: Changes the database
     Invariants: 
         None
     Known faults:

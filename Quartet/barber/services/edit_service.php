@@ -5,6 +5,19 @@ Authors: Alexandra Stratton, Jose Leyba, Brinley Hull, Ben Renner, Kyle Moore
 Date: 4/10/2025
 Revisions:
 Other Sources: ChatGPT
+Preconditions
+    Acceptable inputs: all
+    Unacceptable inputs: none
+Postconditions:
+    None
+Error conditions:
+    Database issues
+Side effects
+    Entries in tables in the database are altered.
+Invariants
+    None
+Known faults:
+    None
 -->
 <?php
 //Connects to the database

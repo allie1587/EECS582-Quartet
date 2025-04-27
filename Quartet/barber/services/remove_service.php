@@ -5,6 +5,19 @@ Authors: Alexandra Stratton, Jose Leyba, Brinley Hull, Ben Renner, Kyle Moore
 Creation date: 4/10/2025
 Revisions:
     4/26/2025 - Brinley, actually delete the thing
+Preconditions
+    Acceptable inputs: all
+    Unacceptable inputs: none
+Postconditions:
+    None
+Error conditions:
+    Database issues
+Side effects
+    Entries in tables in the database are deleted.
+Invariants
+    None
+Known faults:
+    None
 -->
 <?php
 //Connects to the database

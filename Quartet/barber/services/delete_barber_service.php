@@ -5,7 +5,20 @@ Authors: Alexandra Stratton, Jose Leyba, Brinley Hull, Ben Renner, Kyle Moore
 Creation date: 4/10/2025
 Revisions:
     4/18/2025 - Brinley Hull, change to where the barber whose service is added can be someone other than who logged in
--->
+Preconditions
+    Acceptable inputs: all
+    Unacceptable inputs: none
+Postconditions:
+    None
+Error conditions:
+    Database issues
+Side effects
+    Entries are deleted from tables in the database.
+Invariants
+    None
+Known faults:
+    None
+    -->
 <?php
 //Connects to the database
 session_start();
