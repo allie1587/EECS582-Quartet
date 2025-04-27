@@ -36,13 +36,6 @@ if (!is_array($time)) {
     $time = [$time]; // Ensure it's an array
 }
 
-// Return the current filter settings for error checking
-$response = [
-    "barberID" => $barberID,
-    "service" => $service,
-    "time" => $time,
-];
-
 $query = "SELECT * FROM Appointment_Availability a 
           WHERE Available='Y' 
           AND ((Weekday=? AND NOT EXISTS (SELECT 1 FROM Appointment_Availability b

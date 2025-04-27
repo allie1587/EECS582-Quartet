@@ -1,11 +1,31 @@
 <!--
+manage_orders.php
+Page to allow barbers/managers to view and manage order details and status
 Authors: Alexandra, Jose, Brinley, Ben, Kyle
-Date: 03/32/2025
+Date: 03/10/2025
 Revisions:
-    03/31/2025 -- Alexandra Stratton -- created manage_orders.php
- Purpose: Allow the manager/barber to view more information about the order
+    04/10/2025 -- Alexandra Stratton -- created manage_orders.php
+    04/27/2025 -- Alexandra Stratton -- Error Checking
+Preconditions
+    Acceptable inputs: None
+    Unacceptable inputs: None
+    Order_ID must be provided in GET parameters
+    Required Access: User must be logged in and have appropriate role permissions
+Postconditions:
+    Updates the Store and Store_Hours database tables
+Error conditions:
+    Database issues
+    Missing Order_ID parameter
+    Email sending failures
+    Permission issues for unauthorized users
+Side effects
+    None
+Invariants
+    None
+Known faults:
+    None
+-->
 
- -->
 <?php
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -17,6 +37,9 @@ require 'PHPMailerMaster/src/SMTP.php';
 ini_set('display_errors', 1);
 $error = "";
 $success = "";
+
+
+
 ?>
 <?php if (!empty($error)): ?>
     <p style="color: red;"><?php echo $error; ?></p>
@@ -24,6 +47,7 @@ $success = "";
 <?php if (!empty($success)): ?>
     <p style="color: green;"><?php echo $success; ?></p>
 <?php endif; ?>
+
 
 
 <?php
@@ -34,8 +58,59 @@ if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
+if (!isset($_GET['Order_ID'])) {
+    die("Order ID not provided.");
+}
+$storeQuery = "SELECT Address, City, State, Zip_Code FROM Store LIMIT 1";  
+$storeResult = $conn->query($storeQuery);
 
+// Fetch the store location
+if ($storeResult->num_rows > 0) {
+    $storeRow = $storeResult->fetch_assoc();
+    $storeLocation = $storeRow['Address'] . ', ' . $storeRow['City'] . ', ' . $storeRow['State'] . ' ' . $storeRow['Zip_Code'];
+} else {
+    $storeLocation = "Location not available";  // Default message if no store info is found
+}
 
+// Function to convert 24-hour time to 12-hour AM/PM format
+function convertTo12HourFormat($time) {
+    $dateTime = DateTime::createFromFormat('H:i:s', $time);
+    return $dateTime->format('g:i A'); // 'g:i A' gives 12-hour format with AM/PM
+}
+
+// Query to get store hours from Store_Hours table, excluding closed days
+// Query to get all store hours from Store_Hours table, including closed days
+$hoursQuery = "SELECT Day, Open_Time, Close_Time, Is_Closed 
+               FROM Store_Hours 
+               ORDER BY FIELD(Day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')";
+$hoursResult = $conn->query($hoursQuery);
+$storeHours = "";
+
+if ($hoursResult->num_rows > 0) {
+    while ($row = $hoursResult->fetch_assoc()) {
+        $day = $row['Day'];
+        if ($row['Is_Closed'] == 1) {
+            $storeHours .= "$day: Closed<br>";
+        } else {
+            $open = convertTo12HourFormat($row['Open_Time']);
+            $close = convertTo12HourFormat($row['Close_Time']);
+            $storeHours .= "$day: $open - $close<br>";
+        }
+    }
+} else {
+    $storeHours = "No hours available";
+}
+
+if ($hoursResult->num_rows > 0) {
+    while ($row = $hoursResult->fetch_assoc()) {
+        $day = $row['Day'];
+        $open = convertTo12HourFormat($row['Open_Time']);
+        $close = convertTo12HourFormat($row['Close_Time']);
+        $storeHours .= "$day: $open - $close<br>";
+    }
+} else {
+    $storeHours = "No hours available";
+}
 $barber_id = $_SESSION['username'];
 $sql = "SELECT Role FROM Barber_Information WHERE Barber_ID = ?";
 $stmt = $conn->prepare($sql);
@@ -59,6 +134,9 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $order_id);
 $stmt->execute();
 $result = $stmt->get_result();
+if ($result->num_rows === 0) {
+    die("Order not found");
+}
 $order = $result->fetch_assoc();
 
 // Fetch order items
@@ -161,14 +239,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_change'])) {
                         <p>" . nl2br(htmlspecialchars($barber_comments)) . "</p>
                     </div>";
             }
-            
             $mail->Body .= "
                     <p>Please visit us at your earliest convenience to pick up your order.</p>
-                    <p>Thank you for choosing Quartet Barbershop!</p>
+                    <p><strong>Store Location:</strong><br>
+                    $storeLocation</p>
+                    
                     <p><strong>Business Hours:</strong><br>
-                    Monday-Friday: 9am-7pm<br>
-                    Saturday: 9am-5pm<br>
-                    Sunday: Closed</p>
+                    $storeHours</p>
+
+                    <p>Thank you for choosing our barbershop!</p>
                 </body>
                 </html>
             ";
@@ -253,14 +332,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_change'])) {
                         <p>" . nl2br(htmlspecialchars($barber_comments)) . "</p>
                     </div>";
             }
-            
             $mail->Body .= "
                     <p>If this cancellation was unexpected or you have any questions, please contact us.</p>
-                    <p>We hope to serve you again in the future.</p>
+                    <p><strong>Store Location:</strong><br>
+                    $storeLocation</p>
+                    
                     <p><strong>Business Hours:</strong><br>
-                    Monday-Friday: 9am-7pm<br>
-                    Saturday: 9am-5pm<br>
-                    Sunday: Closed</p>
+                    $storeHours</p>
+                    <p>We hope to serve you again in the future.</p>
                 </body>
                 </html>
             ";
