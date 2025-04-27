@@ -35,6 +35,10 @@ if (isset($_GET['Product_ID'])) {
         $product_name = $_POST['product_name'];
         $product_description = $_POST['product_description'];
         $product_price = $_POST['product_price'];
+        if (strlen($product_name) > 255) {
+            echo "Error: Product name cannot exceed 255 characters.";
+            exit();
+        }
         // Used ChatGPT for debugging
         // Check if a file was uploaded and if there are no errors
         if (isset($_FILES['product_image']) && $_FILES['product_image']['error'] == 0) {
