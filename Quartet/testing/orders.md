@@ -1,6 +1,6 @@
 ****************************************
 # Test Scenario 1: Access control
-Status: 
+Status: Passed
 
 | # | Steps | Expected result |
 | --- | --- | --- |
@@ -12,21 +12,22 @@ Status:
 
 ****************************************
 # Test Scenario 2: Verify Page
-Status: 
+Status: Passed
 
 | # | Steps | Expected result |
 | --- | --- | --- |
 | 1 | Log in as manager or barber user | Page should load successfully |
 | 2 | Verify table headers are present | Table should show "Order #", "Client Name", "Date", and "Total" "Status" "View" columns |
-| 3 | Check if prder data appears | Orders should appear same as in the database |
+| 3 | Check if order data appears | Orders should appear same as in the database |
 
 ****************************************
 
 # Test Scenario 3: View Order Details
-Status: 
+Status: Passed
 
 | # | Steps | Expected result |
 | --- | --- | --- |
-| 1 | Click "View" button for an order | Should redirect to manage_orders.php with correct Order_ID |
+| 1 | Click "View" button for an order | Should redirect to manage_orders.php|
+| 2 | Verify displayed order information | Displays the order details from the selected order | 
 
 ****************************************
