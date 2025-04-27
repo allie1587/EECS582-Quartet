@@ -245,6 +245,68 @@ while ($row = mysqli_fetch_assoc($result)) {
         #black-text {
             color: black;
         }
+        .filter-section {
+            background: rgba(248, 248, 248, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 200px;
+        }
+
+        .filter-group label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: rgb(52, 52, 52);
+        }
+
+        .filter-group select {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="gray" class="bi bi-caret-down-fill" viewBox="0 0 16 16"> <path d="M7.247 11.14l-4.796-5.481c-.566-.647-.106-1.659.753-1.659h9.592c.86 0 1.32 1.012.753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/> </svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px 16px;
+        }
+
+        .filter-group select[multiple] {
+            height: auto;
+            min-height: 100px;
+        }
+
+        .apply-filters-button {
+            background-color: #c4454d;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 24px;
+            transition: background-color 0.3s ease;
+        }
+
+        .apply-filters-button:hover {
+            background-color: rgb(143, 48, 55);
+        }
 
     </style>
 </head>
@@ -255,40 +317,50 @@ while ($row = mysqli_fetch_assoc($result)) {
     <!-- Search Feature -->
     <!-- Search Feature -->
     <div class="search-container">
-        <!-- Barber Filter -->
-        <label for="barber-filter">Barber:</label>
-        <select id="barberSelect" name="barberSelect[]" multiple size="5">
-            <option value="None" selected>All</option> <!-- Add selected here -->
-            <?php foreach ($barbers as $barber): ?>
-                <option value="<?php echo $barber['Barber_ID']?>"><?php echo $barber['First_Name'] . " " . $barber['Last_Name']?></option>
-            <?php endforeach; ?>
-        </select>
+        <div class="filter-section">
+            <!-- Barber Filter -->
+            <div class="filter-group">
+                <label for="barberSelect">Barber:</label>
+                <select id="barberSelect" name="barberSelect[]" multiple size="5">
+                    <option value="None" selected>All</option>
+                    <?php foreach ($barbers as $barber): ?>
+                        <option value="<?php echo $barber['Barber_ID']?>"><?php echo $barber['First_Name'] . " " . $barber['Last_Name']?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
 
         <!-- Service Filter (already handled single-select) -->
-        <label for="service-filter">Service:</label>
-        <select id="serviceSelect" name="serviceSelect">
-            <option value="None" selected>All</option> <!-- Add selected here -->
-            <?php foreach ($services as $service): ?>
-                <option value="<?php echo $service['Service_ID']?>"><?php echo $service['Name']?></option>
-            <?php endforeach; ?>
-        </select>
+            <div class="filter-group">
+                <label for="serviceSelect">Service:</label>
+                <select id="serviceSelect" name="serviceSelect">
+                    <option value="None" selected>All</option>
+                    <?php foreach ($services as $service): ?>
+                        <option value="<?php echo $service['Service_ID']?>"><?php echo $service['Name']?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
 
         <!-- Time Filter -->
-        <label for="time-filter">Time:</label>
-        <select id="timeSelect" name="timeSelect[]" multiple size="10">
-            <option value="None" selected>All</option> <!-- Add selected here -->
-            <?php
-            for ($h = 6; $h <= 20; $h++) {
-                foreach ([0] as $m) {
-                    $timeFormatted = sprintf('%02d:%02d', $h, $m);
-                    echo "<option value=\"$timeFormatted\">$timeFormatted</option>";
-                }
-            }
-            ?>
-        </select>
+            <div class="filter-group">
+                <label for="timeSelect">Time:</label>
+                <select id="timeSelect" name="timeSelect[]" multiple size="10">
+                    <option value="None" selected>All</option>
+                    <?php
+                    for ($h = 6; $h <= 20; $h++) {
+                        foreach ([0] as $m) {
+                            $timeFormatted = sprintf('%02d:%02d', $h, $m);
+                            echo "<option value=\"$timeFormatted\">$timeFormatted</option>";
+                        }
+                    }
+                    ?>
+                </select>
+            </div>
         
         <!-- Apply Filters Button -->
-        <button type="button" onclick="search()">Apply Filters</button>
+            <div class="filter-group">
+                <button type="button" class="apply-filters-button" onclick="search()">Apply Filters</button>
+            </div>
+        </div>
     </div>
 
 <script>
