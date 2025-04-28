@@ -307,6 +307,9 @@ while ($row = mysqli_fetch_assoc($result)) {
         .apply-filters-button:hover {
             background-color: rgb(143, 48, 55);
         }
+        .black-text {
+            color: black;
+        }
 
     </style>
 </head>
@@ -438,13 +441,6 @@ while ($row = mysqli_fetch_assoc($result)) {
         // Service Filter
         let service = document.getElementById("serviceSelect").value || null;
 
-        const errorDetails = document.getElementById('errorDetails');
-        errorDetails.textContent = `
-            Selected Barbers: ${JSON.stringify(selectedBarbers, null, 2)}
-            Selected Times: ${JSON.stringify(selectedTimes, null, 2)}
-            Selected Services: ${JSON.stringify(services, null, 2)}
-        `;
-
         // Create query for the selected filters
         let query = '?';
 
@@ -506,10 +502,6 @@ while ($row = mysqli_fetch_assoc($result)) {
             </div>
         </div>
     </div>
-    <div id="errorCheckingBox" style="border: 1px solid red; padding: 10px; margin-top: 20px;">
-        <h3>Error Checking</h3>
-        <pre id="errorDetails"></pre>
-    </div>
     <br>
 
 <script>
@@ -525,12 +517,6 @@ while ($row = mysqli_fetch_assoc($result)) {
 
         let service = document.getElementById("serviceSelect").value || null;
 
-        const errorDetails = document.getElementById('errorDetails');
-        errorDetails.textContent = `
-            Selected Barbers: ${JSON.stringify(selectedBarbers, null, 2)}
-            Selected Times: ${JSON.stringify(selectedTimes, null, 2)}
-            Selected Services: ${service ? service : 'None'}
-        `;
         fetch('set_filter.php', {
             method: 'POST',
             headers: {
@@ -711,6 +697,11 @@ while ($row = mysqli_fetch_assoc($result)) {
                             // Reset appointments for this day
                             let appointments = data.length ? data : ["No appointments"];
 
+                            if (appointments !== "No appointments") {
+                                // Sort appointments by time before creating buttons
+                                appointments.sort((a, b) => (a.Time * 60 + a.Minute) - (b.Time * 60 + b.Minute));
+                            }
+
                             // Create timeslots dynamically
                             appointments.forEach(appointment => {
                                 let item = document.createElement('button');
@@ -726,13 +717,23 @@ while ($row = mysqli_fetch_assoc($result)) {
                                     if (barberColor) {
                                         item.style.backgroundColor = barberColor;
                                     } else {
-                                        item.style.backgroundColor = "gray"; // fallback
+                                        item.style.backgroundColor = "IndianRed"; // fallback
                                     }
-                                    //only make appointment clickable if time is after current time
-                                    if (appointment.Time <= currentTime && appointment.Day == currentDay) {
-                                        item.disabled = true;
-                                        item.style.backgroundColor = 'rgb(70, 70, 70)';
-                                    }  
+                                    let now = new Date();
+                                        let currentHours = now.getHours();
+                                        let currentMinutes = now.getMinutes();
+
+                                        //only make appointment clickable if time is after current time
+                                        let isToday = (tempYear === now.getFullYear() && tempMonth === now.getMonth() && wday === now.getDate());
+                                        if (isToday) {
+                                            if (
+                                                appointment.Time < currentHours || 
+                                                (appointment.Time == currentHours && appointment.Minute <= currentMinutes)
+                                            ) {
+                                                item.disabled = true;
+                                                item.style.backgroundColor = 'rgb(113, 121, 126)';
+                                            }
+                                        }
                                     // Add click event to show appointment details
                                     item.addEventListener('click', () => {
                                         openAppointmentInfo(appointment, tempYear, tempMonth, wday);
@@ -791,37 +792,36 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 
         function openAppointmentInfo(appointment, year, month, day) {
-            // Appointment information popup for a specific timeslot
             const popup = document.getElementById('appointmentPopup');
             const appointmentGrid = document.getElementById('appointmentGrid');
             const appointmentDay = document.getElementById('appointmentDay');
             const time = appointment.Time;
             const minute = appointment.Minute;
 
+            // Always make sure popup is visible
+            popup.style.display = 'block';
+
             // Clear the popup
             appointmentGrid.innerHTML = "";
 
-            // Currently the title, but has all appointment information populated from sent in appointment. e.g. appointment.Time, appointment.BarberID, appointment.[columnName from database]
-            // BarberID needs to be changed in database to actually be the ID and reference the barber information table to get the name.
-            appointmentDay.textContent = `Selected Appointment`;
+            // Update appointment day/title
+            appointmentDay.textContent = `Selected Appointment`; // ✅ Just update the text!
+            appointmentDay.className = 'black-text';
             let appointmentInfoPara = document.createElement('p');
             appointmentInfoPara.innerHTML = `Date: ${dayNames[new Date(year, month, day).getDay()]}, ${monthNames[month]} ${day}, ${year}
-                                    \nTime: ${(time <= 12 ? time : time-12) + ":" + minute + (time < 12 ? "AM" : "PM")}
-                                    \nBarber: ${appointment.Barber_ID}`;
+                                        \nTime: ${(time <= 12 ? time : time-12) + ":" + minute + (time < 12 ? "AM" : "PM")}
+                                        \nBarber: ${appointment.Barber_ID}`;
             appointmentGrid.appendChild(appointmentInfoPara);
 
             let bookButton = document.createElement('button');
             bookButton.textContent = "Book Appointment";
             bookButton.addEventListener('click', () => {
                 bookAppointment(appointment, day, month, year, time, minute);
-             });
+            });
 
             appointmentGrid.appendChild(bookButton);
-
-            // Show popup
-            popup.style.display = 'block';
-
         }
+
 
         function bookAppointment(appointment, day, month, year, time, minute) {
             // Function to show client a space to add their information and confirm their appointment.
