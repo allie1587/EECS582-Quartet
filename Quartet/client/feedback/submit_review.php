@@ -27,10 +27,6 @@ Purpose: Send reviews submited from the user to the database
 // start session to be able to get session information
 session_start();
 
-// For debugging only (not recommended for production)
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 
 // connect to the database
 $mysqli = new mysqli('sql312.infinityfree.com', 'if0_38323969', 'Quartet44', 'if0_38323969_quartet');

@@ -9,6 +9,8 @@ Revisions:
  -->
  <?php
 //Connects to the database
+
+
 session_start();
 require 'db_connection.php';
 require 'login_check.php';
@@ -62,9 +64,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_barber'])) {
         $stmt->execute();
         
         // Commit transaction if all queries succeeded
-        $conn->commit();
-        header("Location: employees.php");
-        exit();
+        if ($conn->commit()) {
+            echo '<script>window.location.href = "employees.php";</script>';
+            exit();
+        }
         
     } catch (Exception $e) {
         // Roll back transaction if any error occurs
