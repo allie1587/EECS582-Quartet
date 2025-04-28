@@ -1,12 +1,27 @@
-<!-- 
-    dashboard.php
-    A page for the barber to have an overview for the day which includes revenue and schedule
+<!--
+client.php
+ A page for the barber to have an overview for the day which includes revenue and schedule
     Author: Alexandra Stratton, Ben Renner, Brinley Hull, Jose Leyba, Kyle Moore
     Revisions:
         3/2/2025 -- Kyle Moore, add menu buttons
         4/23/2025 - Brinley, refactoring
+        4/24/2025 -- Alexandra Stratton -- Display store information and hours
+        4/27/2025 -- Alexandra Stratton -- Testing and Error Checking
     Creation date: 3/2/2025
+Preconditions
+    Required Access: User must be logged in and have appropriate role permissions
+Postconditions:
+    None
+Error conditions:
+    Database issues
+Side effects
+    None
+Invariants
+    None
+Known faults:
+    None
 -->
+
 
 <?php
 session_start();
@@ -19,10 +34,16 @@ ini_set('display_errors', 1);
 
 // Handle checkout action
 if (isset($_POST['checkout'])) {
+    if (!isset($_POST['client_id']) || !isset($_POST['appointment_id'])) {
+        die("Invalid checkout request - missing parameters");
+    }
     $client_id = $_POST['client_id'];
     $appointment_id = $_POST['appointment_id'];
     
     $stmt = $conn->prepare("INSERT INTO Checkout_History (Client_ID, Appointment_ID) VALUES (?, ?)");
+    if (!$stmt) {
+        die("Prepare failed");
+    }
     $stmt->bind_param("is", $client_id, $appointment_id);
     $stmt->execute();
     $stmt->close();
@@ -51,6 +72,9 @@ $sql = "SELECT Confirmed_Appointments.*, Client.First_Name, Client.Last_Name, Cl
           ORDER BY Confirmed_Appointments.Time ASC, Confirmed_Appointments.Minute ASC";
 
 $stmt = $conn->prepare($sql);
+if (!$stmt) {
+    die("Prepare failed");
+}
 $stmt->bind_param("siii", $barber_id, $today_day, $today_month, $today_year);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -69,6 +93,9 @@ if ($store_id) {
             FROM Store_Hours
             WHERE Store_ID = ? ORDER BY FIELD(Day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')";
     $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Prepare failed");
+    }
     $stmt->bind_param("i", $store_id);
     $stmt->execute();
     $hours_result = $stmt->get_result();
