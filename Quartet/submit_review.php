@@ -27,6 +27,11 @@ Purpose: Send reviews submited from the user to the database
 // start session to be able to get session information
 session_start();
 
+// For debugging only (not recommended for production)
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // connect to the database
 $mysqli = new mysqli('sql312.infinityfree.com', 'if0_38323969', 'Quartet44', 'if0_38323969_quartet');
 if ($mysqli->connect_error) { // catch database connection failure error
@@ -34,9 +39,9 @@ if ($mysqli->connect_error) { // catch database connection failure error
 }
 
 // Get latest ID from the table
-$result = $mysqli->query("SELECT MAX(ReviewID) AS ReviewID FROM Reviews");
+$result = $mysqli->query("SELECT MAX(Review_ID) AS Review_ID FROM Reviews");
 $row = $result->fetch_assoc();
-$new_id = $row['ReviewID'] ? $row['ReviewID'] + 1 : 1;
+$new_id = $row['Review_ID'] ? $row['Review_ID'] + 1 : 1;
 
 // set corresponding variables from the form post from the confirm appointment page and from the previously-set session variables from schedule.php
 $Name = isset($_POST['Name']) && !empty(trim($_POST['Name'])) ? trim($_POST['Name']) : "Anonymous";
