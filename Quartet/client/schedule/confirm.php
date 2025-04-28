@@ -82,9 +82,9 @@ function generateUniqueClientID($conn) {
 }
 
 // Set corresponding variables from the form post from the confirm appointment page and from the previously-set session variables from schedule.php
-$fname = $_POST['fname'];
-$lname = $_POST['lname'];
-$email = $_POST['email'];
+$fname = DataEncryptor::encrypt($_POST['fname']);
+$lname = DataEncryptor::encrypt($_POST['lname']);
+$email = DataEncryptor::encrypt($_POST['email']);
 $phone = $_POST['phone'];
 $day = $_SESSION["day"];
 $month = $_SESSION["month"];
@@ -166,7 +166,9 @@ require 'PHPMailerMaster/src/SMTP.php';
 $mail = new PHPMailer(true);
 
 try {
-    // Server settings
+    $decrypted_fname = DataEncryptor::decrypt($fname);
+    $decrypted_lname = DataEncryptor::decrypt($lname);
+    $decrypted_email = DataEncryptor::decrypt($email);
     $mail->isSMTP(); // Use SMTP
     $mail->Host = 'smtp.gmail.com'; // Replace with your SMTP server (e.g., smtp.gmail.com, smtp.sendgrid.net)
     $mail->SMTPAuth = true; // Enable SMTP authentication
@@ -179,7 +181,7 @@ try {
     $mail->setFrom('quartetbarber@gmail.com', 'Quartet Barbershop'); // Replace with your email and name
 
     // Recipient
-    $mail->addAddress($email, "$fname $lname"); // Add the client's email and name
+    $mail->addAddress($decrypted_email, "$decrypted_fname $decrypted_lname"); // Add the client's email and name
 
     // Email content
     $mail->isHTML(true); // Set email format to HTML
@@ -190,7 +192,7 @@ try {
             <title>Appointment Confirmation</title>
         </head>
         <body>
-            <h2>Hello $fname $lname,</h2>
+            <h2>Hello $decrypted_fname $decrypted_lname,</h2>
             <p>Your appointment has been successfully scheduled!</p>
             <p><strong>Appointment ID:</strong> $appointmentID</p>
             <p><strong>Date:</strong> $month/$day/$year</p>
