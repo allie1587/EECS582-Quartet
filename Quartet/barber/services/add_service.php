@@ -61,13 +61,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <script src="validate.js"></script>
     <!-- Internal/External CSS for styling the page -->
     <style>
-        body {
-                font-family: Arial, sans-serif;
-                background-color: #f4f4f4;
-                margin: 0;
-                padding: 0;
-            }
-        /* Style for the form box */
+                body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
         form {
             max-width: 600px;
             margin: 0 auto;
@@ -76,14 +76,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             border-radius: 10px;
             background-color: #f9f9f9;
             color: black;
+            display: block; /* Ensure elements are vertically aligned */
         }
-        /* Style for the labels */
+
         label {
             display: block;
             margin-top: 10px;
             font-weight: bold;
         }
-        /* Style for input boxes */
+
         input[type="text"],
         input[type="number"],
         textarea {
@@ -96,38 +97,71 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         textarea {
-            height: 150px; 
-            resize: vertical; 
+            height: 150px;
+            resize: vertical;
         }
-        /* Add prodct button style */
+
+        .file-input-container {
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .file-input-container input[type="file"] {
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: rgba(36, 35, 35);
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .file-input-label:hover {
+            background-color: rgba(36, 35, 35);
+        }
+
         .add-btn {
             color: white;
             background: #c4454d;
-            padding: 5px 100px;
+            padding: 15px 50px;
             font-size: 18px;
             font-family: 'Georgia', serif;
             border: none;
             cursor: pointer;
             transition: 0.3s;
+            margin-top: 20px; /* Add some space between the form and button */
+            display: block; /* Ensure the button is centered */
+            width: 100%; /* Make the button take the full width of the form */
         }
+
         .add-btn:hover {
             background: rgb(143, 48, 55);
         }
-        /* Back button style */
+
         .back-btn {
             color: white;
             background: #c4454d;
             padding: 15px 50px;
             font-size: 16px;
-            font-family: 'Georgia',     serif;
+            font-family: 'Georgia', serif;
             border: none;
             cursor: pointer;
             transition: 0.3s;
             position: fixed;
             bottom: 20px;
             right: 20px;
-
         }
+
         .back-btn:hover {
             background: rgb(143, 48, 55);
         }
