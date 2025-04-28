@@ -19,6 +19,7 @@
         4/5/2025 - Brinley, fix incorrect month display on week view
         4/10/2025 - Brinley, add minute
         4/14/2025 - Brinley, update filtering
+        4/27/2025 - Brinley, update appointment detail formatting
     Creation date:
     Other sources: ChatGPT
 -->
@@ -351,8 +352,12 @@ while ($row = mysqli_fetch_assoc($result)) {
                     <?php
                     for ($h = 6; $h <= 20; $h++) {
                         foreach ([0] as $m) {
-                            $timeFormatted = sprintf('%02d:%02d', $h, $m);
-                            echo "<option value=\"$timeFormatted\">$timeFormatted</option>";
+                            $period = ($h < 12 ? "AM" : "PM");
+                            $formattedHour = ($h <= 12 ? $h : $h - 12);
+                            $time = sprintf('%02d:%02d', $h, $m);
+                            $timeFormatted = sprintf('%02d:%02d', $formattedHour, $m);
+                            $timeFormatted .= $period;
+                            echo "<option value=\"$time\">$timeFormatted</option>";
                         }
                     }
                     ?>
