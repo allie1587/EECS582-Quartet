@@ -5,13 +5,11 @@
     Revisions:
         3/2/2025 -- Kyle Moore, add menu buttons
         04/08/2025 -- Jose Leyba -- Reworked for new Databases
+        
     Creation date: 3/2/2025
 -->
 
 <?php
-session_start();
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 require 'db_connection.php';
 require 'login_check.php';
 require 'role_check.php';
